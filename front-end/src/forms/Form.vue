@@ -15,15 +15,19 @@ const form = ref<Form | null>({
   form_steps: [{
     id: 1,
     title: "Step 1",
-    description: "This is the first step of the form.",
+    description: "Wählen Sie bitte eine Fachrichtung aus.",
     order: 1,
     fields: [{
       id: 1,
       step_id: 1,
-      name: "first_name",
-      type: "text",
-      label: "First Name",
-      placeholder: "Enter your first name",
+      name: "Fachrichtung",
+      description: "Bitte wählen Sie eine Fachrichtung aus.",
+      type: "select",
+      options: [
+        {id: 'fachrichtung1', value: "fachrichtung1", label: "Fachrichtung 1", description: "Beschreibung für Fachrichtung 1"},
+        {id: 'fachrichtung2', value: "fachrichtung2", label: "Fachrichtung 2"},
+        {id: 'fachrichtung3', value: "fachrichtung3", label: "Fachrichtung 3"}
+      ],
       required: true
     }, {
       id: 2,

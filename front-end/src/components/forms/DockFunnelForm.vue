@@ -47,7 +47,6 @@
 
 <script setup lang="ts">
 import type { Form } from "../../types/index.ts";
-import { Icon } from "@iconify/vue";
 import { computed, onMounted, ref } from "vue";
 import FormFieldsRoot from "./FormFieldsRoot.vue";
 

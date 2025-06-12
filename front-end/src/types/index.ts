@@ -15,6 +15,7 @@ export type FormStep = {
 export type FormField = {
     id: number;
     name: string;
+    description?: string; // Description of the field
     required: boolean;
     validation?: string; // Regex or other validation rules
     custom_attributes?: Record<string, string>; // Additional attributes like data-* attributes
@@ -25,13 +26,14 @@ export type FormField = {
 
 export type FormFieldSelect = FormField & {
     type: 'select'; // Select dropdown type
-    options: { value: string; label: string }[]; // Options for the select field
+    label?: string; // Label for the field
+    options: { id: string; value: string; label: string, description?: string }[]; // Options for the select field
     multiple?: boolean; // Whether the select allows multiple selections
     default_value?: string | string[]; // Default value(s) for the field
 }
 
 export type FormFieldText = FormField & {
-    type: 'text' | 'email' | 'tel' | 'url'; // Input types
+    type: 'text' // Input types
     label?: string; // Label for the field
     placeholder?: string; // Placeholder text
     default_value?: string; // Default value for the field
