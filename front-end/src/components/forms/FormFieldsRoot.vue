@@ -1,7 +1,7 @@
 <template>
 <div class="">
     <div v-if="props.field.type === 'text'" class="form-field-text">
-        Not Implemented
+        <FormFieldText :field="props.field" />
     </div>
     <div v-else-if="props.field.type === 'textarea'" class="form-field-textarea">
         Not Implemented
@@ -10,7 +10,7 @@
         <FormFieldSelect :field="props.field" />
     </div>
     <div v-else>
-        <p class="text-red-500">Field type "{{ props.field.type }}" is not implemented.</p>
+        <p class="text-red-500">Field type is not implemented.</p>
     </div>
 </div>
 </template>
@@ -18,6 +18,7 @@
 <script setup lang="ts">
 import type { Form } from "@/types";
 import FormFieldSelect from "./FormFields/FormFieldSelect.vue";
+import FormFieldText from "./FormFields/FormFieldText.vue";
 
 type Props = {
     field: Form["form_steps"][number]["fields"][number];

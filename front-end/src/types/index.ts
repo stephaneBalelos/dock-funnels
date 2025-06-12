@@ -33,7 +33,8 @@ export type FormFieldSelect = FormField & {
 }
 
 export type FormFieldText = FormField & {
-    type: 'text' // Input types
+    type: 'text'; // Input types
+    input_type?: 'text' | 'email' | 'number' | 'tel' | 'url'; // Type of input field
     label?: string; // Label for the field
     placeholder?: string; // Placeholder text
     default_value?: string; // Default value for the field

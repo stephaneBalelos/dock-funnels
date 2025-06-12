@@ -32,7 +32,7 @@ const form = ref<Form | null>({
     }, {
       id: 2,
       step_id: 1,
-      name: "last_name",
+      name: "Name",
       type: "text",
       label: "Last Name",
       placeholder: "Enter your last name",
