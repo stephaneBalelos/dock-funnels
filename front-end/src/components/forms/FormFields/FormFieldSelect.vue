@@ -46,7 +46,8 @@
 <script setup lang="ts">
 import type { FormFieldSelect } from "@/types";
 import { RadioGroupRoot, RadioGroupItem, RadioGroupIndicator } from "reka-ui";
-import { ref, } from "vue";
+import { ref, watch, } from "vue";
+import { useFormSubmissionStateStore } from "@/forms/stores/form.ts";
 
 type Props = {
   field: FormFieldSelect;
@@ -54,7 +55,18 @@ type Props = {
 
 const props = defineProps<Props>();
 
-const radioStateSingle = ref("default");
+const radioStateSingle = ref(props.field.default_value);
+
+const submissionStateStore = useFormSubmissionStateStore();
+
+
+watch(radioStateSingle, (newValue) => {
+  submissionStateStore.setFieldValue(props.field.field_name, newValue ?? null);
+});
+
+
+
+
 </script>
 
 <style scoped></style>
