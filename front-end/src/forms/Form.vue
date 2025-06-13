@@ -114,7 +114,7 @@ const initFormSubmission = (form: Form) => {
 };
 
 onMounted(() => {
-  console.log(window.DockFunnelsFormData);
+  console.log(window.DockFunnelsForm);
   initFormSubmission(formTest.value!);
 });
 </script>

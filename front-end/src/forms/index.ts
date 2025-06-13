@@ -6,13 +6,13 @@ import Form from './Form.vue'
 // DockFunnelsFormData is provided by the PHP script
 declare global {
     interface Window {
-        DockFunnelsFormData: {
+        DockFunnelsForm: {
             apiUrl: string;
         }
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DockFunnelsFormData:', window.DockFunnelsFormData);
+    console.log('DockFunnelsFormData:', window.DockFunnelsForm);
     createApp(Form).mount('#dock-funnels-form')
 });

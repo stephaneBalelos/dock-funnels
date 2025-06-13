@@ -6,14 +6,15 @@ import App from './App.vue'
 // DockFunnelsData is provided by the PHP script
 declare global {
     interface Window {
-        DockFunnelsData: {
-            apiUrl: string;
+        DockFunnelsAdmin: {
+            ajaxUrl: string;
+            nonce: string;
         }
     }
 }
 
-console.log('DockFunnelsData:', window.DockFunnelsData);
-if (!window.DockFunnelsData) {
+console.log('DockFunnelsData:', window.DockFunnelsAdmin);
+if (!window.DockFunnelsAdmin) {
     console.log('DockFunnelsData is not defined. Please ensure the PHP script is correctly enqueuing the data.');
 }
 
