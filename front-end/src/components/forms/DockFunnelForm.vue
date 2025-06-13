@@ -62,8 +62,6 @@ const selectedStep = computed(() => {
 });
 
 onMounted(() => {
-  // Initialize or fetch form data if needed
-  console.log("Form component mounted with form:", props.form);
 });
 
 const handleStepChange = (step: number) => {

@@ -65,24 +65,32 @@ class DockFunnels
     {
         if (strpos($hook, 'dock-funnels') === false) return;
 
-        wp_enqueue_style('dock-funnels-admin', plugin_dir_url(__FILE__) . 'front-end/dist/assets/main.css');
-        wp_enqueue_script_module('dock-funnels-admin', plugin_dir_url(__FILE__) . 'front-end/dist/assets/main/main.js', [], null, true);
-        wp_enqueue_script_module('dock-funnels-global', plugin_dir_url(__FILE__) . 'front-end/dist/assets/runtime-dom.esm-bundler.js', [], null, true);
-        
+        wp_enqueue_style('dock-funnels-dashboard', plugin_dir_url(__FILE__) . 'front-end/dist/assets/dashboard/dock-funnels.css');
+        wp_enqueue_script('dock-funnels-vue', 'https://unpkg.com/vue@3/dist/vue.global.js"', [], null, true);
+        wp_enqueue_script('dock-funnels-dashboard', plugin_dir_url(__FILE__) . 'front-end/dist/assets/dashboard/index.iife.js', [], null, true);
 
         $data = [
             'formsTable' => $this->get_all_forms(),
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('dock_funnels_nonce')
         ];
-        wp_localize_script('dock-funnels-admin', 'DockFunnelsData', $data);
+        wp_localize_script('dock-funnels-dashboard', 'DockFunnelsData', $data);
     }
 
-    public function enqueue_frontend_assets()
+    public function enqueue_frontend_assets($form_id)
     {
-        wp_enqueue_style('dock-funnels-form', plugin_dir_url(__FILE__) . 'front-end/dist/assets/form.css');
-        wp_enqueue_script_module('dock-funnels-form', plugin_dir_url(__FILE__) . 'front-end/dist/assets/form/form.js', [], null, true);
-        wp_enqueue_script_module('dock-funnels-global', plugin_dir_url(__FILE__) . 'front-end/dist/assets/runtime-dom.esm-bundler.js', [], null, true);
+        wp_enqueue_style('dock-funnels-form', plugin_dir_url(__FILE__) . 'front-end/dist/assets/forms/dock-funnels.css');
+        wp_enqueue_script('dock-funnels-vue', 'https://unpkg.com/vue@3/dist/vue.global.js', [], null, true);
+        wp_enqueue_script('dock-funnels-form', plugin_dir_url(__FILE__) . 'front-end/dist/assets/forms/index.iife.js', [], null, true);
+
+
+        $data = [
+            'formRow' => $this->get_form_by_id($form_id),
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('dock_funnels_form_nonce')
+        ];
+
+        wp_localize_script('dock-funnels-form', 'DockFunnelsFormData', $data);
     }
 
     private function get_all_forms()
@@ -90,6 +98,13 @@ class DockFunnels
         global $wpdb;
         $table_name = $wpdb->prefix . 'dock_funnels';
         return $wpdb->get_results("SELECT id, name FROM $table_name", ARRAY_A);
+    }
+
+    private function get_form_by_id($form_id)
+    {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'dock_funnels';
+        return $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $form_id));
     }
 
     public static function uninstall()
@@ -112,7 +127,7 @@ class DockFunnels
             wp_die(__('You do not have sufficient permissions to access this page.'));
         }
 
-        echo '<div class="wrap"><h1>Dock Funnels</h1>';
+        echo '<div class="wrap"><h1>Dock Funnels dfldo</h1>';
         echo '<div id="app"></div>';
         global $wpdb;
         $table_name = $wpdb->prefix . 'dock_funnels';
@@ -184,32 +199,16 @@ class DockFunnels
 
     public function render_shortcode($atts)
     {
-        $this->enqueue_frontend_assets();
+
         $atts = shortcode_atts(['id' => 0], $atts);
         $form_id = intval($atts['id']);
 
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'dock_funnels';
-        $form = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $form_id));
+        $this->enqueue_frontend_assets($form_id);
 
-        if (!$form) return '<p>Form not found.</p>';
 
-        $fields = json_decode($form->fields);
         ob_start();
 ?>
         <div id="dock-funnels-form"></div>
-        <form method="post" action="<?php echo admin_url('admin-post.php'); ?>">
-            <input type="hidden" name="action" value="dock_funnel_submit">
-            <input type="hidden" name="form_id" value="<?php echo esc_attr($form_id); ?>">
-            <?php foreach ($fields as $field): ?>
-                <p>
-                    <label><?php echo esc_html($field->label); ?>
-                        <input type="text" name="fields[<?php echo esc_attr($field->name); ?>]">
-                    </label>
-                </p>
-            <?php endforeach; ?>
-            <input type="submit" value="Submit">
-        </form>
 <?php
         return ob_get_clean();
     }

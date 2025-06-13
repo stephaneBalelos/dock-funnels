@@ -114,9 +114,7 @@ const initFormSubmission = (form: Form) => {
 };
 
 onMounted(() => {
-  // This is a good place to initialize any global state or perform side effects
-  console.log("Form mounted");
-  console.log(window.DockFunnelsData);
+  console.log(window.DockFunnelsFormData);
   initFormSubmission(formTest.value!);
 });
 </script>

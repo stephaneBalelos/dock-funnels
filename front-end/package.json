@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "build:forms": "vue-tsc -b && vite build",
+    "build:dashboard": "vue-tsc -b && vite build --config vite.dashboard.config.ts",
+    "build": "npm run build:forms && npm run build:dashboard",
     "preview": "vite preview"
   },
   "dependencies": {
