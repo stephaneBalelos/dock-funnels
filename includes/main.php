@@ -1,22 +1,68 @@
 <?php
 
-class DockFunnels_Main {
+class DockFunnels_Main
+{
 
-    public function __construct() {
-        register_activation_hook(__FILE__, [ 'DockFunnels_DB', 'activate' ]);
-        register_deactivation_hook(__FILE__, [ 'DockFunnels_DB', 'deactivate' ]);
-        register_uninstall_hook(__FILE__, [ 'DockFunnels_DB', 'uninstall' ]);
+    public static function install()
+    {
 
-        add_action('init', [ $this, 'register_shortcode' ]);
-        add_action('admin_menu', [ 'DockFunnels_Admin', 'register_admin_menu' ]);
+        add_action('init', ['DockFunnels_Main', 'register_shortcode']);
+        add_action('admin_menu', ['DockFunnels_Admin', 'register_admin_menu']);
 
-        add_action('wp_ajax_dock_funnel_ajax_create_form', [ 'DockFunnels_Ajax', 'create_form' ]);
-        add_action('wp_ajax_nopriv_dock_funnel_ajax_submit', [ 'DockFunnels_Ajax', 'handle_form_submission' ]);
+        add_action('wp_ajax_dock_funnel_ajax_create_form', ['DockFunnels_Ajax', 'create_form']);
+        add_action('wp_ajax_nopriv_dock_funnel_ajax_submit', ['DockFunnels_Ajax', 'handle_form_submission']);
 
-        add_action('admin_enqueue_scripts', [ 'DockFunnels_Admin', 'enqueue_admin_assets' ]);
+        add_action('admin_enqueue_scripts', ['DockFunnels_Admin', 'enqueue_admin_assets']);
     }
 
-    public function register_shortcode() {
-        add_shortcode('dock_funnel', [ 'DockFunnels_Shortcode', 'render' ]);
+
+    public static function register_shortcode()
+    {
+        add_shortcode('dock_funnel', ['DockFunnels_Shortcode', 'render']);
+    }
+
+    public static function activate()
+    {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+
+        $forms_table = $wpdb->prefix . 'dock_funnels';
+        $responses_table = $wpdb->prefix . 'dock_funnel_responses';
+
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
+        $sql_forms = "CREATE TABLE $forms_table (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            name text NOT NULL,
+            fields longtext NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id)
+        ) $charset_collate;";
+
+        $sql_responses = "CREATE TABLE $responses_table (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            form_id mediumint(9) NOT NULL,
+            response longtext NOT NULL,
+            submitted_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id)
+        ) $charset_collate;";
+
+        dbDelta($sql_forms);
+        dbDelta($sql_responses);
+    }
+
+    public static function deactivate()
+    {
+        global $wpdb;
+
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_responses");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnels");
+    }
+    public static function uninstall()
+    {
+        global $wpdb;
+
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_responses");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnels");
     }
 }

@@ -10,17 +10,26 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Autoload all plugin classes
-spl_autoload_register(function ($class) {
-    if (strpos($class, 'DockFunnels_') === 0) {
-        $file = plugin_dir_path(__FILE__) . 'includes/' . strtolower(str_replace('DockFunnels_', '', $class)) . '.php';
-        if (file_exists($file)) {
-            require_once $file;
-        }
-    }
-});
+// include necessary files
+require_once plugin_dir_path(__FILE__) . 'includes/db.php';
+require_once plugin_dir_path(__FILE__) . 'includes/shortcodes.php';
+require_once plugin_dir_path(__FILE__) . 'includes/admin.php';
+require_once plugin_dir_path(__FILE__) . 'includes/ajax.php';
 
 // Load main plugin class
 require_once plugin_dir_path(__FILE__) . 'includes/main.php';
 
-new DockFunnels_Main();
+// Initialize the plugin
+class DockFunnels
+{
+    public static function init()
+    {
+        DockFunnels_Main::install();
+    }
+}
+// Initialize the plugin
+DockFunnels::init();
+// Register activation, deactivation, and uninstall hooks
+register_activation_hook(__FILE__, ['DockFunnels_Main', 'activate']);
+register_deactivation_hook(__FILE__, ['DockFunnels_Main', 'deactivate']);
+register_uninstall_hook(__FILE__, ['DockFunnels_Main', 'uninstall']);

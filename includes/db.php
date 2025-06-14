@@ -2,47 +2,6 @@
 
 class DockFunnels_DB {
 
-    public static function activate() {
-        global $wpdb;
-
-        $charset_collate = $wpdb->get_charset_collate();
-
-        $forms_table = $wpdb->prefix . 'dock_funnels';
-        $responses_table = $wpdb->prefix . 'dock_funnel_responses';
-
-        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-        dbDelta("CREATE TABLE $forms_table (
-            id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
-            description TEXT,
-            fields longtext NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        ) $charset_collate;");
-
-        dbDelta("CREATE TABLE $responses_table (
-            id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-            form_id BIGINT UNSIGNED NOT NULL,
-            response TEXT NOT NULL,
-            submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (form_id) REFERENCES $forms_table(id) ON DELETE CASCADE
-        ) $charset_collate;");
-    }
-
-    public static function deactivate() {
-        // Drop everything related to the plugin
-        global $wpdb;
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_responses");
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnels");
-    }
-
-    public static function uninstall() {
-        global $wpdb;
-
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_responses");
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnels");
-    }
-
     public static function get_forms() {
         global $wpdb;
         return $wpdb->get_results("SELECT * FROM {$wpdb->prefix}dock_funnels", ARRAY_A);
@@ -55,9 +14,10 @@ class DockFunnels_DB {
 
     public static function create_form($name, $description, $fields) {
         global $wpdb;
+        $table_name = $wpdb->prefix . 'dock_funnels';
 
         $wpdb->insert(
-            $wpdb->prefix . 'dock_funnels',
+            $table_name,
             [
                 'name' => $name,
                 'description' => $description,
