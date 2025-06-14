@@ -53,13 +53,23 @@ async function createTestForm() {
 </script>
 
 <template>
-  <div class="flex justify-center items-center flex-col">
-    <h1 class="text-3xl font-bold mb-4">Welcome to Dock Funnels</h1>
-    <p class="mb-4">This is a simple dashboard for managing your funnels.</p>
-    <button @click="createTestForm" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-      Create Test Form
-    </button>
+<div class="h-lvh app-container">
+  <div class="header">
+    Header
   </div>
+  <div class="sidebar-left">
+    sidebar-left
+  </div>
+  <div class="main">
+      <div class="toolbar">
+    toolbar
+  </div>
+    form preview
+  </div>
+  <div class="sidebar-right">
+    sidebar-right
+  </div>
+</div>
 </template>
 
 <style scoped>
