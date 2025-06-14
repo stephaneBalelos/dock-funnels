@@ -38,11 +38,7 @@ class DockFunnels_Ajax {
             wp_send_json_error(['message' => 'Name and fields are required.']);
         }
 
-        $fields_encoded = wp_json_encode($fields);
-
-        // wp_send_json_success($fields_encoded);
-
-        $form_id = DockFunnels_DB::create_form($name, $description, $fields_encoded);
+        $form_id = DockFunnels_DB::create_form($name, $description, $fields);
         if (!$form_id) {
             wp_send_json_error(['message' => 'Failed to create form.']);
         }

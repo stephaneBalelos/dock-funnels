@@ -34,6 +34,7 @@ class DockFunnels_Main
         $sql_forms = "CREATE TABLE $forms_table (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             name text NOT NULL,
+            description text NOT NULL,
             fields longtext NOT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
             PRIMARY KEY  (id)

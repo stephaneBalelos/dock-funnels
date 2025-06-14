@@ -51,9 +51,22 @@ class DockFunnels_Admin {
             return;
         }
         $forms = DockFunnels_DB::get_forms();
-        echo '<div class="wrap"><h1>Dock Funnels</h1><table class="widefat"><thead><tr><th>ID</th><th>Name</th></tr></thead><tbody>';
+        echo '<div class="wrap"><h1>Dock Funnels</h1>
+                <table class="widefat">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Shortcode</th>
+                    </tr>
+                    </thead>
+                <tbody>';
         foreach ($forms as $form) {
-            echo "<tr><td>{$form['id']}</td><td>{$form['name']}</td></tr>";
+            echo "<tr>
+                <td>{$form['id']}</td>
+                <td>{$form['name']}</td>
+                <td><code>[dock_funnel id='{$form['id']}']</code></td>
+                </tr>";
         }
         echo '</tbody></table></div>';
     }

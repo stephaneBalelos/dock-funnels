@@ -27,7 +27,7 @@ class DockFunnels_Shortcode
             <?php foreach ($fields as $field): ?>
                 <p>
                     <label><?php echo esc_html($field['label']); ?>
-                        <input type="text" name="fields[<?php echo esc_attr($field['name']); ?>]">
+                        <input type="<?php echo esc_attr($field['type']); ?>">
                     </label>
                 </p>
             <?php endforeach; ?>
