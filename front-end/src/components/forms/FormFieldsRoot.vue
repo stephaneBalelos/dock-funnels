@@ -21,7 +21,7 @@ import FormFieldSelect from "./FormFields/FormFieldSelect.vue";
 import FormFieldText from "./FormFields/FormFieldText.vue";
 
 type Props = {
-    field: Form["form_steps"][number]["fields"][number];
+    field: Form["fields"][number];
 }
 
 const props = defineProps<Props>();

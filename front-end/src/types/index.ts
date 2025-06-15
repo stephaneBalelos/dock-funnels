@@ -3,18 +3,19 @@ export type Form = {
     title: string;
     description: string;
     form_steps: FormStep[];
+    fields: (FormFieldSelect | FormFieldText | FormFieldTextarea)[]; // Array of fields in this step
 }
 
 export type FormStep = {
     id: number;
     title: string;
     description: string;
-    order: number;
-    fields: (FormFieldSelect | FormFieldText | FormFieldTextarea)[]; // Array of fields in this step
 }
+
 export type FormField = {
     id: number;
-    name: string;
+    step_index: number; // ID of the step this field belongs to
+    label: string;
     description?: string; // Description of the field
     field_name: string; // Name of the field, used for form submission
     required: boolean;
@@ -22,7 +23,6 @@ export type FormField = {
     custom_attributes?: Record<string, string>; // Additional attributes like data-* attributes
     css_classes?: string[]; // Custom CSS classes for styling
     error_message?: string;
-    step_id: number; // ID of the step this field belongs to
     depends_on?: {
         field_id: number; // ID of the field this field depends on
         value: string | string[]; // Value(s) that trigger this field to be shown
@@ -42,6 +42,10 @@ export type FormFieldSelectOptions = {
     value: string; // Value of the option
     label: string; // Display label for the option
     description?: string; // Optional description for the option
+    depends_on?: {
+        field_id: number; // ID of the field this option depends on
+        value: string | string[]; // Value(s) that trigger this option to be shown
+    }; // Conditional logic for showing/hiding the option
 }
 
 export type FormFieldText = FormField & {
@@ -68,11 +72,10 @@ export type FormSubmission = {
 }
 
 export type FormSubmissionField = {
-    field_id: number; // ID of the field
-    field_label: string; // Label of the field
-    field_name: string; // Name of the field
+    field_id: FormField['id']; // ID of the field being submitted
+    field_label: FormField['label']; // Label of the field
+    field_name: FormField['field_name']; // Name of the field, used for form submission
     value: string | string[] | null; // Value(s) submitted for the field
-    step_id: number; // ID of the step this field belongs to
-    step_title: string; // Title of the step this field belongs to
-    step_order: number; // Order of the step this field belongs to
+    step_id: FormStep['id']; // ID of the step this field belongs to
+    step_title: FormStep['title']; // Title of the step this field belongs to
 }

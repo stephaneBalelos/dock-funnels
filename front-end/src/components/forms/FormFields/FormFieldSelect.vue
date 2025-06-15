@@ -4,7 +4,7 @@
       class="text-stone-700 text-lg leading-none mb-3"
       :class="{ 'text-red-500': props.field.required }"
     >
-      {{ props.field.name }}
+      {{ props.field.label }}
       <span v-if="props.field.required" class="text-red-500">*</span>
       <p v-if="props.field.description" class="text-stone-500 text-sm leading-none mt-1">
         {{ props.field.description }}
@@ -62,6 +62,9 @@ const submissionStateStore = useFormSubmissionStateStore();
 
 watch(radioStateSingle, (newValue) => {
   submissionStateStore.setFieldValue(props.field.field_name, newValue ?? null);
+}, {
+  immediate: true,
+  deep: true,
 });
 
 
