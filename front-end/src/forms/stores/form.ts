@@ -56,7 +56,18 @@ export const useFormSubmissionStateStore = createGlobalState(
         const fieldsForCurrentStep = computed(() => {
             if (!form.value) return []
             // Filter fields that belong to the current step
-            return form.value.fields.filter(field => field.step_index === currentStepIndex.value)
+            const f = form.value.fields.filter(field => field.step_index === currentStepIndex.value)
+            // filter out fields that are not visible based on their dependencies
+            return f.filter(field => {
+                if (!field.depends_on) return true // No dependencies, always visible
+                const dependentField = form.value?.fields.find(f => f.field_name === field.depends_on?.field_name)
+                if (!dependentField) return true // Dependent field not found, show this field
+                const dependentValue = formSubmissionFields.value[dependentField.field_name]?.value
+                if (Array.isArray(dependentValue)) {
+                    return dependentValue.includes(field.depends_on.value as string)
+                }
+                return dependentValue === field.depends_on.value
+            })
         })
 
 

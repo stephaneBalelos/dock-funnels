@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-4">
     <CheckboxGroupRoot v-model="checkbox" :name="'checkbox-group'" class="flex flex-col gap-4">
-        <label v-for="option in props.field.options" class="flex flex-row gap-4 items-center [&>.checkbox]:hover:bg-neutral-100">
+        <label v-for="option in props.field.options.filter(shoulShowOption)" class="flex flex-row gap-4 items-center [&>.checkbox]:hover:bg-neutral-100">
           <CheckboxRoot
             :name="option.label"
             :value="option.value"
@@ -18,10 +18,10 @@
 </template>
 
 <script setup lang="ts">
-import type { FormFieldCheckboxList } from "@/types";
+import type { FormFieldCheckboxList, FormFieldCheckboxListOption } from "@/types";
 import { CheckboxGroupRoot, CheckboxIndicator, CheckboxRoot } from 'reka-ui'
 import { useFormSubmissionStateStore } from "@/forms/stores/form.ts";
-import { ref, watch, } from "vue";
+import { onUpdated, ref, watch, } from "vue";
 
 type Props = {
   field: FormFieldCheckboxList;
@@ -41,8 +41,32 @@ watch(checkbox, (newValue) => {
   submissionStateStore.setFieldValue(props.field.field_name, value);
 }, {
   immediate: true,
-  deep: true,
 });
+
+onUpdated(() => {
+  const currentState = submissionStateStore.formSubmissionFields.value[props.field.field_name]
+  if (currentState) {
+    checkbox.value = currentState.value || [];
+  } else {
+    checkbox.value = props.field.default_value || [];
+  }
+});
+
+function shoulShowOption(option: FormFieldCheckboxListOption) {
+  if (!option.depends_on) {
+    return true;
+  }
+  const field_name = option.depends_on.field_name;
+  const dependsOnField = submissionStateStore.formSubmissionFields.value[field_name];
+  if (!dependsOnField) {
+    return false;
+  }
+  const dependsOnValue = dependsOnField.value;
+  if (Array.isArray(dependsOnValue)) {
+    return dependsOnValue.includes(option.depends_on.value as string);
+  }
+  return dependsOnValue === option.depends_on.value;
+}
 
 
 

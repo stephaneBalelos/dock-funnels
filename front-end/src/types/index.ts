@@ -24,7 +24,7 @@ export type FormField = {
     css_classes?: string[]; // Custom CSS classes for styling
     error_message?: string;
     depends_on?: {
-        field_id: number; // ID of the field this field depends on
+        field_name: string; // name of the field this field depends on
         value: string | string[]; // Value(s) that trigger this field to be shown
     }; // Conditional logic for showing/hiding the field
 }
@@ -32,18 +32,17 @@ export type FormField = {
 export type FormFieldSelect = FormField & {
     type: 'select'; // Select dropdown type
     label?: string; // Label for the field
-    options: FormFieldSelectOptions[]; // Array of options for the select field
+    options: FormFieldSelectOption[]; // Array of options for the select field
     multiple?: boolean; // Whether the select allows multiple selections
     default_value?: string | string[]; // Default value(s) for the field
 }
 
-export type FormFieldSelectOptions = {
-    id: string; // Unique identifier for the option
+export type FormFieldSelectOption = {
     value: string; // Value of the option
     label: string; // Display label for the option
     description?: string; // Optional description for the option
     depends_on?: {
-        field_id: number; // ID of the field this option depends on
+        field_name: string; // name of the field this option depends on
         value: string | string[]; // Value(s) that trigger this option to be shown
     }; // Conditional logic for showing/hiding the option
 }
@@ -77,7 +76,7 @@ export type FormFieldCheckboxListOption = {
     label: string; // Display label for the option
     description?: string; // Optional description for the option
     depends_on?: {
-        field_id: number; // ID of the field this option depends on
+        field_name: string; // name of the field this option depends on
         value: string | string[]; // Value(s) that trigger this option to be shown
     }; // Conditional logic for showing/hiding the option
 }

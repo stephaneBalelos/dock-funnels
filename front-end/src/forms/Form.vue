@@ -45,19 +45,16 @@ const formTest = ref<Form | null>({
       type: "select",
       options: [
         {
-          id: "orthopedie",
           value: "orthopedie",
           label: "Orthopädie",
           description: "Beschreibung für Orthopädie",
         },
         {
-          id: "viszeralchirurgie",
           value: "viszeralchirurgie",
           label: "Viszeralchirurgie",
           description: "Beschreibung für Viszeralchirurgie",
         },
         {
-          id: "handchirurgie",
           value: "handchirurgie",
           label: "Handchirurgie",
           description: "Beschreibung für Handchirurgie",
@@ -74,22 +71,23 @@ const formTest = ref<Form | null>({
       type: "select",
       options: [
         {
-          id: "schulter",
           value: "schulter",
           label: "Schulter",
           description: "Schulterbeschwerden und -verletzungen",
         },
         {
-          id: "Hüfte",
           value: "huefte",
           label: "Hüfte",
           description: "Hüftbeschwerden und -verletzungen",
         },
         {
-          id: "Arthrose",
           value: "arthrose",
           label: "Arthrose",
           description: "Arthrose und degenerative Gelenkerkrankungen",
+          depends_on: {
+            field_name: "fachrichtung",
+            value: "orthopedie",
+          },
         },
       ],
       required: true,
