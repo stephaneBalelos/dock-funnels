@@ -31,7 +31,6 @@ export type FormField = {
 
 export type FormFieldSelect = FormField & {
     type: 'select'; // Select dropdown type
-    label?: string; // Label for the field
     options: FormFieldSelectOption[]; // Array of options for the select field
     multiple?: boolean; // Whether the select allows multiple selections
     default_value?: string | string[]; // Default value(s) for the field

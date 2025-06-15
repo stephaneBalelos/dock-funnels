@@ -27,6 +27,8 @@ class DockFunnels_Main
         $charset_collate = $wpdb->get_charset_collate();
 
         $forms_table = $wpdb->prefix . 'dock_funnels';
+        $forms_steps_table = $wpdb->prefix . 'dock_funnel_steps';
+        $forms_fields_table = $wpdb->prefix . 'dock_funnel_fields';
         $responses_table = $wpdb->prefix . 'dock_funnel_responses';
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -40,16 +42,47 @@ class DockFunnels_Main
             PRIMARY KEY  (id)
         ) $charset_collate;";
 
+        $sql_forms_steps = "CREATE TABLE $forms_steps_table (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            form_id mediumint(9) NOT NULL,
+            title text NOT NULL,
+            description text NOT NULL,
+            step_order smallint(5) NOT NULL,
+            PRIMARY KEY  (id),
+            FOREIGN KEY (form_id) REFERENCES $forms_table(id) ON DELETE CASCADE,
+            UNIQUE KEY unique_step (form_id, step_order)
+        ) $charset_collate;";
+
+        $sql_forms_fields = "CREATE TABLE $forms_fields_table (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            form_id mediumint(9) NOT NULL,
+            step_index mediumint(9) NOT NULL,
+            label text NOT NULL,
+            description text NOT NULL,
+            field_name varchar(100) NOT NULL,
+            default_value text,
+            type enum('select', 'text', 'textarea', 'checkboxList') NOT NULL,
+            required boolean DEFAULT false NOT NULL,
+            options longtext,
+            PRIMARY KEY  (id),
+            FOREIGN KEY (form_id) REFERENCES $forms_table(id) ON DELETE CASCADE,
+            UNIQUE KEY unique_field (form_id, field_name)
+        ) $charset_collate;";
+
         $sql_responses = "CREATE TABLE $responses_table (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             form_id mediumint(9) NOT NULL,
             response longtext NOT NULL,
             submitted_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
-            PRIMARY KEY  (id)
+            PRIMARY KEY  (id),
+            FOREIGN KEY (form_id) REFERENCES $forms_table(id) ON DELETE CASCADE
         ) $charset_collate;";
 
         dbDelta($sql_forms);
+        dbDelta($sql_forms_steps);
+        dbDelta($sql_forms_fields);
         dbDelta($sql_responses);
+
     }
 
     public static function deactivate()
@@ -57,6 +90,8 @@ class DockFunnels_Main
         global $wpdb;
 
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_responses");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_steps");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_fields");
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnels");
     }
     public static function uninstall()
@@ -64,6 +99,8 @@ class DockFunnels_Main
         global $wpdb;
 
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_responses");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_steps");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_fields");
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnels");
     }
 }
