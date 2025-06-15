@@ -3,7 +3,7 @@ export type Form = {
     title: string;
     description: string;
     form_steps: FormStep[];
-    fields: (FormFieldSelect | FormFieldText | FormFieldTextarea)[]; // Array of fields in this step
+    fields: (FormFieldSelect | FormFieldText | FormFieldTextarea | FormFieldCheckboxList)[]; // Array of fields in this step
 }
 
 export type FormStep = {
@@ -62,6 +62,24 @@ export type FormFieldTextarea = FormField & {
     default_value?: string; // Default value for the field
     rows?: number; // Number of rows for the textarea
     cols?: number; // Number of columns for the textarea
+}
+
+export type FormFieldCheckboxList = FormField & {
+    type: 'checkboxList'; // Checkbox type
+    label?: string; // Label for the checkbox
+    description?: string; // Description of the checkbox
+    default_value?: string[]; // Default value(s) for the checkbox
+    options: FormFieldCheckboxListOption[]; // Array of options for the checkbox list
+}
+
+export type FormFieldCheckboxListOption = {
+    value: string; // Value of the option
+    label: string; // Display label for the option
+    description?: string; // Optional description for the option
+    depends_on?: {
+        field_id: number; // ID of the field this option depends on
+        value: string | string[]; // Value(s) that trigger this option to be shown
+    }; // Conditional logic for showing/hiding the option
 }
 
 
