@@ -22,17 +22,7 @@ class DockFunnels_Shortcode
         $fields = json_decode($form->fields, true);
         ob_start();
 ?>
-        <form class="dock-funnel-form">
-            <input type="hidden" name="form_id" value="<?php echo esc_attr($form_id); ?>">
-            <?php foreach ($fields as $field): ?>
-                <p>
-                    <label><?php echo esc_html($field['label']); ?>
-                        <input type="<?php echo esc_attr($field['type']); ?>">
-                    </label>
-                </p>
-            <?php endforeach; ?>
-            <input type="submit" value="Submit">
-        </form>
+    <div id="dock-funnels-form"></div>
 <?php
         return ob_get_clean();
     }
