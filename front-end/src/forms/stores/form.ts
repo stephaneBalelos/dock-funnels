@@ -1,5 +1,5 @@
 import { createGlobalState } from '@vueuse/core'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { Form, FormSubmissionField } from '@/types'
 
 export const useFormSubmissionStateStore = createGlobalState(
@@ -47,12 +47,6 @@ export const useFormSubmissionStateStore = createGlobalState(
             }
         }
 
-        const currentStep = computed(() => {
-            if (!form.value) return null
-            // Return the current step object
-            return form.value.form_steps[currentStepIndex.value] || null
-        })
-
         const fieldsForCurrentStep = computed(() => {
             if (!form.value) return []
             // Filter fields that belong to the current step
@@ -70,13 +64,33 @@ export const useFormSubmissionStateStore = createGlobalState(
             })
         })
 
+        // watch changes in form, reset formSubmissionFields and currentStepIndex
+        watch(form, (newForm) => {
+            if (newForm) {
+                formSubmissionFields.value = {}
+                currentStepIndex.value = 0
+                // Populate formSubmissionFields with default values from the form
+                newForm.fields.forEach(field => {
+                    if (field.default_value !== undefined) {
+                        formSubmissionFields.value[field.field_name] = {
+                            step_title: newForm.form_steps[field.step_index || 0].title,
+                            field_id: field.id,
+                            field_label: field.label || field.label,
+                            field_name: field.field_name,
+                            value: field.default_value,
+                            step_id: newForm.form_steps[field.step_index || 0].id,
+                        }
+                    }
+                })
+            }
+        })
+
 
 
         return {
             form,
             formSubmissionFields,
             currentStepIndex,
-            currentStep,
             fieldsForCurrentStep,
             setFieldValue,
             nextStep,

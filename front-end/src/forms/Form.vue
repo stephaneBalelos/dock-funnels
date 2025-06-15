@@ -68,6 +68,7 @@ const formTest = ref<Form | null>({
       label: "Beschwerde",
       field_name: "beschwerde",
       description: "Bitte wählen Sie eine Beschwerde aus.",
+      default_value: "schulter",
       type: "select",
       options: [
         {
@@ -101,9 +102,13 @@ const formTest = ref<Form | null>({
       type: "checkboxList",
       options: [
         {
-          value: "röntgenbilder",
+          value: "roentgenbilder",
           label: "Röntgenbilder",
           description: "Röntgenbilder der betroffenen Gelenke",
+          depends_on: {
+            field_name: "fachrichtung",
+            value: "orthopedie",
+          },
         },
         {
           value: "arztberichte",

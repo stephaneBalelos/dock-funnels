@@ -6,20 +6,26 @@
       <h1>{{ props.form.title }}</h1>
       <p>{{ props.form.description }}</p>
     </div>
-    <div v-if="submissionStateStore.currentStep.value" class="dockfunnelform-content flex-1 p-4 overflow-y-auto">
+    <div
+      v-if="currentStep"
+      class="dockfunnelform-content flex-1 p-4 overflow-y-auto"
+    >
       <div class="flex flex-col">
         <span class="text-sm text-gray-500 mb-2">
           Schritt {{ submissionStateStore.currentStepIndex.value + 1 }}
         </span>
         <h3 class="text-lg font-semibold text-gray-800">
-          {{ submissionStateStore.currentStep.value.title }}
+          {{ currentStep.title }}
         </h3>
         <p class="text-gray-600">
-          {{ submissionStateStore.currentStep.value.description }}
+          {{ currentStep.description }}
         </p>
       </div>
       <div class="mt-8">
-        <FormFieldsRoot v-for="field in submissionStateStore.fieldsForCurrentStep.value" :field="field" />
+        <FormFieldsRoot
+          v-for="field in submissionStateStore.fieldsForCurrentStep.value"
+          :field="field" :key="field.field_name"
+        />
       </div>
     </div>
     <div class="dockfunnelform-footer border-t border-gray-200 p-4">
@@ -46,6 +52,7 @@
 import { useFormSubmissionStateStore } from "@/forms/stores/form.ts";
 import type { Form } from "../../types/index.ts";
 import FormFieldsRoot from "./FormFieldsRoot.vue";
+import { computed } from "vue";
 
 type Props = {
   form: Form;
@@ -54,12 +61,11 @@ type Props = {
 const props = defineProps<Props>();
 const submissionStateStore = useFormSubmissionStateStore();
 
-
-
-
-
-
-
+const currentStep = computed(() => {
+  if (!submissionStateStore.form.value) return null;
+  // Return the current step object
+  return submissionStateStore.form.value.form_steps[submissionStateStore.currentStepIndex.value] || null;
+});
 </script>
 
 <style scoped></style>

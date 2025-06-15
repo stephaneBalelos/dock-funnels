@@ -12,15 +12,17 @@
     </label>
     <RadioGroupRoot
       v-model="radioStateSingle"
+      :name="props.field.field_name"
       class="flex flex-col gap-4"
       default-value="default"
       aria-label="View density"
+      @update:model-value="handleUpdate"
     >
-      <div v-for="option in props.field.options.filter(shoulShowOption)" class="flex items-center" :key="option.value">
+      <div v-for="option in props.field.options.filter(shoulShowOption)" class="flex items-center" :key="props.field.field_name + option.value">
         <RadioGroupItem
           class="bg-white w-[1.125rem] h-[1.125rem] rounded-full border data-[active=true]:border-stone-700 data-[active=true]:bg-stone-700 dark:data-[active=true]:bg-white shadow-sm focus:shadow-[0_0_0_2px] focus:shadow-stone-700 outline-none cursor-default"
           :value="option.value"
-          :id="option.value"
+          :id="props.field.field_name + option.value"
         >
           <RadioGroupIndicator
             class="flex items-center justify-center w-full h-full relative after:content-[''] after:block after:w-2 after:h-2 after:rounded-[50%] after:bg-white dark:after:bg-stone-700"
@@ -29,7 +31,7 @@
         <div class="flex flex-col pl-2">
           <label
             class="text-stone-700 leading-none"
-            :for="option.value"
+            :for="props.field.field_name + option.value"
           >
             {{ option.label }}
             <span v-if="props.field.required" class="text-red-500">*</span>
@@ -46,7 +48,7 @@
 <script setup lang="ts">
 import type { FormFieldSelect, FormFieldSelectOption } from "@/types";
 import { RadioGroupRoot, RadioGroupItem, RadioGroupIndicator } from "reka-ui";
-import { onUpdated, ref, watch, } from "vue";
+import { onMounted, ref } from "vue";
 import { useFormSubmissionStateStore } from "@/forms/stores/form.ts";
 
 type Props = {
@@ -55,25 +57,24 @@ type Props = {
 
 const props = defineProps<Props>();
 
-const radioStateSingle = ref(props.field.default_value);
+const radioStateSingle = ref();
 
 const submissionStateStore = useFormSubmissionStateStore();
 
+const handleUpdate = async (value: string) => {
+  submissionStateStore.setFieldValue(props.field.field_name, value);
+  radioStateSingle.value = value;
+};
 
-watch(radioStateSingle, (newValue) => {
-  submissionStateStore.setFieldValue(props.field.field_name, newValue ?? null);
-}, {
-  immediate: true
-});
-
-onUpdated(() => {
-  const currentState = submissionStateStore.formSubmissionFields.value[props.field.field_name];
-  if (currentState) {
-    radioStateSingle.value = currentState.value ?? props.field.default_value;
-  } else {
-    radioStateSingle.value = props.field.default_value;
+onMounted(() => {
+  console.log("FormFieldSelect onMounted", props.field.field_name);
+  const field = submissionStateStore.formSubmissionFields.value[props.field.field_name];
+  if (field) {
+    submissionStateStore.setFieldValue(props.field.field_name, field.value);
+    radioStateSingle.value = field.value;
   }
 });
+
 
 function shoulShowOption(option: FormFieldSelectOption): boolean {
   if (!option.depends_on) {
