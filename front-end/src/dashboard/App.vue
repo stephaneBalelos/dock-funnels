@@ -4,6 +4,7 @@ import { useEditorStore } from "./editor.store";
 import FormTitle from "@/components/dashboard/header/FormTitle.vue";
 import StepItem from "@/components/dashboard/sidebar-left/StepItem.vue";
 import { Icon } from "@iconify/vue";
+import FormFlowPreview from "@/components/dashboard/preview/FormFlowPreview.vue";
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
 
@@ -47,9 +48,11 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <div class="main">
-      <div class="toolbar">toolbar</div>
-      form preview
+    <div class="main relative">
+      <div class="toolbar absolute">toolbar</div>
+      <div class="absolute inset-0 overflow-auto">
+        <FormFlowPreview />
+      </div>
     </div>
     <div class="sidebar-right">sidebar-right</div>
   </div>

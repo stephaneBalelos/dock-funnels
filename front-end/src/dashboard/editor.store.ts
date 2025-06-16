@@ -12,6 +12,18 @@ export const useEditorStore = createGlobalState(() => {
         fields: []
     })
 
+    const selectedStepIndex = ref<number | null>(null)
+    const setSelectedStepIndex = (index: number | null) => {
+        selectedStepIndex.value = index
+    }
+
+    const getFieldsByStepIndex = (stepIndex: number) => {
+        if (stepIndex < 0 || stepIndex >= form.value.form_steps.length) {
+            return []
+        }
+        return form.value.fields.filter(field => field.step_index === stepIndex)
+    }
+
     const initEditor = (initialForm?: Form) => {
         form.value = initialForm || {
             id: 0,
@@ -57,6 +69,9 @@ export const useEditorStore = createGlobalState(() => {
         addStep,
         removeStep,
         updateStep,
-        moveStep
+        moveStep,
+        selectedStepIndex,
+        setSelectedStepIndex,
+        getFieldsByStepIndex
     }
 })
