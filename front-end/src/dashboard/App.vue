@@ -3,12 +3,6 @@ import { onMounted } from "vue";
 import { useEditorStore } from "./editor.store";
 import FormTitle from "@/components/dashboard/header/FormTitle.vue";
 import StepItem from "@/components/dashboard/sidebar-left/StepItem.vue";
-import {
-  ScrollAreaRoot,
-  ScrollAreaScrollbar,
-  ScrollAreaThumb,
-  ScrollAreaViewport,
-} from "reka-ui";
 import { Icon } from "@iconify/vue";
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
