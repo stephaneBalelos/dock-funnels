@@ -42,13 +42,11 @@ body {
 }
 .app-container > .sidebar-left {
   grid-column: 1 / 3;
-  padding: 1rem;
   background-color: #f8f9fa;
   border-right: 1px solid #dee2e6;
 }
 .app-container > .sidebar-right {
   grid-column: 11 / -1;
-  padding: 1rem;
   background-color: #f8f9fa;
   border-left: 1px solid #dee2e6;
 }

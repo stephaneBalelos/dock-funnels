@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { Icon } from '@iconify/vue'
-import { EditableArea, EditableCancelTrigger, EditableEditTrigger, EditableInput, EditablePreview, EditableRoot, EditableSubmitTrigger } from 'reka-ui'
 import { useEditorStore } from "./editor.store";
-
+import FormTitle from "@/components/dashboard/header/FormTitle.vue";
+import StepItem from "@/components/dashboard/sidebar-left/StepItem.vue";
+import {
+  ScrollAreaRoot,
+  ScrollAreaScrollbar,
+  ScrollAreaThumb,
+  ScrollAreaViewport,
+} from "reka-ui";
+import { Icon } from "@iconify/vue";
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
 
@@ -13,50 +19,40 @@ onMounted(() => {
   // This is a good place to initialize any global state or perform side effects
   console.log("App mounted");
   console.log(window.DockFunnelsAdmin);
-  editorStore.initEditor()
+  editorStore.initEditor();
 });
-
 </script>
 
 <template>
   <div class="h-lvh app-container">
     <div class="header flex items-center">
       <div>
-        <EditableRoot
-          v-slot="{ isEditing }"
-          v-model="editorStore.form.value.title"
-          placeholder="Mein Formular Titel"
-          class="flex items-center gap-4"
-          auto-resize
-        >
-          <EditableArea class="text-stone-700">
-            <EditablePreview class="text-stone-900 font-semibold text-lg" />
-            <EditableInput
-              class="w-full text-stone-900 placeholder:text-stone-700 font-semibold text-lg"
-            />
-          </EditableArea>
-          <EditableEditTrigger
-            v-if="!isEditing"
-            class="w-max inline-flex items-center justify-center rounded-lg font-medium text-sm px-[15px] leading-[35px] h-[35px] bg-white text-green11 shadow-sm border outline-none hover:bg-stone-50 focus:shadow-[0_0_0_2px] focus:shadow-black"
-          >
-          <Icon icon="heroicons:pencil-square" class="w-4 h-4" />
-          </EditableEditTrigger>
-          <div v-else class="flex gap-2">
-            <EditableSubmitTrigger
-              class="inline-flex items-center justify-center rounded-lg font-medium text-sm px-[15px] leading-[35px] h-[35px] bg-white text-green11 shadow-sm border outline-none hover:bg-stone-50 focus:shadow-[0_0_0_2px] focus:shadow-black"
-            >
-              <Icon icon="heroicons:check" class="w-4 h-4" />
-            </EditableSubmitTrigger>
-            <EditableCancelTrigger
-              class="inline-flex items-center justify-center rounded-lg font-medium text-sm px-[15px] leading-[35px] h-[35px] bg-red-700 text-white shadow-sm border outline-none hover:bg-red10 focus:shadow-[0_0_0_2px] focus:shadow-black"
-            >
-              <Icon icon="heroicons:x-mark" class="w-4 h-4" />
-            </EditableCancelTrigger>
-          </div>
-        </EditableRoot>
+        <FormTitle />
       </div>
     </div>
-    <div class="sidebar-left">sidebar-left</div>
+    <div class="sidebar-left flex flex-col">
+      <div class="flex justify-between items-center mb-4 p-4">
+        <div class="text-lg leading-[18px] font-semibold">
+          Formular Schritte
+        </div>
+        <button
+          @click="editorStore.addStep()"
+          class="w-5 h-5 hover:text-green-600 transition-colors duration-200"
+        >
+          <Icon icon="heroicons:plus" />
+        </button>
+      </div>
+      <div class="relative flex-1 overflow-y-auto">
+        <div class="absolute inset-0 overflow-y-scroll divide-y divide-gray-200">
+          <StepItem
+            v-for="(step, index) in editorStore.form.value.form_steps"
+            :key="'step-' + index"
+            :step="step"
+          >
+          </StepItem>
+        </div>
+      </div>
+    </div>
     <div class="main">
       <div class="toolbar">toolbar</div>
       form preview
