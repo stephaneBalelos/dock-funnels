@@ -8,10 +8,10 @@
 
 <script setup lang="ts">
 import { inject, onMounted } from "vue";
-import type { Form } from "../types/index.ts";
 import DockFunnelForm from "@/components/forms/DockFunnelForm.vue";
 import { useFormSubmissionStateStore } from "@/forms/stores/form.ts";
 import { getFormById } from "@/api/wpAjaxApi.ts";
+import type { Form } from "@/types";
 
 
 // const formTest = ref<Form | null>({
@@ -132,8 +132,9 @@ onMounted(async () => {
     return;
   }
   await getFormById(endpoint, nonce, 1)
-    .then((form: Form) => {
-      console.log("Form loaded:", form);
+    .then(({data}) => {
+      console.log("Form loaded:", data.form_data);
+      submissionStateStore.form.value = JSON.parse(data.form_data) as Form
     })
     .catch((error) => {
       console.error("Error loading form:", error);

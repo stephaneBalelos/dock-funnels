@@ -64,7 +64,7 @@ class DockFunnels_Ajax {
         if (!$form) {
             return wp_send_json_error(['message' => 'Form not found.']);
         }
-        wp_send_json_success(['form_data' => $form]);
+        wp_send_json_success($form);
     }
 
     private static function validate_form_data($data) {
