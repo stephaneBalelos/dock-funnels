@@ -2,6 +2,8 @@ import { createApp } from 'vue'
 import './style.css'
 import './index.css'
 import App from './App.vue'
+import PrimeVue from 'primevue/config';
+import Aura from '@primeuix/themes/aura';
 
 // DockFunnelsData is provided by the PHP script
 declare global {
@@ -13,10 +15,17 @@ declare global {
     }
 }
 
-console.log('DockFunnelsData:', window.DockFunnelsAdmin);
-if (!window.DockFunnelsAdmin) {
-    console.log('DockFunnelsData is not defined. Please ensure the PHP script is correctly enqueuing the data.');
-}
-
-
-createApp(App).mount('#app')
+document.addEventListener('DOMContentLoaded', () => {
+    const app = createApp(App)
+    app.use(PrimeVue, {
+        theme: {
+            preset: Aura,
+            options: {
+                darkModeSelector: '', // Selector for dark mode, leave empty to disable
+            }
+        }
+    })
+    app.provide('apiUrl', window.DockFunnelsAdmin?.ajaxUrl);
+    app.mount('#app')
+    console.log('DockFunnelsAdmin mounted');
+});

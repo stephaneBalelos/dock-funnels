@@ -45,7 +45,7 @@ export const useEditorStore = createGlobalState(() => {
     const initEditor = (initialForm?: Form) => {
         Object.assign(form, initialForm || {
             id: 0,
-            title: 'djklaskkds',
+            title: 'Mein Dock Funnel Formular',
             description: '',
             form_steps: [],
             fields: []
@@ -55,8 +55,7 @@ export const useEditorStore = createGlobalState(() => {
     const addStep = () => {
         const stepCount = form.form_steps.length
         form.form_steps.push({
-            id: stepCount + 1,
-            title: 'Step ' + (stepCount + 1),
+            title: 'Schritt ' + (stepCount + 1),
             description: '',
         })
     }
@@ -96,7 +95,6 @@ export const useEditorStore = createGlobalState(() => {
         switch (type) {
             case 'text':
                 const textField: FormFieldText = {
-                    id: newFieldId,
                     field_name: 'text_field_' + (newFieldId),
                     type: 'text',
                     label: 'Text Field',
@@ -108,7 +106,6 @@ export const useEditorStore = createGlobalState(() => {
                 return textField.field_name
             case 'select':
                 const formFieldSelect: FormFieldSelect = {
-                    id: newFieldId,
                     field_name: 'select_field_' + (newFieldId),
                     type: 'select',
                     label: 'Select Field',
@@ -120,7 +117,6 @@ export const useEditorStore = createGlobalState(() => {
                 return formFieldSelect.field_name
             case 'checkboxList':
                 const checkboxListField: FormFieldCheckboxList = {
-                    id: newFieldId,
                     field_name: 'checkbox_list_field_' + (newFieldId),
                     type: 'checkboxList',
                     label: 'Checkbox List Field',

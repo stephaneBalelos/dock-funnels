@@ -6,6 +6,7 @@ import StepItem from "@/components/dashboard/sidebar-left/StepItem.vue";
 import { Icon } from "@iconify/vue";
 import FormFlowPreview from "@/components/dashboard/preview/FormFlowPreview.vue";
 import FieldEditor from "@/components/dashboard/sidebar-right/FieldEditor.vue";
+import Button from 'primevue/button';
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
 
@@ -31,12 +32,9 @@ onMounted(() => {
         <div class="text-lg leading-[18px] font-semibold">
           Formular Schritte
         </div>
-        <button
-          @click="editorStore.addStep()"
-          class="w-5 h-5 hover:text-green-600 transition-colors duration-200"
-        >
+        <Button aria-label="Add Step" @click="editorStore.addStep()">
           <Icon icon="heroicons:plus" />
-        </button>
+        </Button>
       </div>
       <div class="relative flex-1 overflow-y-auto">
         <div class="absolute inset-0 overflow-y-auto">

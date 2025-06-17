@@ -35,7 +35,7 @@
           <span class="text-stone-900 font-semibold text-sm">
             {{ state.title }}
           </span>
-          <span class="text-stone-500 text-xs"> #{{ props.step.id }} </span>
+          <span class="text-stone-500 text-xs"> #{{ props.stepIndex }} </span>
         </div>
         <button
           @click="toggleEdit"
@@ -69,7 +69,7 @@ const editorStore = useEditorStore();
 const toggleEdit = () => {
   isEditing.value = !isEditing.value;
   if (isEditing.value) {
-    editorStore.setSelectedStepIndex(props.step.id - 1);
+    editorStore.setSelectedStepIndex(props.stepIndex);
   }
 };
 
