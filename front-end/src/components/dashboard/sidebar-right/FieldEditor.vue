@@ -2,7 +2,7 @@
     <div v-if="field">
         <FieldSelectEditor
             v-if="field.type === 'select'"
-            :field="field"
+            :field-name="field.field_name"
         />
         <div v-else class="text-gray-500 text-center">
             Dieses Feld ist kein Auswahlfeld. Bitte wählen Sie ein anderes Feld aus.

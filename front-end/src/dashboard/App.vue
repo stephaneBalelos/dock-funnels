@@ -56,7 +56,7 @@ onMounted(() => {
         <FormFlowPreview />
       </div>
     </div>
-    <div v-if="editorStore.selectedFieldName.value" class="sidebar-right flex flex-col">
+    <div class="sidebar-right flex flex-col">
       <div class="flex justify-between items-center mb-4 p-4">
         <div class="text-lg leading-[18px] font-semibold">
           Formular Feld
