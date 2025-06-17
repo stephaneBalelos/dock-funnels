@@ -14,6 +14,7 @@ declare module 'vue' {
     DockFunnelForm: typeof import('./src/components/forms/DockFunnelForm.vue')['default']
     FieldEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor.vue')['default']
     FieldSelectEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldSelectEditor.vue')['default']
+    FieldTextEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldTextEditor.vue')['default']
     FormFieldCheckboxList: typeof import('./src/components/forms/FormFields/FormFieldCheckboxList.vue')['default']
     FormFieldSelect: typeof import('./src/components/forms/FormFields/FormFieldSelect.vue')['default']
     FormFieldsRoot: typeof import('./src/components/forms/FormFieldsRoot.vue')['default']

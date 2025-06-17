@@ -4,6 +4,10 @@
             v-if="field.type === 'select'"
             :field-name="field.field_name"
         />
+        <FieldTextEditor
+            v-else-if="field.type === 'text'"
+            :field-name="field.field_name"
+        />
         <div v-else class="text-gray-500 text-center">
             Dieses Feld ist kein Auswahlfeld. Bitte wählen Sie ein anderes Feld aus.
         </div>
@@ -14,6 +18,7 @@
 import { computed } from 'vue';
 import { useEditorStore } from '@/dashboard/editor.store';
 import FieldSelectEditor from './FieldEditor/FieldSelectEditor.vue';
+import FieldTextEditor from './FieldEditor/FieldTextEditor.vue';
 
 
 type Props = {
