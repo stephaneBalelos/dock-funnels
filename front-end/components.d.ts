@@ -22,6 +22,7 @@ declare module 'vue' {
     FormFlowPreview: typeof import('./src/components/dashboard/preview/FormFlowPreview.vue')['default']
     FormStepPreview: typeof import('./src/components/dashboard/preview/FormStepPreview.vue')['default']
     FormTitle: typeof import('./src/components/dashboard/header/FormTitle.vue')['default']
+    SpeedDial: typeof import('primevue/speeddial')['default']
     StepItem: typeof import('./src/components/dashboard/sidebar-left/StepItem.vue')['default']
   }
 }
