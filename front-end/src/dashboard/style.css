@@ -46,12 +46,12 @@ body {
   border-right: 1px solid #dee2e6;
 }
 .app-container > .sidebar-right {
-  grid-column: 11 / -1;
+  grid-column: 10 / -1;
   background-color: #f8f9fa;
   border-left: 1px solid #dee2e6;
 }
 .app-container > .main {
-  grid-column: 3 / 11;
+  grid-column: 3 / 10;
   padding: 1rem;
   background-color: #ffffff;
 }

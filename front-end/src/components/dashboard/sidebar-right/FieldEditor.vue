@@ -1,5 +1,5 @@
 <template>
-    <div v-if="field">
+    <div v-if="field" class="w-full">
         <FieldSelectEditor
             v-if="field.type === 'select'"
             :field-name="field.field_name"

@@ -60,10 +60,12 @@ onMounted(() => {
           Formular Feld
         </div>
       </div>
-      <div class="flex-1 overflow-y-auto p-4">
-        <FieldEditor v-if="editorStore.selectedFieldName.value" :field-name="editorStore.selectedFieldName.value" />
-        <div v-else class="text-gray-500 text-center">
-          Bitte wählen Sie ein Feld aus, um es zu bearbeiten.
+      <div class="relative flex-1 overflow-y-auto">
+        <div class="absolute inset-0 overflow-y-auto px-4">
+          <FieldEditor v-if="editorStore.selectedFieldName.value" :field-name="editorStore.selectedFieldName.value" />
+          <div v-else class="text-gray-500 text-center">
+            Bitte wählen Sie ein Feld aus, um es zu bearbeiten.
+          </div>
         </div>
       </div>
     </div>
