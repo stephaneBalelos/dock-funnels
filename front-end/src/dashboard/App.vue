@@ -39,7 +39,7 @@ onMounted(() => {
         </button>
       </div>
       <div class="relative flex-1 overflow-y-auto">
-        <div class="absolute inset-0 overflow-y-scroll divide-y divide-gray-200">
+        <div class="absolute inset-0 overflow-y-auto">
           <StepItem
             v-for="(step, index) in editorStore.form.form_steps"
             :key="'step-' + index"
