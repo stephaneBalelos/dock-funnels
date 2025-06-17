@@ -7,19 +7,16 @@ export type Form = {
 }
 
 export type FormStep = {
-    id: number;
     title: string;
     description: string;
 }
 
 export type FormField = {
-    id: number;
-    step_index: number; // ID of the step this field belongs to
+    field_name: string; // Name of the field, used for form submission unique identification
     label: string;
     description?: string; // Description of the field
-    field_name: string; // Name of the field, used for form submission
+    step_index: number; // Index of the step this field belongs to defaults to 0
     required: boolean;
-    validation?: string; // Regex or other validation rules
     custom_attributes?: Record<string, string>; // Additional attributes like data-* attributes
     css_classes?: string[]; // Custom CSS classes for styling
     error_message?: string;
@@ -34,6 +31,7 @@ export type FormFieldSelect = FormField & {
     options: FormFieldSelectOption[]; // Array of options for the select field
     multiple?: boolean; // Whether the select allows multiple selections
     default_value?: string | string[]; // Default value(s) for the field
+    validation?: string; // Regex or other validation rules
 }
 
 export type FormFieldSelectOption = {
@@ -48,14 +46,12 @@ export type FormFieldSelectOption = {
 
 export type FormFieldText = FormField & {
     type: 'text'; // Input types
-    input_type?: 'text' | 'email' | 'number' | 'tel' | 'url'; // Type of input field
-    label?: string; // Label for the field
+    input_type?: 'text' | 'email' | 'number' | 'tel' | 'url'; // Type of text input field
     placeholder?: string; // Placeholder text
     default_value?: string; // Default value for the field
 }
 export type FormFieldTextarea = FormField & {
     type: 'textarea'; // Textarea type
-    label?: string; // Label for the field
     placeholder?: string; // Placeholder text
     default_value?: string; // Default value for the field
     rows?: number; // Number of rows for the textarea
@@ -64,8 +60,6 @@ export type FormFieldTextarea = FormField & {
 
 export type FormFieldCheckboxList = FormField & {
     type: 'checkboxList'; // Checkbox type
-    label?: string; // Label for the checkbox
-    description?: string; // Description of the checkbox
     default_value?: string[]; // Default value(s) for the checkbox
     options: FormFieldCheckboxListOption[]; // Array of options for the checkbox list
 }
@@ -88,10 +82,9 @@ export type FormSubmission = {
 }
 
 export type FormSubmissionField = {
-    field_id: FormField['id']; // ID of the field being submitted
     field_label: FormField['label']; // Label of the field
     field_name: FormField['field_name']; // Name of the field, used for form submission
     value: string | string[] | null; // Value(s) submitted for the field
-    step_id: FormStep['id']; // ID of the step this field belongs to
+    step_index: number
     step_title: FormStep['title']; // Title of the step this field belongs to
 }

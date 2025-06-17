@@ -12,7 +12,7 @@
     </label>
 
     <input
-      :id="props.field.id.toString()"
+      :id="props.field.field_name"
       class="bg-white border inline-flex h-[35px] px-2 appearance-none justify-center rounded-lg text-sm leading-none shadow-sm outline-none focus:shadow-[0_0_0_2px_black] selection:color-white selection:bg-blackA9"
       type="text"
         :placeholder="props.field.placeholder"

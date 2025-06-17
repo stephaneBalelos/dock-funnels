@@ -19,24 +19,20 @@ const formTest = ref<Form | null>({
     "Bitte füllen Sie das Formular aus, um einen Termin zu vereinbaren.",
   form_steps: [
     {
-      id: 1,
       title: "Wählen Sie Ihre Fachrichtung",
       description: "Wählen Sie bitte eine Fachrichtung aus.",
     },
     {
-      id: 2,
       title: "Wählen Sie Ihre Beschwerde",
       description: "Bitte wählen Sie eine Beschwerde in der Fachrichtung Orthopädie aus.",
     },
     {
-      id: 3,
       title: "Haben sie alle Erforderlichen Dokumente bereit?",
       description: "Bitte stellen Sie sicher, dass Sie alle erforderlichen Dokumente bereit haben.",
     },
   ],
   fields: [
     {
-      id: 1,
       step_index: 0,
       label: "Fahrichtung",
       description: "Fahrrichtung auswählen",
@@ -63,7 +59,6 @@ const formTest = ref<Form | null>({
       required: true,
     },
     {
-      id: 2,
       step_index: 1,
       label: "Beschwerde",
       field_name: "beschwerde",
@@ -94,7 +89,6 @@ const formTest = ref<Form | null>({
       required: true,
     },
     {
-      id: 3,
       step_index: 2,
       label: "Dokumente",
       field_name: "dokumente",

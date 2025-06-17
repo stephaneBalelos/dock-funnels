@@ -24,11 +24,10 @@ export const useFormSubmissionStateStore = createGlobalState(
                 if (field) {
                     formSubmissionFields.value[field.field_name] = {
                         step_title: step.title,
-                        field_id: field.id,
-                        field_label: field.label || field.label,
+                        field_label: field.label,
                         field_name: field.field_name,
                         value: value,
-                        step_id: step.id,
+                        step_index: field.step_index
                     }
                 }
             }
@@ -74,11 +73,10 @@ export const useFormSubmissionStateStore = createGlobalState(
                     if (field.default_value !== undefined) {
                         formSubmissionFields.value[field.field_name] = {
                             step_title: newForm.form_steps[field.step_index || 0].title,
-                            field_id: field.id,
                             field_label: field.label || field.label,
                             field_name: field.field_name,
                             value: field.default_value,
-                            step_id: newForm.form_steps[field.step_index || 0].id,
+                            step_index: field.step_index || 0
                         }
                     }
                 })
