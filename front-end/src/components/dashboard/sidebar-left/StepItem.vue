@@ -59,6 +59,7 @@ import { defineProps } from "vue";
 import { Icon } from "@iconify/vue";
 
 type Props = {
+  stepIndex: number;
   step: FormStep;
 };
 const props = defineProps<Props>();
@@ -67,6 +68,9 @@ const editorStore = useEditorStore();
 
 const toggleEdit = () => {
   isEditing.value = !isEditing.value;
+  if (isEditing.value) {
+    editorStore.setSelectedStepIndex(props.step.id - 1);
+  }
 };
 
 const state = ref({
@@ -75,8 +79,7 @@ const state = ref({
 });
 
 const updateStep = () => {
-    console.log("Updating step", props.step.id, state.value);
-  editorStore.updateStep(props.step.id, {
+  editorStore.updateStep(props.stepIndex, {
     title: state.value.title,
     description: state.value.description,
   });

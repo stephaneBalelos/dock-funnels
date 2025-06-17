@@ -5,6 +5,7 @@ import FormTitle from "@/components/dashboard/header/FormTitle.vue";
 import StepItem from "@/components/dashboard/sidebar-left/StepItem.vue";
 import { Icon } from "@iconify/vue";
 import FormFlowPreview from "@/components/dashboard/preview/FormFlowPreview.vue";
+import FieldEditor from "@/components/dashboard/sidebar-right/FieldEditor.vue";
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
 
@@ -40,8 +41,9 @@ onMounted(() => {
       <div class="relative flex-1 overflow-y-auto">
         <div class="absolute inset-0 overflow-y-scroll divide-y divide-gray-200">
           <StepItem
-            v-for="(step, index) in editorStore.form.value.form_steps"
+            v-for="(step, index) in editorStore.form.form_steps"
             :key="'step-' + index"
+            :step-index="index"
             :step="step"
           >
           </StepItem>
@@ -49,12 +51,24 @@ onMounted(() => {
       </div>
     </div>
     <div class="main relative">
-      <div class="toolbar absolute">toolbar</div>
+      <div class="toolbar absolute">{{ editorStore.selectedStepIndex }}</div>
       <div class="absolute inset-0 overflow-auto">
         <FormFlowPreview />
       </div>
     </div>
-    <div class="sidebar-right">sidebar-right</div>
+    <div v-if="editorStore.selectedFieldName.value" class="sidebar-right flex flex-col">
+      <div class="flex justify-between items-center mb-4 p-4">
+        <div class="text-lg leading-[18px] font-semibold">
+          Formular Feld
+        </div>
+      </div>
+      <div class="flex-1 overflow-y-auto p-4">
+        <FieldEditor v-if="editorStore.selectedFieldName.value" :field-name="editorStore.selectedFieldName.value" />
+        <div v-else class="text-gray-500 text-center">
+          Bitte wählen Sie ein Feld aus, um es zu bearbeiten.
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

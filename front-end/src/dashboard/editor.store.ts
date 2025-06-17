@@ -1,10 +1,10 @@
-import type { Form } from "@/types"
+import type { Form, FormFieldCheckboxList, FormFieldSelect, FormFieldText } from "@/types"
 import { createGlobalState } from "@vueuse/core"
-import { ref } from "vue"
+import { computed, reactive, ref } from "vue"
 
 
 export const useEditorStore = createGlobalState(() => {
-    const form = ref<Form>({
+    const form = reactive<Form>({
         id: 0,
         title: '',
         description: '',
@@ -12,31 +12,49 @@ export const useEditorStore = createGlobalState(() => {
         fields: []
     })
 
+    const formSteps = computed(() => {
+        return form.form_steps.map((step, index) => ({
+            ...step,
+            index: index,
+            fields: form.fields.filter(field => field.step_index === index)
+        }))
+    })
+
     const selectedStepIndex = ref<number | null>(null)
     const setSelectedStepIndex = (index: number | null) => {
         selectedStepIndex.value = index
     }
-
     const getFieldsByStepIndex = (stepIndex: number) => {
-        if (stepIndex < 0 || stepIndex >= form.value.form_steps.length) {
+        if (stepIndex < 0 || stepIndex >= form.form_steps.length) {
             return []
         }
-        return form.value.fields.filter(field => field.step_index === stepIndex)
+        return form.fields.filter(field => field.step_index === stepIndex)
+    }
+
+    const selectedFieldName = ref<string | null>(null)
+    const setSelectedFieldName = (field_name: string) => {
+        const field = form.fields.find(f => f.field_name === field_name)
+        if (field) {
+            selectedFieldName.value = field.field_name
+        } else {
+            console.warn('Field not found:', field_name)
+            selectedFieldName.value = null
+        }
     }
 
     const initEditor = (initialForm?: Form) => {
-        form.value = initialForm || {
+        Object.assign(form, initialForm || {
             id: 0,
             title: 'djklaskkds',
             description: '',
             form_steps: [],
             fields: []
-        }
+        })
     }
 
     const addStep = () => {
-        const stepCount = form.value.form_steps.length
-        form.value.form_steps.push({
+        const stepCount = form.form_steps.length
+        form.form_steps.push({
             id: stepCount + 1,
             title: 'Step ' + (stepCount + 1),
             description: '',
@@ -44,34 +62,95 @@ export const useEditorStore = createGlobalState(() => {
     }
 
     const removeStep = (index: number) => {
-        if (index >= 0 && index < form.value.form_steps.length) {
-            form.value.form_steps.splice(index, 1)
+        if (index >= 0 && index < form.form_steps.length) {
+            form.form_steps.splice(index, 1)
         }
     }
-    const updateStep = (index: number, step: { title: string; description: string }) => {
-        if (index >= 0 && index < form.value.form_steps.length) {
-            form.value.form_steps[index].title = step.title
-            form.value.form_steps[index].description = step.description
+    const updateStep = async (index: number, step: { title: string; description: string }) => {
+        const s = form.form_steps[index]
+        if (!s) {
+            console.warn('Step not found for index:', index)
+            return
+        } else {
+            form.form_steps[index].title = step.title
+            form.form_steps[index].description = step.description
         }
     }
     const moveStep = (fromIndex: number, toIndex: number) => {
-        if (fromIndex < 0 || fromIndex >= form.value.form_steps.length || toIndex < 0 || toIndex >= form.value.form_steps.length) {
+        if (fromIndex < 0 || fromIndex >= form.form_steps.length || toIndex < 0 || toIndex >= form.form_steps.length) {
             return
         }
-        const step = form.value.form_steps[fromIndex]
-        form.value.form_steps.splice(fromIndex, 1)
-        form.value.form_steps.splice(toIndex, 0, step)
+        const step = form.form_steps[fromIndex]
+        form.form_steps.splice(fromIndex, 1)
+        form.form_steps.splice(toIndex, 0, step)
     }
+
+    const addField = (stepIndex: number, type: string) => {
+        const step = form.form_steps[stepIndex]
+        if (!step) {
+            console.warn('Step not found for index:', stepIndex)
+            return null
+        }
+        const newFieldId = form.fields.length + 1
+
+        switch (type) {
+            case 'text':
+                const textField: FormFieldText = {
+                    id: newFieldId,
+                    field_name: 'text_field_' + (newFieldId),
+                    type: 'text',
+                    label: 'Text Field',
+                    placeholder: 'Enter text',
+                    required: false,
+                    step_index: stepIndex,
+                }
+                form.fields.push(textField)
+                return textField.field_name
+            case 'select':
+                const formFieldSelect: FormFieldSelect = {
+                    id: newFieldId,
+                    field_name: 'select_field_' + (newFieldId),
+                    type: 'select',
+                    label: 'Select Field',
+                    options: [],
+                    required: false,
+                    step_index: stepIndex,
+                }
+                form.fields.push(formFieldSelect)
+                return formFieldSelect.field_name
+            case 'checkboxList':
+                const checkboxListField: FormFieldCheckboxList = {
+                    id: newFieldId,
+                    field_name: 'checkbox_list_field_' + (newFieldId),
+                    type: 'checkboxList',
+                    label: 'Checkbox List Field',
+                    options: [],
+                    required: false,
+                    step_index: stepIndex,
+                }
+                form.fields.push(checkboxListField)
+                return checkboxListField.field_name
+            default:
+                console.warn('Unsupported field type:', type)
+                return null
+        }
+    }
+
+
 
     return {
         form,
         initEditor,
+        formSteps,
         addStep,
         removeStep,
         updateStep,
         moveStep,
         selectedStepIndex,
         setSelectedStepIndex,
-        getFieldsByStepIndex
+        getFieldsByStepIndex,
+        selectedFieldName,
+        setSelectedFieldName,
+        addField,
     }
 })

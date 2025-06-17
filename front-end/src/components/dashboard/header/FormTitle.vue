@@ -1,7 +1,7 @@
 <template>
         <EditableRoot
           v-slot="{ isEditing }"
-          v-model="editorStore.form.value.title"
+          v-model="editorStore.form.title"
           placeholder="Mein Formular Titel"
           class="flex items-center gap-4"
           auto-resize
