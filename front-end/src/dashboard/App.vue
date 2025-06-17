@@ -32,12 +32,12 @@ onMounted(() => {
         <div class="text-lg leading-[18px] font-semibold">
           Formular Schritte
         </div>
-        <Button aria-label="Add Step" @click="editorStore.addStep()">
+        <Button aria-label="Add Step" @click="editorStore.addStep()" size="small" severity="secondary">
           <Icon icon="heroicons:plus" />
         </Button>
       </div>
       <div class="relative flex-1 overflow-y-auto">
-        <div class="absolute inset-0 overflow-y-auto">
+        <div class="absolute inset-0 overflow-y-auto px-4">
           <StepItem
             v-for="(step, index) in editorStore.form.form_steps"
             :key="'step-' + index"

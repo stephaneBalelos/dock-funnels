@@ -1,54 +1,69 @@
 <template>
-  <div class="ring-1 ring-gray-400 rounded-lg p-4 mb-4 mx-4 mt-2">
-    <div v-if="isEditing" class="flex flex-col gap-2">
-      <fieldset class="flex flex-col">
-        <label class="text-sm mb-2" for="step-title"> Schritt Titel </label>
-        <input
-          id="step-title"
-          class="w-full text-sm shadow-sm bg-white ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-primary-500 px-2.5 py-1.5"
-          v-model="state.title"
-        />
-      </fieldset>
-      <fieldset class="flex flex-col">
-        <label class="text-sm mb-2" for="step-description">
-          Schritt Beschreibung
-        </label>
-        <textarea
-          id="step-description"
-          class="w-full text-sm shadow-sm bg-white ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-primary-500 px-2.5 py-1.5"
-          v-model="state.description"
-          >{{ state.description }}</textarea
+  <Card>
+    <template #content>
+      <div v-if="isEditing">
+        <Form
+          v-slot="$form"
+          :initialValues="state"
+          :resolver
+          @submit.prevent="onFormSubmit"
+          class="flex flex-col gap-2"
         >
-      </fieldset>
-      <div class="flex gap-2 justify-end pt-2">
-        <button @click="updateStep">
-            speichern
-        </button>
-        <button @click="cancelEdit" class="ml-2">
-          abbrechen
-        </button>
+          <div class="flex flex-col gap-1">
+            <InputText name="title" type="text" placeholder="Titel" size="small" />
+            <Message
+              v-if="$form.title?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ $form.title.error?.message }}
+            </Message>
+          </div>
+          <div class="flex flex-col gap-1">
+            <InputTextarea
+              name="description"
+              type="text"
+              placeholder="Beschreibung"
+              rows="3"
+            />
+            <Message
+              v-if="$form.description?.invalid"
+              severity="error"
+              size="small"
+              variant="simple"
+            >
+              {{ $form.description.error?.message }}
+            </Message>
+          </div>
+          <div class="flex gap-2 justify-end items-center pt-2">
+            <Button type="submit" size="small">speichern</Button>
+            <Button @click.prevent="cancelEdit" size="small">abbrechen</Button>
+          </div>
+        </Form>
       </div>
-    </div>
-    <div v-else class="flex flex-col gap-2">
-      <div class="flex justify-between w-full">
-        <div class="flex flex-col">
-          <span class="text-stone-900 font-semibold text-sm">
-            {{ state.title }}
-          </span>
-          <span class="text-stone-500 text-xs"> #{{ props.stepIndex }} </span>
+      <div v-else class="flex flex-col gap-2">
+        <div class="flex justify-between w-full">
+          <div class="flex flex-col">
+            <span class="text-stone-900 font-semibold text-sm">
+              {{ state.title }}
+            </span>
+            <span class="text-stone-500 text-xs"> #{{ props.stepIndex }} </span>
+          </div>
+          <Button
+            @click="toggleEdit"
+            size="small"
+            severity="secondary"
+          >
+            <Icon icon="heroicons:pencil-square" />
+          </Button>
         </div>
-        <button
-          @click="toggleEdit"
-          class="p-1.5 hover:text-green-600 transition-colors duration-200 shadow-sm ring-1 ring-inset ring-gray-300 text-gray-900 bg-white hover:bg-gray-50 disabled:bg-white aria-disabled:bg-white focus-visible:ring-2 focus-visible:ring-primary-500"
-        >
-          <Icon icon="heroicons:pencil-square" class="w-4 h-4" />
-        </button>
+        <div class="text-xs text-stone-600">
+          {{ state.description }}
+        </div>
       </div>
-          <div class="text-xs text-stone-600">
-      {{ state.description }}
-    </div>
-    </div>
-  </div>
+    </template>
+  </Card>
 </template>
 
 <script setup lang="ts">
@@ -57,6 +72,13 @@ import type { FormStep } from "@/types";
 import { useEditorStore } from "@/dashboard/editor.store";
 import { defineProps } from "vue";
 import { Icon } from "@iconify/vue";
+import Card from "primevue/card";
+import InputText from "primevue/inputtext";
+import InputTextarea from "primevue/textarea";
+import Message from "primevue/message";
+import { Form } from "@primevue/forms";
+import { zodResolver } from "@primevue/forms/resolvers/zod";
+import { z } from "zod";
 
 type Props = {
   stepIndex: number;
@@ -65,6 +87,13 @@ type Props = {
 const props = defineProps<Props>();
 const isEditing = ref(false);
 const editorStore = useEditorStore();
+const resolver = ref(
+  zodResolver(
+    z.object({
+      username: z.string().min(1, { message: "Username is required via Zod." }),
+    })
+  )
+);
 
 const toggleEdit = () => {
   isEditing.value = !isEditing.value;
@@ -89,6 +118,12 @@ const cancelEdit = () => {
   state.value.title = props.step.title;
   state.value.description = props.step.description;
   toggleEdit();
+};
+
+const onFormSubmit = () => {
+  // Handle form submission if needed
+  console.log("Form submitted with values:", state.value);
+  updateStep();
 };
 </script>
 
