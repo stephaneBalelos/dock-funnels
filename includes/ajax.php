@@ -30,20 +30,117 @@ class DockFunnels_Ajax {
         if (!current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'You do not have permission to create forms.']);
         }
-        $data = $data['data'] ?? [];
-        $name = isset($data['name']) ? sanitize_text_field($data['name']) : '';
-        $description = isset($data['description']) ? sanitize_textarea_field($data['description']) : '';
-        $fields = isset($data['fields']) ? $data['fields'] : [];
-        if (empty($name) || empty($fields)) {
-            wp_send_json_error(['message' => 'Name and fields are required.']);
+        $form_data = json_decode($data['form_data'], true); // see @/types.index.ts for Form type
+
+        // Validate form data
+        if (!self::validate_form_data($form_data)) {
+            wp_send_json_error(['message' => 'Invalid form data.']);
         }
 
-        $form_id = DockFunnels_DB::create_form($name, $description, $fields);
+        // Save form data
+        $form_id = DockFunnels_DB::create_form($form_data['title'], $form_data['description'], $form_data);
         if (!$form_id) {
             wp_send_json_error(['message' => 'Failed to create form.']);
         }
         wp_send_json_success(['message' => 'Form created successfully.', 'form_id' => $form_id]);
+    }
 
+    private static function get_form_by_id($form_id) {
+        if (empty($form_id) || !is_numeric($form_id)) {
+            return false;
+        }
+        $form = DockFunnels_DB::get_form_by_id($form_id);
+        if (!$form) {
+            return false;
+        }
+        return $form;
+    }
 
+    private static function validate_form_data($data) {
+        $f_data = [];
+        // Check Title
+        if (empty($data['title']) || !is_string($data['title'])) {
+            return false;
+        }
+        $f_data['title'] = sanitize_text_field($data['title']);
+
+        // Check Description
+        if (!isset($data['description']) || !is_string($data['description'])) {
+            return false;
+        }
+        $f_data['description'] = isset($data['description']) ? sanitize_textarea_field($data['description']) : '';
+
+        // Check Steps
+        if (!isset($data['form_steps']) || !is_array($data['form_steps']) || empty($data['form_steps'])) {
+            return false;
+        }
+        $steps_data = self::validate_steps_data($data['form_steps']);
+        if (!$steps_data) {
+            return false;
+        }
+        $f_data['form_steps'] = $steps_data;
+
+        // Check Fields
+        if (!isset($data['fields']) || !is_array($data['fields']) || empty($data['fields'])) {
+            return false;
+        }
+        
+        return $f_data;
+    }
+
+    private static function validate_steps_data($steps) {
+        $f_steps = [];
+
+        foreach ($steps as $step) {
+            $title = self::validate_and_sanitize($step['title']);
+            if (!$title) {
+                return false;
+            }
+            $description = isset($step['description']) ? self::validate_and_sanitize($step['description']) : '';
+            $f_step = [
+                'title' => sanitize_text_field($step['title']),
+                'description' => $description,
+            ];
+            // Add $f_step to $f_steps
+            $f_steps[] = $f_step; 
+        }
+        if (empty($f_steps)) {
+            return false;
+        }
+        return $f_steps;
+    }
+
+    public static function validate_fields_data($fields) {
+        $f_fields = [];
+        foreach ($fields as $field) {
+            if (!isset($field['name']) || !is_string($field['name']) || empty($field['name'])) {
+                return false;
+            }
+            $name = sanitize_text_field($field['name']);
+
+            if (!isset($field['type']) || !is_string($field['type']) || empty($field['type'])) {
+                return false;
+            }
+            $type = sanitize_text_field($field['type']);
+
+            if (!isset($field['required']) || !is_bool($field['required'])) {
+                return false;
+            }
+            $required = (bool)$field['required'];
+
+            $f_fields[] = [
+                'name' => $name,
+                'type' => $type,
+                'required' => $required,
+            ];
+        }
+        return $f_fields;
+    }
+
+    private static function validate_and_sanitize($string_data) {
+        if (!is_string($string_data) || empty($string_data)) {
+            return false;
+        }
+        return sanitize_text_field($string_data);
     }
 }

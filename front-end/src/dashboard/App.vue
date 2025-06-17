@@ -7,15 +7,46 @@ import { Icon } from "@iconify/vue";
 import FormFlowPreview from "@/components/dashboard/preview/FormFlowPreview.vue";
 import FieldEditor from "@/components/dashboard/sidebar-right/FieldEditor.vue";
 import Button from "primevue/button";
+import { createForm } from "@/api/wpAjaxApi";
+import type { Form } from "@/types";
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
 
 const editorStore = useEditorStore();
-const endpoint = inject("apiUrl");
+const endpoint = inject("apiUrl") as string | undefined;
+const nonce = inject("nonce") as string | undefined;
 
-const saveForm = () => {
-  console.log("Saving form:", editorStore.form);
-  console.log("API Endpoint:", endpoint);
+const saveForm = async () => {
+  if (!editorStore.form) {
+    console.error("No form to save");
+    return;
+  }
+
+  const formdata: Form = {
+    id: editorStore.form.id,
+    title: editorStore.form.title,
+    description: editorStore.form.description,
+    form_steps: editorStore.form.form_steps,
+    fields: editorStore.form.fields,
+  };
+
+  console.log("Saving form data:", JSON.stringify(formdata));
+
+  if (!endpoint || !nonce) {
+    console.error("API endpoint or nonce not provided");
+    return;
+  }
+
+  try {
+    const response = await createForm(
+      endpoint,
+      nonce,
+      JSON.stringify(formdata)
+    );
+    console.log(response);
+  } catch (error) {
+    console.error("Error saving form:", error);
+  }
 };
 
 onMounted(() => {

@@ -12,16 +12,16 @@ class DockFunnels_DB {
         return $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}dock_funnels WHERE id = %d", $id));
     }
 
-    public static function create_form($name, $description, $fields) {
+    public static function create_form($title, $description, $form_data) {
         global $wpdb;
         $table_name = $wpdb->prefix . 'dock_funnels';
 
         $wpdb->insert(
             $table_name,
             [
-                'name' => $name,
+                'name' => $title,
                 'description' => $description,
-                'fields' => wp_json_encode($fields),
+                'form_data' => wp_json_encode($form_data),
             ]
         );
 

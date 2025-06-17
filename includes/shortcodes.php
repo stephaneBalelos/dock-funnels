@@ -19,7 +19,6 @@ class DockFunnels_Shortcode
             self::enqueue_scripts($atts['id']);
         }
 
-        $fields = json_decode($form->fields, true);
         ob_start();
 ?>
     <div id="dock-funnels-form"></div>
