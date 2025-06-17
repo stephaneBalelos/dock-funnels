@@ -13,7 +13,7 @@ import type { Form } from "@/types";
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
 
 const editorStore = useEditorStore();
-const endpoint = inject("apiUrl") as string | undefined;
+const endpoint = inject("ajaxUrl") as string | undefined;
 const nonce = inject("nonce") as string | undefined;
 
 const saveForm = async () => {

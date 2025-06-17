@@ -45,15 +45,26 @@ class DockFunnels_Ajax {
         wp_send_json_success(['message' => 'Form created successfully.', 'form_id' => $form_id]);
     }
 
-    private static function get_form_by_id($form_id) {
-        if (empty($form_id) || !is_numeric($form_id)) {
-            return false;
+    public static function get_form_by_id() {
+        $body = file_get_contents('php://input');
+        if (empty($body)) {
+            wp_send_json_error(['message' => 'No data received.']);
+        }
+        $data = json_decode($body, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            wp_send_json_error(['message' => 'Invalid JSON data.']);
+        }
+        wp_verify_nonce($data['nonce'], 'dock_funnel_form_nonce');
+
+        $form_id = isset($data['form_id']) ? intval($data['form_id']) : 0;
+        if (!$form_id) {
+            wp_send_json_error(['message' => 'Invalid form ID.']);
         }
         $form = DockFunnels_DB::get_form_by_id($form_id);
         if (!$form) {
-            return false;
+            return wp_send_json_error(['message' => 'Form not found.']);
         }
-        return $form;
+        wp_send_json_success(['form_data' => $form]);
     }
 
     private static function validate_form_data($data) {

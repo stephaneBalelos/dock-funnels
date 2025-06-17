@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     })
-    app.provide('apiUrl', window.DockFunnelsAdmin?.ajaxUrl);
+    app.provide('ajaxUrl', window.DockFunnelsAdmin?.ajaxUrl);
     app.provide('nonce', window.DockFunnelsAdmin?.nonce);
     app.mount('#app')
     console.log('DockFunnelsAdmin mounted');

@@ -10,7 +10,8 @@ import Aura from '@primeuix/themes/aura';
 declare global {
     interface Window {
         DockFunnelsForm: {
-            apiUrl: string;
+            ajaxUrl: string;
+            nonce: string;
         }
     }
 }
@@ -26,7 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     })
-    app.provide('apiUrl', window.DockFunnelsForm?.apiUrl);
+    app.provide('ajaxUrl', window.DockFunnelsForm?.ajaxUrl);
+    app.provide('nonce', window.DockFunnelsForm?.nonce);
     app.mount('#dock-funnels-form')
     console.log('DockFunnelsForm app mounted');
 });
