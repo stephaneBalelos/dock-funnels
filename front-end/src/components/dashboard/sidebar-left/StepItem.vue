@@ -6,7 +6,7 @@
           v-slot="$form"
           :initialValues="state"
           :resolver
-          @submit.prevent="onFormSubmit"
+          @submit="(e) => onFormSubmit(e as FormSubmitEvent<FormStep>)"
           class="flex flex-col gap-2"
         >
           <div class="flex flex-col gap-1">
@@ -76,7 +76,7 @@ import Card from "primevue/card";
 import InputText from "primevue/inputtext";
 import InputTextarea from "primevue/textarea";
 import Message from "primevue/message";
-import { Form } from "@primevue/forms";
+import { Form, type FormSubmitEvent } from "@primevue/forms";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { z } from "zod";
 
@@ -90,7 +90,8 @@ const editorStore = useEditorStore();
 const resolver = ref(
   zodResolver(
     z.object({
-      username: z.string().min(1, { message: "Username is required via Zod." }),
+      title: z.string().min(1, { message: "Titel ist erforderlich" }),
+      description: z.string().optional(),
     })
   )
 );
@@ -120,9 +121,12 @@ const cancelEdit = () => {
   toggleEdit();
 };
 
-const onFormSubmit = () => {
+const onFormSubmit = (form: FormSubmitEvent<FormStep>) => {
   // Handle form submission if needed
-  console.log("Form submitted with values:", state.value);
+  console.log("Form submitted:", form.values.title);
+  state.value.title = form.values.title
+  state.value.description = form.values.description;
+  // Update the step with the new values
   updateStep();
 };
 </script>

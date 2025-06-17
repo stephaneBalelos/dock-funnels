@@ -10,6 +10,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AddFieldModal: typeof import('./src/components/dashboard/preview/AddFieldModal.vue')['default']
     Button: typeof import('primevue/button')['default']
+    Card: typeof import('primevue/card')['default']
     DockFunnelForm: typeof import('./src/components/forms/DockFunnelForm.vue')['default']
     FieldEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor.vue')['default']
     FieldSelectEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldSelectEditor.vue')['default']
