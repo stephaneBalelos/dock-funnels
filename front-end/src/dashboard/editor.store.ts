@@ -132,6 +132,19 @@ export const useEditorStore = createGlobalState(() => {
         }
     }
 
+    const updateField = (fieldName: string, fieldData: Partial<FormFieldText | FormFieldSelect | FormFieldCheckboxList>) => {
+        const field = form.fields.find(f => f.field_name === fieldName)
+        if (!field) {
+            console.warn('Field not found:', fieldName)
+            return
+        }
+        Object.assign(field, fieldData)
+
+        setSelectedFieldName(field.field_name)
+
+        console.log(form.fields)
+    }
+
 
 
     return {
@@ -148,5 +161,6 @@ export const useEditorStore = createGlobalState(() => {
         selectedFieldName,
         setSelectedFieldName,
         addField,
+        updateField
     }
 })
