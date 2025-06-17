@@ -8,10 +8,15 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Button: typeof import('primevue/button')['default']
+    Card: typeof import('primevue/card')['default']
     DockFunnelForm: typeof import('./src/components/forms/DockFunnelForm.vue')['default']
     FieldEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor.vue')['default']
     FieldSelectEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldSelectEditor.vue')['default']
+    Fieldset: typeof import('primevue/fieldset')['default']
     FieldTextEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldTextEditor.vue')['default']
+    Form: typeof import('@primevue/forms/form')['default']
+    FormField: typeof import('@primevue/forms/formfield')['default']
     FormFieldCheckboxList: typeof import('./src/components/forms/FormFields/FormFieldCheckboxList.vue')['default']
     FormFieldSelect: typeof import('./src/components/forms/FormFields/FormFieldSelect.vue')['default']
     FormFieldsRoot: typeof import('./src/components/forms/FormFieldsRoot.vue')['default']
@@ -19,6 +24,10 @@ declare module 'vue' {
     FormFlowPreview: typeof import('./src/components/dashboard/preview/FormFlowPreview.vue')['default']
     FormStepPreview: typeof import('./src/components/dashboard/preview/FormStepPreview.vue')['default']
     FormTitle: typeof import('./src/components/dashboard/header/FormTitle.vue')['default']
+    InputText: typeof import('primevue/inputtext')['default']
+    Message: typeof import('primevue/message')['default']
+    SpeedDial: typeof import('primevue/speeddial')['default']
     StepItem: typeof import('./src/components/dashboard/sidebar-left/StepItem.vue')['default']
+    ToggleSwitch: typeof import('primevue/toggleswitch')['default']
   }
 }
