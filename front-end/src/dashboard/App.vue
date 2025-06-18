@@ -7,7 +7,7 @@ import { Icon } from "@iconify/vue";
 import FormFlowPreview from "@/components/dashboard/preview/FormFlowPreview.vue";
 import FieldEditor from "@/components/dashboard/sidebar-right/FieldEditor.vue";
 import Button from "primevue/button";
-import { createForm, getFormById, updateForm } from "@/api/wpAjaxApi";
+import { createForm, deleteForm, getFormById, updateForm } from "@/api/wpAjaxApi";
 import type { Form } from "@/types";
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
@@ -63,6 +63,40 @@ const saveForm = async () => {
   }
 };
 
+const formDelete = async () => {
+  if (!endpoint || !nonce) {
+    console.error("API endpoint or nonce not provided");
+    return;
+  }
+
+  if (!editFormId) {
+    console.error("No form ID provided for deletion");
+    return;
+  }
+
+  if (!confirm("Sind Sie sicher, dass Sie dieses Formular löschen möchten?")) {
+    return;
+  }
+
+  try {
+    const response = await deleteForm(
+      endpoint,
+      nonce,
+      editFormId
+    );
+    if (response.success) {
+      console.log("Form deleted successfully");
+      // Redirect the user to the forms list or another page
+      window.location.href = "/wp-admin/admin.php?page=dock-funnels";
+      
+    } else {
+      console.error("Failed to delete form:", response);
+    }
+  } catch (error) {
+    console.error("Error deleting form:", error);
+  }
+}
+
 onMounted(() => {
   // This is a good place to initialize any global state or perform side effects
   console.log(window.DockFunnelsAdmin);
@@ -79,6 +113,15 @@ onMounted(() => {
       .catch((error) => {
         console.error("Error loading form:", error);
       });
+  } else {
+    // Initialize with a new form if no editFormId is provided
+    editorStore.initEditor({
+      id: 0,
+      title: "Mein neues Formular",
+      description: "Beschreibung des Formulars",
+      form_steps: [],
+      fields: [],
+    } as Form);
   }
 });
 </script>
@@ -97,6 +140,16 @@ onMounted(() => {
         >
           <Icon icon="heroicons:arrow-down-tray" class="mr-2" />
           Speichern
+        </Button>
+        <Button
+          v-if="editorStore.form"
+          @click="formDelete"
+          size="small"
+          severity="danger"
+          class="flex items-center"
+        >
+          <Icon icon="heroicons:trash" class="mr-2" />
+          Löschen
         </Button>
       </div>
     </div>

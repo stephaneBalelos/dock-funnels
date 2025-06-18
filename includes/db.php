@@ -56,6 +56,20 @@ class DockFunnels_DB {
         return $wpdb->rows_affected > 0;
     }
 
+    public static function delete_form($id) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'dock_funnels';
+
+        $result = $wpdb->delete($table_name, ['id' => $id]);
+
+        if ($result) {
+            // Also delete associated responses
+            $wpdb->delete($wpdb->prefix . 'dock_funnel_responses', ['form_id' => $id]);
+        }
+
+        return $result;
+    }
+
     public static function get_form_responses($form_id) {
         global $wpdb;
         return $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}dock_funnel_responses WHERE form_id = %d", $form_id), ARRAY_A);
