@@ -1,5 +1,16 @@
 <?php
 
+
+/**
+ * DockFunnels_DB class for handling database operations related to Dock Funnels.
+ *
+ * This class provides methods to interact with the database, including creating,
+ * updating, and retrieving forms and their responses.
+ */
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly
+}
+
 class DockFunnels_DB {
 
     public static function get_forms() {
