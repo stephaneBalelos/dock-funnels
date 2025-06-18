@@ -1,6 +1,7 @@
 <?php
 
-class DockFunnels_Admin {
+class DockFunnels_Admin
+{
 
     public static function enqueue_admin_assets($hook)
     {
@@ -17,13 +18,14 @@ class DockFunnels_Admin {
         wp_localize_script('dock-funnels-dashboard', 'DockFunnelsAdmin', $data);
     }
 
-    public static function register_admin_menu() {
+    public static function register_admin_menu()
+    {
         add_menu_page(
             'Dock Funnels',
             'Dock Funnels',
             'manage_options',
             'dock-funnels',
-            [ __CLASS__, 'render_forms_page' ],
+            [__CLASS__, 'render_forms_page'],
             'dashicons-feedback'
         );
 
@@ -33,7 +35,7 @@ class DockFunnels_Admin {
             'Responses',
             'manage_options',
             'dock-funnels-responses',
-            [ __CLASS__, 'render_responses_page' ]
+            [__CLASS__, 'render_responses_page']
         );
 
         add_submenu_page(
@@ -42,36 +44,54 @@ class DockFunnels_Admin {
             'Create Form',
             'manage_options',
             'dock-funnels-create-form',
-            [ __CLASS__, 'render_create_form_page' ]
+            [__CLASS__, 'render_create_form_page']
         );
     }
 
-    public static function render_forms_page() {
+    public static function render_forms_page()
+    {
         if (!current_user_can('manage_options')) {
             return;
         }
-        $forms = DockFunnels_DB::get_forms();
-        echo '<div class="wrap"><h1>Dock Funnels</h1>
+        if (isset($_GET['form_id']) && is_numeric($_GET['form_id'])) {
+            $form_id = intval($_GET['form_id']);
+            $form = DockFunnels_DB::get_form_by_id($form_id);
+            if ($form) {
+                echo '<div id="app"></div></div>';
+                return;
+            }
+        } elseif (isset($_GET['form_id'])) {
+            echo '<div class="wrap"><h1>Form Not Found</h1><p>The requested form does not exist.</p></div>';
+            return;
+        } else {
+            $forms = DockFunnels_DB::get_forms();
+            echo '<div class="wrap"><h1>Dock Funnels</h1>
                 <table class="widefat">
                     <thead>
                     <tr>
                         <th>ID</th>
                         <th>Name</th>
                         <th>Shortcode</th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                 <tbody>';
-        foreach ($forms as $form) {
-            echo "<tr>
+            foreach ($forms as $form) {
+                echo "<tr>
                 <td>{$form['id']}</td>
                 <td>{$form['name']}</td>
                 <td><code>[dock_funnel id='{$form['id']}']</code></td>
+                <td>
+                    <a href='" . admin_url("admin.php?page=dock-funnels&form_id={$form['id']}") . "' class='button'>Edit</a>
+                    <a href='" . admin_url("admin.php?page=dock-funnels-responses&form_id={$form['id']}") . "' class='button'>Responses</a>
                 </tr>";
+            }
+            echo '</tbody></table></div>';
         }
-        echo '</tbody></table></div>';
     }
 
-    public static function render_responses_page() {
+    public static function render_responses_page()
+    {
         if (!current_user_can('manage_options') || !isset($_GET['form_id'])) {
             echo '<div class="wrap"><h1>Responses</h1><p>No form selected.</p></div>';
             return;
@@ -87,12 +107,11 @@ class DockFunnels_Admin {
         echo '</tbody></table></div>';
     }
 
-    public static function render_create_form_page() {
+    public static function render_create_form_page()
+    {
         if (!current_user_can('manage_options')) {
             return;
         }
         echo '<div id="app"></div>';
     }
-
-
 }

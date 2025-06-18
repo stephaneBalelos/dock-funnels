@@ -7,7 +7,7 @@ import { Icon } from "@iconify/vue";
 import FormFlowPreview from "@/components/dashboard/preview/FormFlowPreview.vue";
 import FieldEditor from "@/components/dashboard/sidebar-right/FieldEditor.vue";
 import Button from "primevue/button";
-import { createForm } from "@/api/wpAjaxApi";
+import { createForm, getFormById, updateForm } from "@/api/wpAjaxApi";
 import type { Form } from "@/types";
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
@@ -15,6 +15,7 @@ import type { Form } from "@/types";
 const editorStore = useEditorStore();
 const endpoint = inject("ajaxUrl") as string | undefined;
 const nonce = inject("nonce") as string | undefined;
+const editFormId = inject("editFormId") as number | undefined;
 
 const saveForm = async () => {
   if (!editorStore.form) {
@@ -38,12 +39,25 @@ const saveForm = async () => {
   }
 
   try {
+    // If editFormId is provided, we update the existing form
+    if (editFormId) {
+      formdata.id = editFormId;
+      const response = await updateForm(
+        endpoint,
+        nonce,
+        editFormId,
+        JSON.stringify(formdata)
+      );
+      console.log("Form updated successfully:", response);
+    } else {
+      // If no editFormId, we create a new form
     const response = await createForm(
       endpoint,
       nonce,
       JSON.stringify(formdata)
     );
     console.log(response);
+    }
   } catch (error) {
     console.error("Error saving form:", error);
   }
@@ -51,9 +65,21 @@ const saveForm = async () => {
 
 onMounted(() => {
   // This is a good place to initialize any global state or perform side effects
-  console.log("App mounted");
   console.log(window.DockFunnelsAdmin);
-  editorStore.initEditor();
+  if (!endpoint || !nonce) {
+    console.error("API endpoint or nonce not provided");
+    return;
+  }
+  if (editFormId) {
+    getFormById(endpoint, nonce, editFormId)
+      .then(({ data }) => {
+        console.log("Form loaded:", data.form_data);
+        editorStore.initEditor(JSON.parse(data.form_data) as Form);
+      })
+      .catch((error) => {
+        console.error("Error loading form:", error);
+      });
+  }
 });
 </script>
 

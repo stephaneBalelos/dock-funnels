@@ -28,6 +28,23 @@ class DockFunnels_DB {
         return $wpdb->insert_id;
     }
 
+    public static function update_form($id, $title, $description, $form_data) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'dock_funnels';
+
+        $wpdb->update(
+            $table_name,
+            [
+                'name' => $title,
+                'description' => $description,
+                'form_data' => wp_json_encode($form_data),
+            ],
+            ['id' => $id]
+        );
+
+        return $wpdb->rows_affected > 0;
+    }
+
     public static function get_form_responses($form_id) {
         global $wpdb;
         return $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}dock_funnel_responses WHERE form_id = %d", $form_id), ARRAY_A);

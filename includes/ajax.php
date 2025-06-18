@@ -1,8 +1,10 @@
 <?php
 
-class DockFunnels_Ajax {
+class DockFunnels_Ajax
+{
 
-    public static function handle_form_submission() {
+    public static function handle_form_submission()
+    {
         check_ajax_referer('dock_funnel_form_nonce', 'nonce');
 
         $form_id = isset($_POST['form_id']) ? intval($_POST['form_id']) : 0;
@@ -17,7 +19,8 @@ class DockFunnels_Ajax {
         wp_send_json_success(['message' => 'Thank you! Your response has been recorded.']);
     }
 
-    public static function create_form() {
+    public static function create_form()
+    {
         $body = file_get_contents('php://input');
         if (empty($body)) {
             wp_send_json_error(['message' => 'No data received.']);
@@ -45,7 +48,11 @@ class DockFunnels_Ajax {
         wp_send_json_success(['message' => 'Form created successfully.', 'form_id' => $form_id]);
     }
 
-    public static function get_form_by_id() {
+    /**
+     * Get form by ID
+     */
+    public static function get_form_by_id()
+    {
         $body = file_get_contents('php://input');
         if (empty($body)) {
             wp_send_json_error(['message' => 'No data received.']);
@@ -67,7 +74,50 @@ class DockFunnels_Ajax {
         wp_send_json_success($form);
     }
 
-    private static function validate_form_data($data) {
+    /**
+     * Update form by ID
+     */
+    public static function update_form()
+    {
+        $body = file_get_contents('php://input');
+        if (empty($body)) {
+            wp_send_json_error(['message' => 'No data received.']);
+        }
+        $data = json_decode($body, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            wp_send_json_error(['message' => 'Invalid JSON data.']);
+        }
+        wp_verify_nonce($data['nonce'], 'dock_funnel_admin_nonce');
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'You do not have permission to create forms.']);
+        }
+        $form_id = isset($data['form_id']) ? intval($data['form_id']) : 0;
+        if (!$form_id) {
+            wp_send_json_error(['message' => 'Invalid form ID.']);
+        }
+        $form_data = json_decode($data['form_data'], true); // see @/types.index.ts for Form type
+
+        // Validate form data
+        if (!self::validate_form_data($form_data)) {
+            wp_send_json_error(['message' => 'Invalid form data.']);
+        }
+        // Update form data
+        $updated = DockFunnels_DB::update_form($form_id, $form_data['title'], $form_data['description'], $form_data);
+        if (!$updated) {
+            wp_send_json_error(['message' => 'Failed to update form.']);
+        }
+        wp_send_json_success(['message' => 'Form updated successfully.', 'form_id' => $form_id]);
+    }
+
+    /**
+     * Validate and sanitize form data
+     *
+     * @param array $data
+     * @return array|false
+     */
+
+    private static function validate_form_data($data)
+    {
         $f_data = [];
         // Check Title
         if (empty($data['title']) || !is_string($data['title'])) {
@@ -95,11 +145,12 @@ class DockFunnels_Ajax {
         if (!isset($data['fields']) || !is_array($data['fields']) || empty($data['fields'])) {
             return false;
         }
-        
+
         return $f_data;
     }
 
-    private static function validate_steps_data($steps) {
+    private static function validate_steps_data($steps)
+    {
         $f_steps = [];
 
         foreach ($steps as $step) {
@@ -113,7 +164,7 @@ class DockFunnels_Ajax {
                 'description' => $description,
             ];
             // Add $f_step to $f_steps
-            $f_steps[] = $f_step; 
+            $f_steps[] = $f_step;
         }
         if (empty($f_steps)) {
             return false;
@@ -121,7 +172,8 @@ class DockFunnels_Ajax {
         return $f_steps;
     }
 
-    public static function validate_fields_data($fields) {
+    public static function validate_fields_data($fields)
+    {
         $f_fields = [];
         foreach ($fields as $field) {
             if (!isset($field['name']) || !is_string($field['name']) || empty($field['name'])) {
@@ -148,7 +200,8 @@ class DockFunnels_Ajax {
         return $f_fields;
     }
 
-    private static function validate_and_sanitize($string_data) {
+    private static function validate_and_sanitize($string_data)
+    {
         if (!is_string($string_data) || empty($string_data)) {
             return false;
         }

@@ -27,6 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     app.provide('ajaxUrl', window.DockFunnelsAdmin?.ajaxUrl);
     app.provide('nonce', window.DockFunnelsAdmin?.nonce);
+    app.provide('editFormId', new URLSearchParams(window.location.search).get('form_id') || null);
     app.mount('#app')
-    console.log('DockFunnelsAdmin mounted');
 });
