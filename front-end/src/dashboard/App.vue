@@ -7,7 +7,12 @@ import { Icon } from "@iconify/vue";
 import FormFlowPreview from "@/components/dashboard/preview/FormFlowPreview.vue";
 import FieldEditor from "@/components/dashboard/sidebar-right/FieldEditor.vue";
 import Button from "primevue/button";
-import { createForm, deleteForm, getFormById, updateForm } from "@/api/wpAjaxApi";
+import {
+  createForm,
+  deleteForm,
+  getFormById,
+  updateForm,
+} from "@/api/wpAjaxApi";
 import type { Form } from "@/types";
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
@@ -51,12 +56,12 @@ const saveForm = async () => {
       console.log("Form updated successfully:", response);
     } else {
       // If no editFormId, we create a new form
-    const response = await createForm(
-      endpoint,
-      nonce,
-      JSON.stringify(formdata)
-    );
-    console.log(response);
+      const response = await createForm(
+        endpoint,
+        nonce,
+        JSON.stringify(formdata)
+      );
+      console.log(response);
     }
   } catch (error) {
     console.error("Error saving form:", error);
@@ -79,32 +84,27 @@ const formDelete = async () => {
   }
 
   try {
-    const response = await deleteForm(
-      endpoint,
-      nonce,
-      editFormId
-    );
+    const response = await deleteForm(endpoint, nonce, editFormId);
     if (response.success) {
       console.log("Form deleted successfully");
       // Redirect the user to the forms list or another page
       window.location.href = "/wp-admin/admin.php?page=dock-funnels";
-      
     } else {
       console.error("Failed to delete form:", response);
     }
   } catch (error) {
     console.error("Error deleting form:", error);
   }
-}
+};
 
 onMounted(() => {
   // This is a good place to initialize any global state or perform side effects
   console.log(window.DockFunnelsAdmin);
-  if (!endpoint || !nonce) {
-    console.error("API endpoint or nonce not provided");
-    return;
-  }
   if (editFormId) {
+    if (!endpoint || !nonce) {
+      console.error("API endpoint or nonce not provided");
+      return;
+    }
     getFormById(endpoint, nonce, editFormId)
       .then(({ data }) => {
         console.log("Form loaded:", data.form_data);
@@ -186,20 +186,7 @@ onMounted(() => {
       </div>
     </div>
     <div class="sidebar-right flex flex-col">
-      <div class="flex justify-between items-center mb-4 p-4">
-        <div class="text-lg leading-[18px] font-semibold">Formular Feld</div>
-      </div>
-      <div class="relative flex-1 overflow-y-auto">
-        <div class="absolute inset-0 overflow-y-auto px-4">
-          <FieldEditor
-            v-if="editorStore.selectedFieldName.value"
-            :field-name="editorStore.selectedFieldName.value"
-          />
-          <div v-else class="text-gray-500 text-center">
-            Bitte wählen Sie ein Feld aus, um es zu bearbeiten.
-          </div>
-        </div>
-      </div>
+      <FieldEditor />
     </div>
   </div>
 </template>
