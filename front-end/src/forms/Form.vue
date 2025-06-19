@@ -36,6 +36,11 @@ const formTest = ref<Form | null>({
       description:
         "Bitte stellen Sie sicher, dass Sie alle erforderlichen Dokumente bereit haben.",
     },
+    {
+      title: "Dokumente für Viszeralchirurgie",
+      description:
+        "Bitte stellen Sie sicher, dass Sie alle erforderlichen Dokumente bereit haben.",
+    },
   ],
   fields: [
     {
@@ -86,13 +91,41 @@ const formTest = ref<Form | null>({
           value: "arthrose",
           label: "Arthrose",
           description: "Arthrose und degenerative Gelenkerkrankungen",
-          depends_on: [{
-            field_name: "fachrichtung",
-            value: "orthopedie",
-          }],
+          depends_on: [
+            {
+              field_name: "fachrichtung",
+              value: "orthopedie",
+            },
+          ],
         },
       ],
       required: true,
+    },
+    {
+      step_index: 1,
+      label: "Dependent on Fahrrichtung Orthopädie",
+      field_name: "orthopedie_beschwerde",
+      description: "Bitte wählen Sie eine spezifische Beschwerde aus.",
+      type: "select",
+      options: [
+        {
+          value: "schulter",
+          label: "Schulter",
+          description: "Schulterbeschwerden und -verletzungen",
+        },
+        {
+          value: "huefte",
+          label: "Hüfte",
+          description: "Hüftbeschwerden und -verletzungen",
+        },
+      ],
+      required: true,
+      depends_on: [
+        {
+          field_name: "fachrichtung",
+          value: "orthopedie",
+        },
+      ],
     },
     {
       step_index: 2,
@@ -106,14 +139,53 @@ const formTest = ref<Form | null>({
           value: "roentgenbilder",
           label: "Röntgenbilder",
           description: "Röntgenbilder der betroffenen Gelenke",
-          depends_on: [{
-            field_name: "fachrichtung",
-            value: "orthopedie",
-          }],
+          depends_on: [
+            {
+              field_name: "fachrichtung",
+              value: "orthopedie",
+            },
+          ],
         },
         {
           value: "arztberichte",
           label: "Arztberichte",
+          description: "Arztberichte und medizinische Gutachten",
+        },
+        {
+          value: "vorherige behandlungen",
+          label: "Vorherige Behandlungen",
+          description:
+            "Informationen zu vorherigen Behandlungen oder Operationen",
+        },
+      ],
+      required: true,
+    },
+    {
+      step_index: 3,
+      label: "Dokumente",
+      field_name: "dokumente_viszeralchirurgie",
+      description:
+        "Bitte stellen Sie sicher, dass Sie alle erforderlichen Dokumente bereit haben.",
+      type: "checkboxList",
+      options: [
+        {
+          value: "operationsberichte",
+          label: "Operationsberichte",
+          description: "Röntgenbilder der betroffenen Gelenke",
+          depends_on: [
+            {
+              field_name: "dokumente",
+              value: "roentgenbilder",
+            },
+            {
+              field_name: "dokumente",
+              value: "arztberichte",
+            },
+          ],
+        },
+        {
+          value: "blutest",
+          label: "Bluttest",
           description: "Arztberichte und medizinische Gutachten",
         },
         {

@@ -22,8 +22,8 @@ export type FormField = {
     error_message?: string;
     depends_on?: {
         field_name: string; // name of the field this field depends on
-        value: string | string[]; // Value(s) that trigger this field to be shown
-    }; // Conditional logic for showing/hiding the field
+        value: string; // Value(s) that trigger this field to be shown
+    }[]; // Conditional logic for showing/hiding the field
 }
 
 export type FormFieldSelect = FormField & {

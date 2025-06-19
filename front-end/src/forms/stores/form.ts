@@ -53,14 +53,14 @@ export const useFormSubmissionStateStore = createGlobalState(
             // filter out fields that are not visible based on their dependencies
             return f.filter(field => {
                 if (!field.depends_on) return true // No dependencies, always visible
-                const dependentField = form.value?.fields.find(f => f.field_name === field.depends_on?.field_name)
-                if (!dependentField) return true // Dependent field not found, show this field
-                const dependentValue = formSubmissionFields.value[dependentField.field_name]?.value
-                if (dependentValue === undefined || dependentValue === null) return false // Dependent field not set, hide this field
-                if (Array.isArray(dependentValue)) {
-                    return dependentValue.includes(field.depends_on.value as string)
-                }
-                return dependentValue === field.depends_on.value
+                return field.depends_on.every(dependency => {
+                    const dependentField = formSubmissionFields.value[dependency.field_name]
+                    if (!dependentField) return false // Dependency field not set, hide this field
+                    if (Array.isArray(dependentField.value)) {
+                        return dependentField.value.includes(dependency.value) // Check if value is in array
+                    }
+                    return dependentField.value === dependency.value // Check for single value match
+                })
             })
         })
 
