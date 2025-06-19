@@ -50,12 +50,14 @@ export const useFormSubmissionStateStore = createGlobalState(
             }
             if (form.value && nextStepIndex < form.value.form_steps.length) {
                 currentStepIndex.value = nextStepIndex
+                currentStepErrors.value = [] // Clear errors when moving to the next step
             }
         }
         const previousStep = () => {
             const previousStepIndex = currentStepIndex.value - 1
             if (previousStepIndex >= 0) {
                 currentStepIndex.value = previousStepIndex
+                currentStepErrors.value = [] // Clear errors when moving to the previous step
             }
         }
 
@@ -85,12 +87,12 @@ export const useFormSubmissionStateStore = createGlobalState(
                         fieldSchema = z.string().min(1, `${field.label} ist erforderlich`)
                         break
                     case 'select':
-                        const enumValues = field.options ? field.options.map(option => option.value) : []
-                        fieldSchema = z.enum(['', ...enumValues])
+                        const selectValues = field.options ? field.options.map(option => option.value) : []
+                        fieldSchema = z.enum([selectValues[0], ...selectValues])
                         break
                     case 'checkboxList':
                         const checkboxValues = field.options ? field.options.map(option => option.value) : []
-                        fieldSchema = z.array(z.enum(['', ...checkboxValues])).min(1, `${field.label} ist erforderlich`)
+                        fieldSchema = z.array(z.enum([checkboxValues[0], ...checkboxValues])).min(1, `${field.label} ist erforderlich`)
                         break
                     default:
                         console.warn(`Unsupported field type}`)
