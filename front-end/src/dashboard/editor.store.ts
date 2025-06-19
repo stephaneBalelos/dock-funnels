@@ -65,6 +65,20 @@ export const useEditorStore = createGlobalState(() => {
 
     const removeStep = (index: number) => {
         if (index >= 0 && index < form.form_steps.length) {
+            // Remove all fields associated with this step
+            form.fields = form.fields.filter(field => field.step_index !== index)
+            // Update step indices for remaining fields
+            form.fields.forEach(field => {
+                if (field.step_index > index) {
+                    field.step_index -= 1
+                }
+            })
+            // Remove the step itself
+            if (selectedStepIndex.value === index) {
+                selectedStepIndex.value = null // Reset selected step index if it was the removed step
+            }
+            // Remove the step from the form steps
+            // Perform the removal
             form.form_steps.splice(index, 1)
         }
     }

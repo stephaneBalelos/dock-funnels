@@ -43,20 +43,30 @@
         </Form>
       </div>
       <div v-else class="flex flex-col gap-2">
-        <div class="flex justify-between w-full">
+        <div class="flex flex-col gap-2 justify-between w-full">
           <div class="flex flex-col">
             <span class="text-stone-900 font-semibold text-sm">
               {{ state.title }}
             </span>
             <span class="text-stone-500 text-xs"> #{{ props.stepIndex }} </span>
           </div>
-          <Button
-            @click="toggleEdit"
-            size="small"
-            severity="secondary"
-          >
-            <Icon icon="heroicons:pencil-square" />
-          </Button>
+          <div class="flex gap-2 justify-end items-center">
+            <Button
+              @click="toggleEdit"
+              size="small"
+              severity="secondary"
+            >
+              <Icon icon="heroicons:pencil-square" />
+            </Button>
+            <Button
+              v-if="editorStore.form"
+              size="small"
+              severity="danger"
+              @click="editorStore.removeStep(props.stepIndex)"
+            >
+              <Icon icon="heroicons:trash" />
+            </Button>
+          </div>
         </div>
         <div class="text-xs text-stone-600">
           {{ state.description }}
