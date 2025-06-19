@@ -157,7 +157,7 @@
             }}</Message
           >
         </FormField>
-        
+
       </div>
       <Fieldset legend="Form " class="h-80 overflow-auto">
         <pre class="whitespace-pre-wrap">{{ state }}</pre>
@@ -204,7 +204,6 @@ const schema = z
     placeholder: z.string().optional(),
     default_value: z.string().optional(),
   })
-  .strict();
 
 const state = reactive<FormFieldText>({
   step_index: field.value.step_index,
@@ -223,7 +222,7 @@ const errorState = ref<z.ZodError<FormFieldText> | null>(null);
 function onFormSubmit($event: FormSubmitEvent<FormFieldText>) {
   // Validate the form before proceeding
   if (!validateForm()) {
-    console.error("Form validation failed");
+    console.error("Form validation failed", errorState.value);
     return;
   }
   // Here you can handle the form submission, e.g., save the state or emit an event

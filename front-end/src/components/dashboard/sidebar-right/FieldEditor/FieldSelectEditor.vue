@@ -284,7 +284,7 @@ function onFormSubmit($event: FormSubmitEvent<FormFieldSelect>) {
 
 const validateForm = () => {
   try {
-    const res = schema.safeParse(state, {});
+    const res = schema.safeParse(state);
     if (!res.success) {
       errorState.value = res.error;
       return false;

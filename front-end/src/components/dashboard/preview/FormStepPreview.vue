@@ -17,12 +17,13 @@
           @click="editorStore.setSelectedFieldName(field.field_name)"
         >
           <div class="text-sm font-medium text-gray-700">
-            {{ field.label }} <span>{{ field.field_name }}</span>
+            {{ field.label }}
           </div>
           <p v-if="field.description" class="text-xs text-gray-500">
             {{ field.description }}
           </p>
-          <div class="">
+          <div class="flex flex-col">
+            <span class="text-xs text-gray-400">Feldname: {{ field.field_name }}</span>
             <span class="text-xs text-gray-400">Type: {{ field.type }}</span>
           </div>
         </div>

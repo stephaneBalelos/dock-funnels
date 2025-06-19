@@ -1,5 +1,5 @@
 <template>
-  <Card>
+  <Card class="mb-4">
     <template #content>
       <div v-if="isEditing">
         <Form
