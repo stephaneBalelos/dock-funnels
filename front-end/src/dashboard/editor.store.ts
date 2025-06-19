@@ -1,6 +1,6 @@
 import type { Form, FormFieldCheckboxList, FormFieldSelect, FormFieldText } from "@/types"
 import { createGlobalState } from "@vueuse/core"
-import { computed, reactive, ref } from "vue"
+import { computed, nextTick, reactive, ref } from "vue"
 
 
 export const useEditorStore = createGlobalState(() => {
@@ -35,7 +35,10 @@ export const useEditorStore = createGlobalState(() => {
     const setSelectedFieldName = (field_name: string) => {
         const field = form.fields.find(f => f.field_name === field_name)
         if (field) {
-            selectedFieldName.value = field.field_name
+            selectedFieldName.value = null // Reset before setting to avoid stale state
+            nextTick(() => {
+                selectedFieldName.value = field.field_name
+            })
         } else {
             console.warn('Field not found:', field_name)
             selectedFieldName.value = null

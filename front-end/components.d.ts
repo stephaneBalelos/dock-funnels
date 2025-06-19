@@ -10,7 +10,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     Button: typeof import('primevue/button')['default']
     Card: typeof import('primevue/card')['default']
-    Checkbox: typeof import('primevue/checkbox')['default']
     DockFunnelForm: typeof import('./src/components/forms/DockFunnelForm.vue')['default']
     FieldChecklistEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldChecklistEditor.vue')['default']
     FieldEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor.vue')['default']

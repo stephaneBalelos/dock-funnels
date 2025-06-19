@@ -13,7 +13,7 @@
         <div
           v-for="field in fields"
           :key="'field-' + field.field_name"
-          class="p-2 border rounded bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
+          :class="'p-2 border rounded bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors duration-200 ' + (editorStore.selectedFieldName.value === field.field_name ? 'border-blue-500 bg-blue-50' : 'border-gray-200')"
           @click="editorStore.setSelectedFieldName(field.field_name)"
         >
           <div class="text-sm font-medium text-gray-700">

@@ -18,12 +18,11 @@
           :field-name="field.field_name"
         />
         <div v-else class="text-gray-500 text-center">
-          Dieses Feld ist kein Auswahlfeld. Bitte wählen Sie ein anderes Feld
-          aus.
+          Dieses Feld ist nicht verfügbar oder wird nicht unterstützt.
         </div>
       </div>
     </div>
-    <div v-else class="text-gray-500 text-center">
+    <div v-else class="text-gray-500 text-center p-8">
       Bitte wählen Sie ein Feld aus, um es zu bearbeiten.
     </div>
   </div>
