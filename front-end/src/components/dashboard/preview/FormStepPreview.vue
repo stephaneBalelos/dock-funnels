@@ -1,6 +1,6 @@
 <template>
   <Card
-    class="flex flex-col border rounded-lg shadow-sm mb-4 w-[300px] min-w-[300px]"
+    class="flex flex-col border rounded-lg shadow-sm mb-4 w-full min-w-[450px] max-w-[600px] mx-auto"
   >
     <template #title>
       <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ step.title }}</h3>
@@ -9,7 +9,7 @@
       </p>
     </template>
     <template #content>
-      <div v-if="fields.length > 0" class="grid grid-cols-1 gap-4">
+      <div v-if="fields.length > 0" class="grid grid-cols-1 gap-4 mb-4">
         <FormStepFieldPreview
           v-for="(field) in fields"
           :key="field.field_name"
@@ -34,7 +34,7 @@
           direction="down"
           :transitionDelay="80"
           :style="{ position: 'absolute', top: '0' }"
-          pt:menuitem="m-2"
+          class="w-full"
         >
           <template #button="{ toggleCallback }">
             <Button size="small" severity="secondary" @click="toggleCallback">
@@ -44,7 +44,7 @@
           </template>
           <template #item="{ item, toggleCallback }">
             <div
-              class="flex flex items-center justify-between gap-2 p-2 border rounded border-surface-200 cursor-pointer w-full bg-white hover:bg-white-200 transition-colors duration-200"
+              class="flex items-center justify-between gap-2 p-2 border rounded border-surface-200 cursor-pointer w-full bg-white hover:bg-white-200 transition-colors duration-200"
               @click="toggleCallback"
             >
               <Icon v-if="item.icon" :icon="item.icon" />
