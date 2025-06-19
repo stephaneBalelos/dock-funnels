@@ -13,18 +13,33 @@
         <div
           v-for="field in fields"
           :key="'field-' + field.field_name"
-          :class="'p-2 border rounded bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors duration-200 ' + (editorStore.selectedFieldName.value === field.field_name ? 'border-blue-500 bg-blue-50' : 'border-gray-200')"
+          :class="
+            'p-2 border rounded bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors duration-200 ' +
+            (editorStore.selectedFieldName.value === field.field_name
+              ? 'border-blue-500 bg-blue-50'
+              : 'border-gray-200')
+          "
           @click="editorStore.setSelectedFieldName(field.field_name)"
         >
-          <div class="text-sm font-medium text-gray-700">
+          <div class="text-md font-medium text-gray-700">
             {{ field.label }}
+            <span v-if="field.required" class="text-red-500">*</span>
           </div>
-          <p v-if="field.description" class="text-xs text-gray-500">
+          <p v-if="field.description" class="text-sm text-gray-500">
             {{ field.description }}
           </p>
-          <div class="flex flex-col">
-            <span class="text-xs text-gray-400">Feldname: {{ field.field_name }}</span>
+          <div class="flex flex-col py-2 gap-1">
+            <span class="text-xs text-gray-400"
+              >Feldname: {{ field.field_name }}</span
+            >
             <span class="text-xs text-gray-400">Type: {{ field.type }}</span>
+            <span v-if="field.depends_on" class="text-xs text-gray-400">
+              Abhängigkeit(en):
+              {{ field.depends_on.map((d) => d.field_name).join(", ") }}
+            </span>
+            <span v-if="field.default_value" class="text-xs text-gray-400">
+              Standardwert: {{ field.default_value }}
+            </span>
           </div>
         </div>
       </div>
@@ -44,7 +59,7 @@
           :model="items"
           direction="down"
           :transitionDelay="80"
-          :style="{ position: 'absolute', top: '0'}"
+          :style="{ position: 'absolute', top: '0' }"
           pt:menuitem="m-2"
         >
           <template #button="{ toggleCallback }">

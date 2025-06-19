@@ -20,10 +20,12 @@ export type FormField = {
     custom_attributes?: Record<string, string>; // Additional attributes like data-* attributes
     css_classes?: string[]; // Custom CSS classes for styling
     error_message?: string;
-    depends_on?: {
-        field_name: string; // name of the field this field depends on
-        value: string; // Value(s) that trigger this field to be shown
-    }[]; // Conditional logic for showing/hiding the field
+    depends_on?: FormFieldDependsOn[]; // Conditional logic for showing/hiding the field
+}
+
+export type FormFieldDependsOn = {
+    field_name: string; // Name of the field this field depends on
+    value: string; // Value(s) that trigger this field to be shown
 }
 
 export type FormFieldSelect = FormField & {

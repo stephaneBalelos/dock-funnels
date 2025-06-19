@@ -40,7 +40,8 @@
             size="small"
             variant="simple"
             >{{
-              errorState?.errors.find((e) => e.path.join('.') === 'label')?.message
+              errorState?.errors.find((e) => e.path.join(".") === "label")
+                ?.message
             }}</Message
           >
         </FormField>
@@ -52,12 +53,15 @@
             v-model="state.field_name"
           />
           <Message
-            v-if="errorState?.errors.find((e) => e.path.join('.') === 'field_name')"
+            v-if="
+              errorState?.errors.find((e) => e.path.join('.') === 'field_name')
+            "
             severity="error"
             size="small"
             variant="simple"
             >{{
-              errorState?.errors.find((e) => e.path.join('.') === 'field_name')?.message
+              errorState?.errors.find((e) => e.path.join(".") === "field_name")
+                ?.message
             }}</Message
           >
         </FormField>
@@ -76,23 +80,23 @@
             size="small"
             variant="simple"
             >{{
-              errorState?.errors.find((e) => e.path.join('.') === 'description')
+              errorState?.errors.find((e) => e.path.join(".") === "description")
                 ?.message
             }}</Message
           >
         </FormField>
         <FormField name="required" class="flex items-center gap-2">
           <ToggleSwitch name="required" v-model="state.required" />
-          <label class="text-sm">
-            Ist dieses Feld erforderlich?
-          </label>
+          <label class="text-sm"> Ist dieses Feld erforderlich? </label>
           <Message
-            v-if="errorState?.errors.find((e) => e.path.join('.') === 'required')"
+            v-if="
+              errorState?.errors.find((e) => e.path.join('.') === 'required')
+            "
             severity="error"
             size="small"
             variant="simple"
             >{{
-              errorState?.errors.find((e) => e.path.join('.') === 'required')
+              errorState?.errors.find((e) => e.path.join(".") === "required")
                 ?.message
             }}</Message
           >
@@ -190,7 +194,11 @@
               severity="secondary"
               size="small"
               @click="
-                state.options.push({ label: `Auswahl ${state.options.length + 1}`, value: `Auswahlwert ${state.options.length + 1}`, description: '' })
+                state.options.push({
+                  label: `Auswahl ${state.options.length + 1}`,
+                  value: `Auswahlwert ${state.options.length + 1}`,
+                  description: '',
+                })
               "
             >
               Auswahl hinzufügen
@@ -263,23 +271,21 @@ const state = reactive<FormFieldSelect>({
   field_name: field.value.field_name,
   label: field.value.label,
   description: field.value.description,
-  options: field.value.options,
+  options: field.value.options ?? [],
 });
 
 const errorState = ref<z.ZodError<FormFieldSelect> | null>(null);
 
-function onFormSubmit($event: FormSubmitEvent<FormFieldSelect>) {
+function onFormSubmit(_$event: FormSubmitEvent<FormFieldSelect>) {
   // Validate the form before proceeding
   if (!validateForm()) {
     console.error("Form validation failed");
     return;
   }
+
+  console.log("Form submitted with state:", state);
   // Here you can handle the form submission, e.g., save the state or emit an event
-  if ($event.valid) {
-    editorStore.updateField(props.fieldName, $event.values);
-  } else {
-    console.error("Form validation failed:", $event.errors);
-  }
+  editorStore.updateField(props.fieldName, state);
 }
 
 const validateForm = () => {
