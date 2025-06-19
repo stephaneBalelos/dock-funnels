@@ -129,7 +129,7 @@ onMounted(() => {
 <template>
   <div class="h-lvh app-container">
     <div class="header flex justify-between items-center p-4 shadow">
-      <FormTitle />
+      <FormTitle v-if="editorStore.form" />
       <div class="flex gap-2">
         <Button
           v-if="editorStore.form"
