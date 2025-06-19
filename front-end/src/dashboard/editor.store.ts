@@ -165,6 +165,22 @@ export const useEditorStore = createGlobalState(() => {
         console.log(form.fields)
     }
 
+    const removeField = (field_name: string) => {
+        const fieldIndex = form.fields.findIndex(f => f.field_name === field_name)
+        if (fieldIndex === -1) {
+            console.warn('Field not found:', field_name)
+            return
+        }
+        // TODO: Check if the field is a dependency for other fields
+        // Remove the field from the form
+        form.fields.splice(fieldIndex, 1)
+        // Reset selected field name if it was the deleted field
+        if (selectedFieldName.value === field_name) {
+            selectedFieldName.value = null
+        }
+        console.log(`Field ${field_name} deleted successfully`)
+    }
+
     const addFieldDependency = (field_name: string, depends_on: FormFieldDependsOn) => {
         const field = form.fields.find(f => f.field_name === field_name)
         if (!field) {
@@ -243,6 +259,7 @@ export const useEditorStore = createGlobalState(() => {
         setSelectedFieldName,
         addField,
         updateField,
+        removeField,
         addFieldDependency,
         removeFieldDependency
     }

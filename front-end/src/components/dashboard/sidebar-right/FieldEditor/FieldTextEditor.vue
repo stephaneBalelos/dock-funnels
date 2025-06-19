@@ -21,6 +21,7 @@
           size="small"
           severity="danger"
           class="ml-2"
+          @click="editorStore.removeField(props.fieldName)"
         >
           <Icon icon="heroicons:trash" />
         </Button>
