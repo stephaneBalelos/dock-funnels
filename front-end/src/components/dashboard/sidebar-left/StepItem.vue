@@ -10,7 +10,12 @@
           class="flex flex-col gap-2"
         >
           <div class="flex flex-col gap-1">
-            <InputText name="title" type="text" placeholder="Titel" size="small" />
+            <InputText
+              name="title"
+              type="text"
+              placeholder="Titel"
+              size="small"
+            />
             <Message
               v-if="$form.title?.invalid"
               severity="error"
@@ -49,13 +54,12 @@
               {{ state.title }}
             </span>
             <span class="text-stone-500 text-xs"> #{{ props.stepIndex }} </span>
+            <div class="text-xs text-stone-600">
+              {{ state.description }}
+            </div>
           </div>
           <div class="flex gap-2 justify-end items-center">
-            <Button
-              @click="toggleEdit"
-              size="small"
-              severity="secondary"
-            >
+            <Button @click="toggleEdit" size="small" severity="secondary">
               <Icon icon="heroicons:pencil-square" />
             </Button>
             <Button
@@ -67,9 +71,6 @@
               <Icon icon="heroicons:trash" />
             </Button>
           </div>
-        </div>
-        <div class="text-xs text-stone-600">
-          {{ state.description }}
         </div>
       </div>
     </template>
@@ -134,7 +135,7 @@ const cancelEdit = () => {
 const onFormSubmit = (form: FormSubmitEvent<FormStep>) => {
   // Handle form submission if needed
   console.log("Form submitted:", form.values.title);
-  state.value.title = form.values.title
+  state.value.title = form.values.title;
   state.value.description = form.values.description;
   // Update the step with the new values
   updateStep();

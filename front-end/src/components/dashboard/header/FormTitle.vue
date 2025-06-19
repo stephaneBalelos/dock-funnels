@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { useEditorStore } from "@/dashboard/editor.store";
 import { Icon } from "@iconify/vue";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import z from "zod";
 
 const editorStore = useEditorStore();
@@ -56,9 +56,16 @@ const schema = z.object({
   description: z.string().optional(),
 });
 
-const state = ref({
-  title: editorStore.form.title,
-  description: editorStore.form.description,
+const state = ref<z.infer<typeof schema>>({
+  title: editorStore.form?.title || "",
+  description: editorStore.form?.description || "",
+});
+
+onMounted(() => {
+  if (editorStore.form) {
+    state.value.title = editorStore.form.title;
+    state.value.description = editorStore.form.description || "";
+  }
 });
 
 console.log("FormTitle.vue state:", state.value);

@@ -107,8 +107,8 @@ onMounted(() => {
     }
     getFormById(endpoint, nonce, editFormId)
       .then(({ data }) => {
-        console.log("Form loaded:", data.form_data);
         editorStore.initEditor(JSON.parse(data.form_data) as Form);
+        console.log("Form loaded:", editorStore.form);
       })
       .catch((error) => {
         console.error("Error loading form:", error);
@@ -129,7 +129,7 @@ onMounted(() => {
 <template>
   <div class="h-lvh app-container">
     <div class="header flex justify-between items-center p-4 shadow">
-      <FormTitle v-if="editorStore.form" />
+      <FormTitle v-if="editorStore.form.title" />
       <div class="flex gap-2">
         <Button
           v-if="editorStore.form"
