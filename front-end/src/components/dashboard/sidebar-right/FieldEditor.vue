@@ -13,6 +13,10 @@
           v-else-if="field.type === 'text'"
           :field-name="field.field_name"
         />
+        <FieldChecklistEditor
+          v-else-if="field.type === 'checkboxList'"
+          :field-name="field.field_name"
+        />
         <div v-else class="text-gray-500 text-center">
           Dieses Feld ist kein Auswahlfeld. Bitte wählen Sie ein anderes Feld
           aus.
@@ -30,6 +34,7 @@ import { computed } from "vue";
 import { useEditorStore } from "@/dashboard/editor.store";
 import FieldSelectEditor from "./FieldEditor/FieldSelectEditor.vue";
 import FieldTextEditor from "./FieldEditor/FieldTextEditor.vue";
+import FieldChecklistEditor from "./FieldEditor/FieldChecklistEditor.vue";
 
 const editorStore = useEditorStore();
 

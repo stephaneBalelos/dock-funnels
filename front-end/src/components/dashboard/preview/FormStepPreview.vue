@@ -109,7 +109,7 @@ const items = ref([
     label: "Checkbox Field",
     icon: "heroicons:check-circle",
     command: () => {
-      addFormField("checkbox");
+      addFormField("checkboxList");
     },
   },
   {
