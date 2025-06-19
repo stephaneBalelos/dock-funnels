@@ -12,6 +12,7 @@ declare global {
         DockFunnelsForm: {
             ajaxUrl: string;
             nonce: string;
+            formId: number;
         }
     }
 }
@@ -29,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     app.provide('ajaxUrl', window.DockFunnelsForm?.ajaxUrl);
     app.provide('nonce', window.DockFunnelsForm?.nonce);
+    app.provide('formId', window.DockFunnelsForm?.formId);
     app.mount('#dock-funnels-form')
     console.log('DockFunnelsForm app mounted');
 });

@@ -125,13 +125,14 @@ import type { Form } from "@/types";
 const submissionStateStore = useFormSubmissionStateStore();
 const endpoint = inject("ajaxUrl") as string | undefined;
 const nonce = inject("nonce") as string | undefined;
+const formId = inject("formId") as number | undefined;
 
 onMounted(async () => {
-  if (!endpoint || !nonce) {
-    console.error("API endpoint or nonce not provided");
+  if (!endpoint || !nonce || !formId) {
+    console.error("API endpoint, nonce, or formId is not provided.");
     return;
   }
-  await getFormById(endpoint, nonce, 1)
+  await getFormById(endpoint, nonce, formId)
     .then(({data}) => {
       console.log("Form loaded:", data.form_data);
       submissionStateStore.form.value = JSON.parse(data.form_data) as Form
