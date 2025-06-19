@@ -1,7 +1,4 @@
 <template>
-  <div class="flex justify-between items-center mb-4 p-4">
-    <div class="text-lg leading-[18px] font-semibold">Formular Feld</div>
-  </div>
   <div class="relative flex-1 overflow-y-auto">
     <div
       v-if="editorStore.selectedFieldName.value"

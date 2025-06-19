@@ -1,33 +1,202 @@
 <template>
-  <div class="">
+  <div class="flex flex-col gap-4 py-4">
     <Form
-      v-slot="$form"
-      :resolver
       :initial-values="state"
+      @change="validateForm"
       @submit="(e) => onFormSubmit(e as FormSubmitEvent<FormFieldSelect>)"
       class="flex flex-col gap-4 w-full"
     >
+      <div class="flex items-center">
+        <div class="text-lg leading-[18px] font-semibold">Auswahlfeld</div>
+        <Button
+          v-if="editorStore.form"
+          :type="'submit'"
+          size="small"
+          class="ml-auto"
+        >
+          Speichern
+        </Button>
+        <Button
+          v-if="editorStore.form"
+          size="small"
+          severity="danger"
+          class="ml-2"
+        >
+          <Icon icon="heroicons:trash" />
+        </Button>
+      </div>
       <div class="flex flex-col gap-4">
-        <FormField v-slot="$field" name="label" class="flex flex-col gap-1">
-          <InputText type="text" placeholder="Label" size="small" />
+        <FormField name="label" class="flex flex-col gap-1">
+          <InputText
+            type="text"
+            placeholder="Label"
+            size="small"
+            v-model="state.label"
+            @change="generateSlug"
+          />
           <Message
-            v-if="$field?.invalid"
+            v-if="errorState?.errors.find((e) => e.path.join('.') === 'label')"
             severity="error"
             size="small"
             variant="simple"
-            >{{ $field.error?.message }}</Message
+            >{{
+              errorState?.errors.find((e) => e.path.join('.') === 'label')?.message
+            }}</Message
           >
         </FormField>
-        <FormField
-          v-slot="$field"
-          name="field_name"
-          class="flex flex-col gap-1"
-        >
+        <FormField name="field_name" class="flex flex-col gap-1">
           <InputText
             type="text"
             placeholder="Field Name (alphanumeric or underscore)"
             size="small"
+            v-model="state.field_name"
           />
+          <Message
+            v-if="errorState?.errors.find((e) => e.path.join('.') === 'field_name')"
+            severity="error"
+            size="small"
+            variant="simple"
+            >{{
+              errorState?.errors.find((e) => e.path.join('.') === 'field_name')?.message
+            }}</Message
+          >
+        </FormField>
+        <FormField name="description" class="flex flex-col gap-1">
+          <InputText
+            type="text"
+            placeholder="Description"
+            size="small"
+            v-model="state.description"
+          />
+          <Message
+            v-if="
+              errorState?.errors.find((e) => e.path.join('.') === 'description')
+            "
+            severity="error"
+            size="small"
+            variant="simple"
+            >{{
+              errorState?.errors.find((e) => e.path.join('.') === 'description')
+                ?.message
+            }}</Message
+          >
+        </FormField>
+        <FormField name="required" class="flex items-center gap-2">
+          <ToggleSwitch name="required" v-model="state.required" />
+          <label class="text-sm">
+            Ist dieses Feld erforderlich?
+          </label>
+          <Message
+            v-if="errorState?.errors.find((e) => e.path.join('.') === 'required')"
+            severity="error"
+            size="small"
+            variant="simple"
+            >{{
+              errorState?.errors.find((e) => e.path.join('.') === 'required')
+                ?.message
+            }}</Message
+          >
+        </FormField>
+        <FormField v-slot="$field" name="options" class="flex flex-col gap-1">
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-semibold">
+              Auswahlmöglichkeiten (mindestens eine erforderlich)
+              <span class="text-red-500">*</span>
+            </label>
+            <div
+              v-for="(_option, index) in state.options"
+              :key="index"
+              class="flex flex-col gap-2 border p-4 rounded"
+            >
+              <FormField class="flex flex-col gap-1">
+                <InputText
+                  type="text"
+                  placeholder="Option Label"
+                  size="small"
+                  v-model="state.options[index].label"
+                />
+                <Message
+                  v-if="
+                    errorState?.errors.find(
+                      (e) => e.path.join('.') === `options.${index}.label`
+                    )
+                  "
+                  severity="error"
+                  size="small"
+                  variant="simple"
+                  >{{
+                    errorState?.errors.find(
+                      (e) => e.path.join(".") === `options.${index}.label`
+                    )?.message
+                  }}</Message
+                >
+              </FormField>
+              <FormField class="flex flex-col gap-1">
+                <InputText
+                  type="text"
+                  placeholder="Option Value"
+                  size="small"
+                  v-model="state.options[index].value"
+                />
+                <Message
+                  v-if="
+                    errorState?.errors.find(
+                      (e) => e.path.join('.') === `options.${index}.value`
+                    )
+                  "
+                  severity="error"
+                  size="small"
+                  variant="simple"
+                  >{{
+                    errorState?.errors.find(
+                      (e) => e.path.join(".") === `options.${index}.value`
+                    )?.message
+                  }}</Message
+                >
+              </FormField>
+              <FormField class="flex flex-col gap-1">
+                <InputText
+                  type="text"
+                  placeholder="Option Description (optional)"
+                  size="small"
+                  v-model="state.options[index].description"
+                />
+                <Message
+                  v-if="
+                    errorState?.errors.find(
+                      (e) => e.path.join('.') === `options.${index}.description`
+                    )
+                  "
+                  severity="error"
+                  size="small"
+                  variant="simple"
+                  >{{
+                    errorState?.errors.find(
+                      (e) => e.path.join(".") === `options.${index}.description`
+                    )?.message
+                  }}</Message
+                >
+              </FormField>
+              <Button
+                v-if="state.options.length > 1"
+                severity="danger"
+                size="small"
+                @click="state.options.splice(index, 1)"
+              >
+                <Icon icon="heroicons:trash" />
+              </Button>
+            </div>
+            <Button
+              severity="secondary"
+              size="small"
+              @click="
+                state.options.push({ label: `Auswahl ${state.options.length + 1}`, value: `Auswahlwert ${state.options.length + 1}`, description: '' })
+              "
+            >
+              Auswahl hinzufügen
+              <Icon icon="heroicons:plus" />
+            </Button>
+          </div>
           <Message
             v-if="$field?.invalid"
             severity="error"
@@ -36,58 +205,23 @@
             >{{ $field.error?.message }}</Message
           >
         </FormField>
-        <FormField v-slot="$field" name="description" class="flex flex-col gap-1">
-          <InputText type="text" placeholder="Description" size="small" />
-          <Message
-            v-if="$field?.invalid"
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{ $field.error?.message }}</Message
-          >
-        </FormField>
-        <FormField v-slot="$field" name="required" class="flex items-center gap-2">
-          <ToggleSwitch name="required" />
-          <label class="text-sm">Required</label>
-          <Message
-            v-if="$field?.invalid"
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{ $field.error?.message }}</Message
-          >
-        </FormField>
-        <div class="flex items-center gap-2 pt-4">
-          <Button
-            type="submit"
-            label="speichern"
-            severity="primary"
-            size="small"
-          />
-          <Button
-            type="button"
-            label="Löschen"
-            severity="danger"
-            size="small"
-          />
-
-        </div>
       </div>
       <Fieldset legend="Form " class="h-80 overflow-auto">
-        <pre class="whitespace-pre-wrap">{{ $form }}</pre>
+        <pre class="whitespace-pre-wrap">{{ state }}</pre>
       </Fieldset>
     </Form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { computed } from "vue";
 import { useEditorStore } from "@/dashboard/editor.store";
 import type { FormFieldSelect } from "@/types";
-import { zodResolver } from "@primevue/forms/resolvers/zod";
 import z from "zod";
 import type { FormSubmitEvent } from "@primevue/forms";
+import { Icon } from "@iconify/vue";
+import { slugify } from "@/utils";
 
 type Props = {
   fieldName: string;
@@ -102,20 +236,25 @@ const field = computed(() => {
   ) as FormFieldSelect;
 });
 
-const resolver = zodResolver(
-  z.object({
-    label: z.string().min(1, { message: "Label is required" }),
-    // field_name is required without spaces and special characters
-    field_name: z
-      .string()
-      .min(1, { message: "Field name is required" })
-      .regex(/^[a-zA-Z0-9_]+$/, {
-        message: "Field name must be alphanumeric or underscore",
-      }),
-    description: z.string().optional(),
-    required: z.boolean().optional(),
-  })
-);
+const schema = z.object({
+  label: z.string().min(1, { message: "Label is required" }),
+  // field_name is required without spaces and special characters
+  field_name: z
+    .string()
+    .min(1, { message: "Field name is required" })
+    .regex(/^[a-zA-Z0-9_]+$/, {
+      message: "Field name must be alphanumeric or underscore",
+    }),
+  description: z.string().optional(),
+  required: z.boolean().optional(),
+  options: z.array(
+    z.object({
+      label: z.string().min(1, { message: "Option label is required" }),
+      value: z.string().min(1, { message: "Option value is required" }),
+      description: z.string().optional(),
+    })
+  ),
+});
 
 const state = reactive<FormFieldSelect>({
   step_index: field.value.step_index,
@@ -127,8 +266,14 @@ const state = reactive<FormFieldSelect>({
   options: field.value.options,
 });
 
+const errorState = ref<z.ZodError<FormFieldSelect> | null>(null);
+
 function onFormSubmit($event: FormSubmitEvent<FormFieldSelect>) {
-  console.log("Form submitted with state:", $event);
+  // Validate the form before proceeding
+  if (!validateForm()) {
+    console.error("Form validation failed");
+    return;
+  }
   // Here you can handle the form submission, e.g., save the state or emit an event
   if ($event.valid) {
     editorStore.updateField(props.fieldName, $event.values);
@@ -136,6 +281,27 @@ function onFormSubmit($event: FormSubmitEvent<FormFieldSelect>) {
     console.error("Form validation failed:", $event.errors);
   }
 }
+
+const validateForm = () => {
+  try {
+    const res = schema.safeParse(state, {});
+    if (!res.success) {
+      errorState.value = res.error;
+      return false;
+    } else {
+      errorState.value = null;
+      return true;
+    }
+  } catch (error) {
+    return false;
+  }
+};
+
+const generateSlug = () => {
+  if (state.label) {
+    state.field_name = slugify(state.label);
+  }
+};
 </script>
 
 <style scoped></style>
