@@ -1,4 +1,4 @@
-import type { Form, FormFieldCheckboxList, FormFieldSelect, FormFieldText } from "@/types"
+import type { Form, FormFieldCheckboxList, FormFieldDependsOn, FormFieldSelect, FormFieldText } from "@/types"
 import { createGlobalState } from "@vueuse/core"
 import { computed, nextTick, reactive, ref } from "vue"
 
@@ -141,11 +141,75 @@ export const useEditorStore = createGlobalState(() => {
             console.warn('Field not found:', fieldName)
             return
         }
+
+        // Todo Update all fields that depend on this field
+        // end todo
         Object.assign(field, fieldData)
 
         setSelectedFieldName(field.field_name)
 
         console.log(form.fields)
+    }
+
+    const addFieldDependency = (field_name: string, depends_on: FormFieldDependsOn) => {
+        const field = form.fields.find(f => f.field_name === field_name)
+        if (!field) {
+            throw new Error(`Field with name ${field_name} not found`)
+        }
+
+        // CHeck if the dependency is already in the field
+        if (!field.depends_on) {
+            field.depends_on = []
+        }
+        if (!Array.isArray(field.depends_on)) {
+            throw new Error(`Field ${field_name} depends_on should be an array`)
+        }
+        const existingDep = field.depends_on.find(dep => dep.field_name === depends_on.field_name && dep.value === depends_on.value)
+        if (existingDep) {
+            throw new Error(`Dependency for field ${field_name} with value ${depends_on.value} already exists`)
+        }
+        // Validate the depends_on structure
+        if (!depends_on || !depends_on.field_name || !depends_on.value) {
+            throw new Error(`Invalid depends_on structure for field ${field_name}`)
+        }
+        // Find the referenced field
+        const referencedField = form.fields.find(f => f.field_name === depends_on.field_name)
+        if (!referencedField) {
+            throw new Error(`Referenced field ${depends_on.field_name} not found`)
+        }
+        // Ensure the referenced field is of type select or checkboxList
+        if (referencedField.type !== 'select' && referencedField.type !== 'checkboxList') {
+            throw new Error(`Field ${depends_on.field_name} must be of type select or checkboxList`)
+        }
+        // check the value is valid for the referenced field
+        if (referencedField.type === 'select' && !referencedField.options.some(option => option.value === depends_on.value)) {
+            throw new Error(`Value ${depends_on.value} is not a valid option for field ${depends_on.field_name}`)
+        }
+        if (referencedField.type === 'checkboxList' && !referencedField.options.some(option => option.value === depends_on.value)) {
+            throw new Error(`Value ${depends_on.value} is not a valid option for field ${depends_on.field_name}`)
+        }
+
+        field.depends_on.push(depends_on)
+        updateField(field.field_name, { depends_on: field.depends_on })
+        console.log(`Added dependency to field ${field_name}:`, depends_on)
+    }
+
+    const removeFieldDependency = (field_name: string, dep_index: number) => {
+        const field = form.fields.find(f => f.field_name === field_name)
+        if (!field) {
+            console.warn('Field not found:', field_name)
+            return
+        }
+        if (!field.depends_on || !Array.isArray(field.depends_on)) {
+            console.warn('No dependencies found for field:', field_name)
+            return
+        }
+        if (dep_index < 0 || dep_index >= field.depends_on.length) {
+            console.warn('Invalid dependency index:', dep_index)
+            return
+        }
+        field.depends_on.splice(dep_index, 1)
+        updateField(field.field_name, { depends_on: field.depends_on })
     }
 
 
@@ -164,6 +228,8 @@ export const useEditorStore = createGlobalState(() => {
         selectedFieldName,
         setSelectedFieldName,
         addField,
-        updateField
+        updateField,
+        addFieldDependency,
+        removeFieldDependency
     }
 })
