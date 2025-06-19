@@ -64,17 +64,22 @@ function shoulShowOption(option: FormFieldSelectOption): boolean {
   if (!option.depends_on) {
     return true;
   }
-  const field_name = option.depends_on.field_name;
-  const dependsOnField =
-    submissionStateStore.formSubmissionFields.value[field_name];
-  if (!dependsOnField) {
-    return false;
-  }
-  const dependsOnValue = dependsOnField.value;
-  if (Array.isArray(dependsOnValue)) {
-    return dependsOnValue.includes(option.depends_on.value as string);
-  }
-  return dependsOnValue === option.depends_on.value;
+  // Check dependencies
+  const dependencies: boolean[] = option.depends_on.map((dep) => {
+    const field_name = dep.field_name;
+    const dependsOnField =
+      submissionStateStore.formSubmissionFields.value[field_name];
+    if (!dependsOnField) {
+      return false;
+    }
+    const dependsOnValue = dependsOnField.value;
+    if (Array.isArray(dependsOnValue)) {
+      return dependsOnValue.includes(dep.value as string);
+    }
+    return dependsOnValue === dep.value;
+  });
+
+  return dependencies.every((dep) => dep);
 }
 
 watch(selectedValue, (newValue) => {

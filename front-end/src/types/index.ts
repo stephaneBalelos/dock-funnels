@@ -40,8 +40,8 @@ export type FormFieldSelectOption = {
     description?: string; // Optional description for the option
     depends_on?: {
         field_name: string; // name of the field this option depends on
-        value: string | string[]; // Value(s) that trigger this option to be shown
-    }; // Conditional logic for showing/hiding the option
+        value: string; // Value(s) that trigger this option to be shown
+    }[]; // Conditional logic for showing/hiding the option
 }
 
 export type FormFieldText = FormField & {
@@ -70,8 +70,8 @@ export type FormFieldCheckboxListOption = {
     description?: string; // Optional description for the option
     depends_on?: {
         field_name: string; // name of the field this option depends on
-        value: string | string[]; // Value(s) that trigger this option to be shown
-    }; // Conditional logic for showing/hiding the option
+        value: string; // Value(s) that trigger this option to be shown
+    }[]; // Conditional logic for showing/hiding the option
 }
 
 
