@@ -2,6 +2,28 @@
   <div class="flex flex-col gap-4">
     Selected Values: {{ selectedValues }}
     <div class="flex flex-col gap-2">
+      <label
+        class="text-stone-700 text-lg leading-none mb-3"
+        :class="{ 'text-red-500': props.field.required }"
+      >
+        {{ props.field.label }}
+        <span v-if="props.field.required" class="text-red-500">*</span>
+        <p
+          v-if="props.field.description"
+          class="text-stone-500 text-sm leading-none mt-1"
+        >
+          {{ props.field.description }}
+        </p>
+      </label>
+      <Message
+        v-if="submissionStateStore.currentStepErrors.value.find(e => e.joined_path === props.field.field_name)"
+        severity="error"
+        variant="simple"
+        size="small"
+        class="mb-4"
+      >
+        {{ submissionStateStore.currentStepErrors.value.find(e => e.joined_path === props.field.field_name)?.message }}
+      </Message>
       <div
         v-for="option in props.field.options.filter(shoulShowOption)"
         :key="field.field_name + option.value"
@@ -14,6 +36,7 @@
           :value="option.value"
         />
         <label :for="field.field_name + option.value">{{ option.label }}</label>
+        <p class="text-sm text-gray-500">{{ option.description }}</p>
       </div>
     </div>
   </div>

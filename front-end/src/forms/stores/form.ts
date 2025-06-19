@@ -1,6 +1,12 @@
 import { createGlobalState } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
 import type { Form, FormSubmissionField } from '@/types'
+import z from 'zod'
+
+type FormFieldError = {
+    joined_path: string; // Name of the field with the error
+    message: string; // Error message
+}
 
 export const useFormSubmissionStateStore = createGlobalState(
     () => {
@@ -8,6 +14,8 @@ export const useFormSubmissionStateStore = createGlobalState(
         const formSubmissionFields = ref<Record<string, FormSubmissionField>>({})
 
         const currentStepIndex = ref(0)
+
+        const currentStepErrors = ref<FormFieldError[]>([])
 
         function setFieldValue(field_name: string, value: string | string[] | null) {
             if (form.value) {
@@ -35,6 +43,11 @@ export const useFormSubmissionStateStore = createGlobalState(
 
         const nextStep = () => {
             const nextStepIndex = currentStepIndex.value + 1
+            // Validate all fields in the current step before proceeding
+            if (!validateCurrentStep()) {
+                console.warn(`Validation failed for step ${currentStepIndex.value}. Cannot proceed to next step.`)
+                return
+            }
             if (form.value && nextStepIndex < form.value.form_steps.length) {
                 currentStepIndex.value = nextStepIndex
             }
@@ -45,6 +58,74 @@ export const useFormSubmissionStateStore = createGlobalState(
                 currentStepIndex.value = previousStepIndex
             }
         }
+
+        const validateCurrentStep = () => {
+            if (!form.value) return true // No form, nothing to validate
+            const currentFields = form.value.fields.filter(field => field.step_index === currentStepIndex.value)
+
+            // Create validation schema based on current step fields
+            const fieldsSchemas = []
+            for (const field of currentFields) {
+                if (!field.required) continue // Skip non-required fields
+                let fieldSchema;
+                switch (field.type) {
+                    case 'text':
+                        fieldSchema = z.string().min(1, `${field.label} ist erforderlich`)
+                        if (field.input_type === 'email') {
+                            fieldSchema = fieldSchema.email(`${field.label} muss eine gültige E-Mail-Adresse sein`)
+                        } else if (field.input_type === 'number') {
+                            fieldSchema = fieldSchema.transform(value => {
+                                const num = Number(value)
+                                if (isNaN(num)) throw new Error(`${field.label} muss eine gültige Zahl sein`)
+                                return num
+                            })
+                        }
+                        break
+                    case 'textarea':
+                        fieldSchema = z.string().min(1, `${field.label} ist erforderlich`)
+                        break
+                    case 'select':
+                        const enumValues = field.options ? field.options.map(option => option.value) : []
+                        fieldSchema = z.enum(['', ...enumValues])
+                        break
+                    case 'checkboxList':
+                        const checkboxValues = field.options ? field.options.map(option => option.value) : []
+                        fieldSchema = z.array(z.enum(['', ...checkboxValues])).min(1, `${field.label} ist erforderlich`)
+                        break
+                    default:
+                        console.warn(`Unsupported field type}`)
+                        continue // Skip unsupported field types
+                }
+                fieldsSchemas.push({
+                    field_name: field.field_name,
+                    schema: fieldSchema
+                })
+            }
+            // Combine all field schemas into a single schema
+            const stepSchema = z.object(
+                Object.fromEntries(fieldsSchemas.map(({ field_name, schema }) => [field_name, schema]))
+            )
+            // Validate the current step fields
+            const stepData = Object.fromEntries(
+                currentFields.map(field => [
+                    field.field_name,
+                    formSubmissionFields.value[field.field_name]?.value || null
+                ])
+            )
+            const result = stepSchema.safeParse(stepData)
+            if (!result.success) {
+                // Handle validation errors
+                console.log(result.error)
+                currentStepErrors.value = result.error.errors.map(err => ({
+                    joined_path: err.path.join('.'),
+                    message: err.message
+                }))
+                return false
+            }
+            return true // Validation passed
+        }
+
+
 
         const fieldsForCurrentStep = computed(() => {
             if (!form.value) return []
@@ -71,14 +152,12 @@ export const useFormSubmissionStateStore = createGlobalState(
                 currentStepIndex.value = 0
                 // Populate formSubmissionFields with default values from the form
                 newForm.fields.forEach(field => {
-                    if (field.default_value !== undefined) {
-                        formSubmissionFields.value[field.field_name] = {
-                            step_title: newForm.form_steps[field.step_index || 0].title,
-                            field_label: field.label || field.label,
-                            field_name: field.field_name,
-                            value: field.default_value,
-                            step_index: field.step_index || 0
-                        }
+                    formSubmissionFields.value[field.field_name] = {
+                        step_title: newForm.form_steps[field.step_index || 0].title,
+                        field_label: field.label || field.label,
+                        field_name: field.field_name,
+                        value: field.default_value ?? null,
+                        step_index: field.step_index || 0
                     }
                 })
             }
@@ -94,5 +173,6 @@ export const useFormSubmissionStateStore = createGlobalState(
             setFieldValue,
             nextStep,
             previousStep,
+            currentStepErrors
         }
     })

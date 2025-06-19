@@ -14,6 +14,23 @@
         {{ props.field.description }}
       </p>
     </label>
+    <Message
+      v-if="
+        submissionStateStore.currentStepErrors.value.find(
+          (e) => e.joined_path === props.field.field_name
+        )
+      "
+      severity="error"
+      variant="simple"
+      size="small"
+      class="mb-4"
+    >
+      {{
+        submissionStateStore.currentStepErrors.value.find(
+          (e) => e.joined_path === props.field.field_name
+        )?.message
+      }}
+    </Message>
     <div class="flex flex-col gap-4">
       <div
         v-for="option in props.field.options.filter(shoulShowOption)"
@@ -26,7 +43,10 @@
           :name="option.label"
           :value="option.value"
         />
-        <label :for="props.field.field_name + option.value">{{ option.label }}</label>
+        <label :for="props.field.field_name + option.value">{{
+          option.label
+        }}</label>
+        <p class="text-sm text-gray-500">{{ option.description }}</p>
       </div>
     </div>
   </div>
@@ -47,8 +67,6 @@ const props = defineProps<Props>();
 const selectedValue = ref<string | null>(null);
 
 const submissionStateStore = useFormSubmissionStateStore();
-
-
 
 onMounted(() => {
   console.log("FormFieldSelect onMounted", props.field.field_name);
