@@ -134,6 +134,23 @@ const formTest = ref<Form | null>({
       placeholder: "TT.MM.JJJJ",
       required: true,
       default_value: "",
+    },
+    {
+      step_index: 2,
+      label: "Zustimmung zur Datenverarbeitung",
+      field_name: "datenschutz",
+      description: "Bitte stimmen Sie der Datenverarbeitung zu.",
+      type: "checkboxList",
+      options: [
+        {
+          value: "datenschutz",
+          label: "Ich stimme der Verarbeitung meiner Daten zu.",
+          description: "Ich habe die Datenschutzerklärung gelesen und akzeptiere sie.",
+        },
+      ],
+      required: true,
+      min: 1,
+      max: 1,
     }
   ],
 });

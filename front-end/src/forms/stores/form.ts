@@ -92,16 +92,21 @@ export const useFormSubmissionStateStore = createGlobalState(
                         break
                     case 'select':
                         const selectValues = field.options ? field.options.map(option => option.value) : []
-                        fieldSchema = z.enum([selectValues[0], ...selectValues])
+                        const values: z.EnumLike = Object.fromEntries(selectValues.map(value => [value, value]))
+                        fieldSchema = z.nativeEnum(values, {message: `${field.label} ist erforderlich`})
                         break
                     case 'checkboxList':
                         const checkboxValues = field.options ? field.options.map(option => option.value) : []
                         fieldSchema = z.array(z.enum([checkboxValues[0], ...checkboxValues]))
-                        if (field.min) {
-                            fieldSchema = fieldSchema.min(field.min, `${field.label} muss mindestens ${field.min} ausgewählt sein`)
-                        }
-                        if (field.max) {
-                            fieldSchema = fieldSchema.max(field.max, `${field.label} darf höchstens ${field.max} ausgewählt sein`)
+                        if (checkboxValues.length === 1 && field.min === 1) {
+                            fieldSchema = fieldSchema.nonempty(`${field.label} muss ausgewählt werden`)
+                        } else {
+                            if (field.min) {
+                                fieldSchema = fieldSchema.min(field.min, `${field.label}: Sie müssen mindestens ${field.min} auswählen`)
+                            }
+                            if (field.max) {
+                                fieldSchema = fieldSchema.max(field.max, `${field.label}: Sie können maximal ${field.max} auswählen`)
+                            }
                         }
                         break
                     default:
@@ -121,7 +126,7 @@ export const useFormSubmissionStateStore = createGlobalState(
             const stepData = Object.fromEntries(
                 currentFields.map(field => [
                     field.field_name,
-                    formSubmissionFields.value[field.field_name]?.value || null
+                    formSubmissionFields.value[field.field_name]?.value || (field.type === 'checkboxList' ? [] : '')
                 ])
             )
             const result = stepSchema.safeParse(stepData)

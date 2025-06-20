@@ -101,7 +101,6 @@ function shoulShowOption(option: FormFieldSelectOption): boolean {
 }
 
 watch(selectedValue, (newValue) => {
-  console.log("Selected value changed:", newValue);
   submissionStateStore.setFieldValue(props.field.field_name, newValue);
 });
 </script>
