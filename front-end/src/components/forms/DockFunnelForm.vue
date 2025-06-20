@@ -57,7 +57,7 @@
         {{ submissionStateStore.form.value.intro_step.description }}
       </p>
       <button
-        class="mt-6 inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-green-400 text-white hover:bg-green-500 outline-none"
+        class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-blue-500 text-white hover:bg-blue-600 focus:shadow-[0_0_0_2px] focus:shadow-blue-700 outline-none"
         @click="submissionStateStore.showIntroStep.value = false"
       >
         {{ submissionStateStore.form.value.intro_step.start_button_text || 'Loslegen' }}
@@ -66,7 +66,7 @@
     <div class="dockfunnelform-footer border-t border-gray-200 p-4">
       <div class="flex justify-between">
         <button
-          class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-green4 text-green11 hover:bg-green5 focus:shadow-[0_0_0_2px] focus:shadow-green7 outline-none"
+          class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-gray-500 text-white hover:bg-gray-600 focus:shadow-[0_0_0_2px] focus:shadow-blue-700 outline-none"
           @click="submissionStateStore.previousStep"
           :disabled="submissionStateStore.currentStepIndex.value === 0"
           v-if="submissionStateStore.currentStepIndex.value > 0"
@@ -74,11 +74,18 @@
           Zurück
         </button>
         <button
-          class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-green4 text-green11 hover:bg-green5 focus:shadow-[0_0_0_2px] focus:shadow-green7 outline-none ml-auto"
+          class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-blue-500 text-white hover:bg-blue-600 focus:shadow-[0_0_0_2px] focus:shadow-blue-700 outline-none"
           @click="submissionStateStore.nextStep"
           v-if="submissionStateStore.currentStepIndex.value < submissionStateStore.form.value?.form_steps.length - 1"
         >
           Weiter
+        </button>
+        <button
+          class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-blue-500 text-white hover:bg-blue-600 focus:shadow-[0_0_0_2px] focus:shadow-blue-700 outline-none"
+          @click=""
+          v-if="submissionStateStore.currentStepIndex.value === submissionStateStore.form.value?.form_steps.length - 1"
+        >
+          Abschließen
         </button>
       </div>
     </div>
