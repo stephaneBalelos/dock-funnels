@@ -64,7 +64,8 @@ export const useFormSubmissionStateStore = createGlobalState(
 
         const validateCurrentStep = () => {
             if (!form.value) return true // No form, nothing to validate
-            const currentFields = form.value.fields.filter(field => field.step_index === currentStepIndex.value)
+            const currentFields = fieldsForCurrentStep.value
+            if (currentFields.length === 0) return true // No fields in current step,
 
             // Create validation schema based on current step fields
             const fieldsSchemas = []
@@ -92,6 +93,7 @@ export const useFormSubmissionStateStore = createGlobalState(
                         fieldSchema = z.string().min(1, `${field.label} ist erforderlich`)
                         break
                     case 'select':
+                        console.log('select field', field)
                         const selectValues = field.options ? field.options.map(option => option.value) : []
                         const values: z.EnumLike = Object.fromEntries(selectValues.map(value => [value, value]))
                         fieldSchema = z.nativeEnum(values, {message: `${field.label} ist erforderlich`})

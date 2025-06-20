@@ -21,7 +21,7 @@ const formTest = ref<Form | null>({
   description:
     "Bitte füllen Sie das Formular aus, um einen Termin zu vereinbaren.",
   intro_step: {
-    enabled: true,
+    enabled: false,
     title: "Willkommen zur Online Terminvereinbarung [Test]",
     description:
       "Bitte folgen Sie den Schritten, um einen Termin zu vereinbaren.",
@@ -98,6 +98,32 @@ const formTest = ref<Form | null>({
         {
           field_name: "fachrichtung",
           value: "orthopedie",
+        },
+      ],
+    },
+    {
+      step_index: 1,
+      label: "Dependent on Fahrrichtung Viszeralchirurgie",
+      field_name: "viszeralchirurgie_beschwerde",
+      description: "Bitte wählen Sie eine spezifische Beschwerde aus.",
+      type: "select",
+      options: [
+        {
+          value: "tumor",
+          label: "Tumor",
+          description: "Tumorbehandlung und -diagnose",
+        },
+        {
+          value: "schilddruesenprobleme",
+          label: "Schilddrüsenprobleme",
+          description: "Schilddrüsenprobleme und -behandlungen",
+        },
+      ],
+      required: true,
+      depends_on: [
+        {
+          field_name: "fachrichtung",
+          value: "viszeralchirurgie",
         },
       ],
     },
