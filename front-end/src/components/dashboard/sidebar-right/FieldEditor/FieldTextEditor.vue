@@ -228,7 +228,7 @@ function onFormSubmit($event: FormSubmitEvent<FormFieldText>) {
   }
   // Here you can handle the form submission, e.g., save the state or emit an event
   if ($event.valid) {
-    editorStore.updateField(props.fieldName, $event.values);
+    editorStore.updateField(props.fieldName, state);
   } else {
     console.error("Form validation failed:", $event.errors);
   }
