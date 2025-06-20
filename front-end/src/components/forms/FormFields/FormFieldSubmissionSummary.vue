@@ -1,5 +1,18 @@
 <template>
   <div class="flex flex-col gap-6 p-4 px-6 border rounded-lg bg-white shadow">
+    <label
+      v-if="field.field_settings?.hide_label !== true"
+      class="text-stone-700 text-lg leading-none mb-2"
+      :class="{ 'text-red-500': props.field.required }"
+    >
+      {{ props.field.label }}
+      <p
+        v-if="props.field.description"
+        class="text-stone-500 text-sm leading-none mt-1"
+      >
+        {{ props.field.description }}
+      </p>
+    </label>
     <div
       v-for="([_, fields], stepIndex) in Object.entries(summary)"
       :key="stepIndex"
@@ -62,7 +75,6 @@ const getFieldStepNameByIndex = (stepIndex: number): string => {
   const step = submissionStateStore.form.value?.form_steps[stepIndex];
   return step ? step.title : `Step ${stepIndex + 1}`;
 };
-
 </script>
 
 <style scoped></style>
