@@ -24,6 +24,8 @@ declare module 'vue' {
     FormFieldCheckboxList: typeof import('./src/components/forms/FormFields/FormFieldCheckboxList.vue')['default']
     FormFieldSelect: typeof import('./src/components/forms/FormFields/FormFieldSelect.vue')['default']
     FormFieldsRoot: typeof import('./src/components/forms/FormFieldsRoot.vue')['default']
+    FormFieldSubmissionSummary: typeof import('./src/components/forms/FormFields/FormFieldSubmissionSummary.vue')['default']
+    FormFieldSubmissionSummaryItem: typeof import('./src/components/forms/FormFields/FormFieldSubmissionSummaryItem.vue')['default']
     FormFieldText: typeof import('./src/components/forms/FormFields/FormFieldText.vue')['default']
     FormFlowPreview: typeof import('./src/components/dashboard/preview/FormFlowPreview.vue')['default']
     FormStepFieldPreview: typeof import('./src/components/dashboard/preview/FormStepFieldPreview.vue')['default']

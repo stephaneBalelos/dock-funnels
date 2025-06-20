@@ -3,7 +3,7 @@ export type Form = {
     title: string;
     description: string;
     form_steps: FormStep[];
-    fields: (FormFieldSelect | FormFieldText | FormFieldTextarea | FormFieldCheckboxList)[]; // Array of fields in this step
+    fields: (FormFieldSelect | FormFieldText | FormFieldTextarea | FormFieldCheckboxList | FormFieldSubmissionSummary)[]; // Array of fields in this step
     intro_step?: {
         enabled: boolean; // Whether the intro step is enabled
         title: string; // Title of the intro step
@@ -83,6 +83,13 @@ export type FormFieldCheckboxListOption = {
         field_name: string; // name of the field this option depends on
         value: string; // Value(s) that trigger this option to be shown
     }[]; // Conditional logic for showing/hiding the option
+}
+
+export type FormFieldSubmissionSummary = FormField & {
+    required: false; // Submission summary fields are not required
+    show_full_summary?: boolean; // Whether to show the full summary for this field
+    default_value?: null; // Default value for the field, usually null
+    type: 'submissionSummary'; // Type of the field
 }
 
 

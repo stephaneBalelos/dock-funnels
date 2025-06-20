@@ -42,6 +42,10 @@ const formTest = ref<Form | null>({
       description:
         "Bitte stellen Sie sicher, dass Sie alle erforderlichen Dokumente bereit haben.",
     },
+    {
+      title: "Zusammenfassung und Abschluss",
+      description: "Überprüfen Sie Ihre Angaben und schließen Sie die Terminvereinbarung ab.",
+    }
   ],
   fields: [
     {
@@ -160,6 +164,14 @@ const formTest = ref<Form | null>({
       min: 1,
       max: 1,
     },
+    {
+      step_index: 3,
+      label: "Zusammenfassung",
+      field_name: "zusammenfassung",
+      description: "Überprüfen Sie Ihre Angaben und schließen Sie die Terminvereinbarung ab.",
+      type: "submissionSummary",
+      required: false,
+    }
   ],
 });
 

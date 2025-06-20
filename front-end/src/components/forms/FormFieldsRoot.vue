@@ -12,6 +12,9 @@
     <div v-else-if="props.field.type === 'checkboxList'" class="form-field-checkbox">
         <FormFieldCheckboxList :field="props.field" />
     </div>
+    <div v-else-if="props.field.type === 'submissionSummary'" class="form-field-submission-summary">
+        <FormFieldSubmissionSummary :field="props.field" />
+    </div>
     <div v-else>
         <p class="text-red-500">Field type is not implemented.</p>
     </div>
@@ -23,6 +26,7 @@ import type { Form } from "@/types";
 import FormFieldSelect from "./FormFields/FormFieldSelect.vue";
 import FormFieldText from "./FormFields/FormFieldText.vue";
 import FormFieldCheckboxList from "./FormFields/FormFieldCheckboxList.vue";
+import FormFieldSubmissionSummary from "./FormFields/FormFieldSubmissionSummary.vue";
 
 type Props = {
     field: Form["fields"][number];
