@@ -102,6 +102,7 @@
               { label: 'Nummer', value: 'number' },
               { label: 'Telefon', value: 'tel' },
               { label: 'URL', value: 'url' },
+              { label: 'Datum', value: 'date' }
             ]"
             size="small"
           />
