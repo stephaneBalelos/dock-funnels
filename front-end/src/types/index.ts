@@ -5,6 +5,7 @@ export type Form = {
     form_steps: FormStep[];
     fields: (FormFieldSelect | FormFieldText | FormFieldTextarea | FormFieldCheckboxList)[]; // Array of fields in this step
     intro_step?: {
+        enabled: boolean; // Whether the intro step is enabled
         title: string; // Title of the intro step
         description: string; // Description of the intro step
         start_button_text?: string; // Text for the start button

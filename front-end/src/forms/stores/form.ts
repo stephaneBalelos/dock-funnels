@@ -171,7 +171,7 @@ export const useFormSubmissionStateStore = createGlobalState(
                 formSubmissionFields.value = {}
                 currentStepIndex.value = 0
                 if (newForm.intro_step) {
-                    showIntroStep.value = true // Show intro step if it exists
+                    showIntroStep.value = newForm.intro_step.enabled // Show intro step if it exists
                 }
                 else {
                     showIntroStep.value = false // Hide intro step if it doesn't exist

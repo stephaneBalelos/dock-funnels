@@ -21,10 +21,11 @@ const formTest = ref<Form | null>({
   description:
     "Bitte füllen Sie das Formular aus, um einen Termin zu vereinbaren.",
   intro_step: {
+    enabled: true,
     title: "Willkommen zur Online Terminvereinbarung",
     description:
-      "Bitte folgen Sie den Schritten, um einen Termin in der Fachrichtung Orthopädie zu vereinbaren.",
-    start_button_text: "Loslegen",
+      "Bitte folgen Sie den Schritten, um einen Termin zu vereinbaren.",
+    start_button_text: "Starten",
   },
   form_steps: [
     {
