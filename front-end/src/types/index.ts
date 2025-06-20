@@ -48,7 +48,7 @@ export type FormFieldSelectOption = {
 
 export type FormFieldText = FormField & {
     type: 'text'; // Input types
-    input_type?: 'text' | 'email' | 'number' | 'tel' | 'url'; // Type of text input field
+    input_type?: 'text' | 'email' | 'number' | 'tel' | 'url' | 'date'; // Type of text input field
     placeholder?: string; // Placeholder text
     default_value?: string; // Default value for the field
 }

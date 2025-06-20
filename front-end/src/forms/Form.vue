@@ -130,8 +130,8 @@ const formTest = ref<Form | null>({
       field_name: "zusatzinfo",
       description: "Geben Sie hier zusätzliche Informationen an.",
       type: "text",
-      input_type: "url",
-      placeholder: "Geben Sie hier Ihre Website oder URL ein",
+      input_type: "date",
+      placeholder: "TT.MM.JJJJ",
       required: true,
       default_value: "",
     }
