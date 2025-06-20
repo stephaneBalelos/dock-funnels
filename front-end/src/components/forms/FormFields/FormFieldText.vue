@@ -13,15 +13,24 @@
         {{ props.field.description }}
       </p>
     </label>
-
-    <input
-      :id="props.field.field_name"
-      class="bg-white border inline-flex h-[35px] px-2 appearance-none justify-center rounded-lg text-sm leading-none shadow-sm outline-none focus:shadow-[0_0_0_2px_black] selection:color-white selection:bg-blackA9"
-      type="text"
-      :placeholder="props.field.placeholder"
-      v-model="textValue"
-      @change="onChange"
-    />
+    <InputGroup>
+      <InputGroupAddon v-if="props.field.input_type === 'email'">
+        <Icon icon="heroicons:envelope" />
+      </InputGroupAddon>
+      <InputGroupAddon v-if="props.field.input_type === 'tel'">
+        <Icon icon="heroicons:phone" />
+      </InputGroupAddon>
+      <InputGroupAddon v-if="props.field.input_type === 'number'">
+        <Icon icon="heroicons:hashtag" />
+      </InputGroupAddon>
+      <InputText
+        :id="props.field.field_name"
+        v-model="textValue"
+        @change="onChange"
+        :type="props.field.input_type || 'text'"
+        :placeholder="props.field.placeholder "
+      />
+    </InputGroup>
     <Message
       v-if="
         submissionStateStore.currentStepErrors.value.find(
@@ -45,6 +54,7 @@
 import { useFormSubmissionStateStore } from "@/forms/stores/form";
 import type { FormFieldText } from "@/types";
 import { ref } from "vue";
+import { Icon } from "@iconify/vue";
 
 type Props = {
   field: FormFieldText;
@@ -56,12 +66,8 @@ const props = defineProps<Props>();
 const submissionStateStore = useFormSubmissionStateStore();
 
 const onChange = () => {
-  submissionStateStore.setFieldValue(
-    props.field.field_name,
-    textValue.value
-  );
+  submissionStateStore.setFieldValue(props.field.field_name, textValue.value);
 };
-
 </script>
 
 <style scoped></style>
