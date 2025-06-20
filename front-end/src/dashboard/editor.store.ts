@@ -1,4 +1,4 @@
-import type { Form, FormFieldCheckboxList, FormFieldDependsOn, FormFieldSelect, FormFieldText } from "@/types"
+import type { Form, FormFieldCheckboxList, FormFieldDependsOn, FormFieldSelect, FormFieldSubmissionSummary, FormFieldText } from "@/types"
 import { createGlobalState } from "@vueuse/core"
 import { computed, nextTick, reactive, ref } from "vue"
 
@@ -143,13 +143,24 @@ export const useEditorStore = createGlobalState(() => {
                 }
                 form.fields.push(checkboxListField)
                 return checkboxListField.field_name
+            case 'submissionSummary':
+                const submissionSummaryField: FormFieldSubmissionSummary = {
+                    field_name: 'submission_summary_field_' + (newFieldId),
+                    type: 'submissionSummary',
+                    label: 'Zusammenfassung',
+                    required: false,
+                    show_full_summary: true,
+                    step_index: stepIndex,
+                }
+                form.fields.push(submissionSummaryField)
+                return submissionSummaryField.field_name
             default:
                 console.warn('Unsupported field type:', type)
                 return null
         }
     }
 
-    const updateField = (fieldName: string, fieldData: Partial<FormFieldText | FormFieldSelect | FormFieldCheckboxList>) => {
+    const updateField = (fieldName: string, fieldData: Partial<FormFieldText | FormFieldSelect | FormFieldCheckboxList | FormFieldSubmissionSummary>) => {
         const field = form.fields.find(f => f.field_name === fieldName)
         if (!field) {
             console.warn('Field not found:', fieldName)

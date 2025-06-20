@@ -17,6 +17,10 @@
           v-else-if="field.type === 'checkboxList'"
           :field-name="field.field_name"
         />
+        <FieldSummaryEditor
+          v-else-if="field.type === 'submissionSummary'"
+          :field-name="field.field_name"
+        />
         <div v-else class="text-gray-500 text-center">
           Dieses Feld ist nicht verfügbar oder wird nicht unterstützt.
         </div>
@@ -34,6 +38,7 @@ import { useEditorStore } from "@/dashboard/editor.store";
 import FieldSelectEditor from "./FieldEditor/FieldSelectEditor.vue";
 import FieldTextEditor from "./FieldEditor/FieldTextEditor.vue";
 import FieldChecklistEditor from "./FieldEditor/FieldChecklistEditor.vue";
+import FieldSummaryEditor from "./FieldEditor/FieldSummaryEditor.vue";
 
 const editorStore = useEditorStore();
 

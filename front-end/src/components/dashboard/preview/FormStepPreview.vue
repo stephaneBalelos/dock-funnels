@@ -109,6 +109,13 @@ const items = ref([
       addFormField("textarea");
     },
   },
+  {
+    label: "Zusammenfassung Feld",
+    icon: "heroicons:document-text",
+    command: () => {
+      addFormField("submissionSummary");
+    },
+  }
 ]);
 
 const addFormField = (field: string) => {
