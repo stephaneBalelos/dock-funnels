@@ -1,10 +1,10 @@
 <template>
   <div
-    class="dockfunnelform-container h-full w-full max-w-5xl mx-auto flex flex-col"
+  v-if="submissionStateStore.form.value"
+    class="dockfunnelform-container h-full w-full max-w-5xl mx-auto flex flex-col relative border border-gray-200 rounded-lg shadow-lg"
   >
     <div class="dockfunnelform-header border-b border-gray-200 p-4">
-      <h1>{{ props.form.title }}</h1>
-      <p>{{ props.form.description }}</p>
+      <h3>{{ props.form.title }}</h3>
     </div>
     <div
       v-if="currentStep"
@@ -21,13 +21,20 @@
           {{ currentStep.description }}
         </p>
       </div>
-      <div v-if="submissionStateStore.fieldsForCurrentStep.value.length > 0" class="mt-8">
+      <div
+        v-if="submissionStateStore.fieldsForCurrentStep.value.length > 0"
+        class="mt-8"
+      >
         <FormFieldsRoot
           v-for="field in submissionStateStore.fieldsForCurrentStep.value"
-          :field="field" :key="field.field_name"
+          :field="field"
+          :key="field.field_name"
         />
       </div>
-      <div v-else class="mt-8 flex flex-col items-center py-8 bg-gray-50 rounded-lg">
+      <div
+        v-else
+        class="mt-8 flex flex-col items-center py-8 bg-gray-50 rounded-lg"
+      >
         <h3 class="text-gray-600 text-lg font-semibold">
           Dieser Schritt können Sie überspringen.
         </h3>
@@ -39,18 +46,37 @@
         />
       </div>
     </div>
+    <div
+      v-if="submissionStateStore.showIntroStep.value && submissionStateStore.form.value.intro_step"
+      class="dockfunnelform-intro absolute inset-0 p-4 min-h-96 flex flex-col items-center justify-center bg-white"
+    >
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">
+        {{ submissionStateStore.form.value.intro_step.title }}
+      </h3>
+      <p class="text-gray-600">
+        {{ submissionStateStore.form.value.intro_step.description }}
+      </p>
+      <button
+        class="mt-6 inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-green-400 text-white hover:bg-green-500 outline-none"
+        @click="submissionStateStore.showIntroStep.value = false"
+      >
+        {{ submissionStateStore.form.value.intro_step.start_button_text || 'Loslegen' }}
+      </button>
+    </div>
     <div class="dockfunnelform-footer border-t border-gray-200 p-4">
       <div class="flex justify-between">
         <button
           class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-green4 text-green11 hover:bg-green5 focus:shadow-[0_0_0_2px] focus:shadow-green7 outline-none"
           @click="submissionStateStore.previousStep"
           :disabled="submissionStateStore.currentStepIndex.value === 0"
+          v-if="submissionStateStore.currentStepIndex.value > 0"
         >
           Zurück
         </button>
         <button
-          class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-green4 text-green11 hover:bg-green5 focus:shadow-[0_0_0_2px] focus:shadow-green7 outline-none"
+          class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-green4 text-green11 hover:bg-green5 focus:shadow-[0_0_0_2px] focus:shadow-green7 outline-none ml-auto"
           @click="submissionStateStore.nextStep"
+          v-if="submissionStateStore.currentStepIndex.value < submissionStateStore.form.value?.form_steps.length - 1"
         >
           Weiter
         </button>
@@ -75,7 +101,11 @@ const submissionStateStore = useFormSubmissionStateStore();
 const currentStep = computed(() => {
   if (!submissionStateStore.form.value) return null;
   // Return the current step object
-  return submissionStateStore.form.value.form_steps[submissionStateStore.currentStepIndex.value] || null;
+  return (
+    submissionStateStore.form.value.form_steps[
+      submissionStateStore.currentStepIndex.value
+    ] || null
+  );
 });
 </script>
 

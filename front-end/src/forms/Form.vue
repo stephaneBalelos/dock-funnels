@@ -20,6 +20,12 @@ const formTest = ref<Form | null>({
   title: "Online Terminvereinbarung",
   description:
     "Bitte füllen Sie das Formular aus, um einen Termin zu vereinbaren.",
+  intro_step: {
+    title: "Willkommen zur Online Terminvereinbarung",
+    description:
+      "Bitte folgen Sie den Schritten, um einen Termin in der Fachrichtung Orthopädie zu vereinbaren.",
+    start_button_text: "Loslegen",
+  },
   form_steps: [
     {
       title: "Wählen Sie Ihre Fachrichtung",
@@ -34,7 +40,7 @@ const formTest = ref<Form | null>({
       title: "Haben sie alle Erforderlichen Dokumente bereit?",
       description:
         "Bitte stellen Sie sicher, dass Sie alle erforderlichen Dokumente bereit haben.",
-    }
+    },
   ],
   fields: [
     {
@@ -145,13 +151,14 @@ const formTest = ref<Form | null>({
         {
           value: "datenschutz",
           label: "Ich stimme der Verarbeitung meiner Daten zu.",
-          description: "Ich habe die Datenschutzerklärung gelesen und akzeptiere sie.",
+          description:
+            "Ich habe die Datenschutzerklärung gelesen und akzeptiere sie.",
         },
       ],
       required: true,
       min: 1,
       max: 1,
-    }
+    },
   ],
 });
 

@@ -4,6 +4,11 @@ export type Form = {
     description: string;
     form_steps: FormStep[];
     fields: (FormFieldSelect | FormFieldText | FormFieldTextarea | FormFieldCheckboxList)[]; // Array of fields in this step
+    intro_step?: {
+        title: string; // Title of the intro step
+        description: string; // Description of the intro step
+        start_button_text?: string; // Text for the start button
+    }
 }
 
 export type FormStep = {

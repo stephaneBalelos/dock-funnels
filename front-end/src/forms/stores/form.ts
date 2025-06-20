@@ -14,6 +14,7 @@ export const useFormSubmissionStateStore = createGlobalState(
         const formSubmissionFields = ref<Record<string, FormSubmissionField>>({})
 
         const currentStepIndex = ref(0)
+        const showIntroStep = ref(false) // Whether to show the intro step
 
         const currentStepErrors = ref<FormFieldError[]>([])
 
@@ -169,6 +170,12 @@ export const useFormSubmissionStateStore = createGlobalState(
             if (newForm) {
                 formSubmissionFields.value = {}
                 currentStepIndex.value = 0
+                if (newForm.intro_step) {
+                    showIntroStep.value = true // Show intro step if it exists
+                }
+                else {
+                    showIntroStep.value = false // Hide intro step if it doesn't exist
+                }
                 // Populate formSubmissionFields with default values from the form
                 newForm.fields.forEach(field => {
                     formSubmissionFields.value[field.field_name] = {
@@ -188,6 +195,7 @@ export const useFormSubmissionStateStore = createGlobalState(
             form,
             formSubmissionFields,
             currentStepIndex,
+            showIntroStep,
             fieldsForCurrentStep,
             setFieldValue,
             nextStep,
