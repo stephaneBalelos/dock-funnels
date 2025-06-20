@@ -193,7 +193,14 @@ const field = computed(() => {
 
 const schema = z
   .object({
-    input_type: z.enum(["text", "email", "number", "tel", "url"]),
+    input_type: z.enum(["text", "email", "number", "tel", "url", "date"], {
+      errorMap: (issue, ctx) => {
+        if (issue.code === "invalid_enum_value") {
+          return { message: "Ungültiger Eingabetyp" };
+        }
+        return { message: ctx.defaultError };
+      },
+    }),
     required: z.boolean(),
     field_name: z
       .string()
@@ -207,10 +214,12 @@ const schema = z
     default_value: z.string().optional(),
   })
 
+  console.log("Field Text Editor", field.value);
+
 const state = reactive<FormFieldText>({
   step_index: field.value.step_index,
   type: field.value.type,
-  input_type: field.value.type,
+  input_type: field.value.input_type,
   required: field.value.required,
   field_name: field.value.field_name,
   label: field.value.label,
@@ -221,18 +230,15 @@ const state = reactive<FormFieldText>({
 
 const errorState = ref<z.ZodError<FormFieldText> | null>(null);
 
-function onFormSubmit($event: FormSubmitEvent<FormFieldText>) {
+function onFormSubmit(_$event: FormSubmitEvent<FormFieldText>) {
   // Validate the form before proceeding
   if (!validateForm()) {
     console.error("Form validation failed", errorState.value);
     return;
   }
+  console.log("Form submitted successfully", state);
   // Here you can handle the form submission, e.g., save the state or emit an event
-  if ($event.valid) {
-    editorStore.updateField(props.fieldName, state);
-  } else {
-    console.error("Form validation failed:", $event.errors);
-  }
+  editorStore.updateField(props.fieldName, state);
 }
 
 const validateForm = () => {
