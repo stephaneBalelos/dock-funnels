@@ -14,6 +14,8 @@ import {
   updateForm,
 } from "@/api/wpAjaxApi";
 import type { Form } from "@/types";
+import FormExporter from "@/components/dashboard/header/FormExporter.vue";
+import FormImporter from "@/components/dashboard/header/FormImporter.vue";
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
 
@@ -131,6 +133,8 @@ onMounted(() => {
     <div class="header flex justify-between items-center p-4 shadow">
       <FormTitle v-if="editorStore.form.title" />
       <div class="flex gap-2">
+        <FormImporter />
+        <FormExporter />
         <Button
           v-if="editorStore.form"
           @click="saveForm"
