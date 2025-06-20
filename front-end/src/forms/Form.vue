@@ -131,7 +131,7 @@ const formTest = ref<Form | null>({
       required: true,
     },
     {
-      step_index: 0,
+      step_index: 2,
       label: "Zusätzliche Informationen",
       field_name: "zusatzinfo",
       description: "Geben Sie hier zusätzliche Informationen an.",
