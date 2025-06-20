@@ -17,12 +17,12 @@ import type { Form } from "@/types";
 
 const formTest = ref<Form | null>({
   id: 1,
-  title: "Online Terminvereinbarung",
+  title: "Online Terminvereinbarung [Test]",
   description:
     "Bitte füllen Sie das Formular aus, um einen Termin zu vereinbaren.",
   intro_step: {
     enabled: true,
-    title: "Willkommen zur Online Terminvereinbarung",
+    title: "Willkommen zur Online Terminvereinbarung [Test]",
     description:
       "Bitte folgen Sie den Schritten, um einen Termin zu vereinbaren.",
     start_button_text: "Starten",
@@ -44,8 +44,9 @@ const formTest = ref<Form | null>({
     },
     {
       title: "Zusammenfassung und Abschluss",
-      description: "Überprüfen Sie Ihre Angaben und schließen Sie die Terminvereinbarung ab.",
-    }
+      description:
+        "Überprüfen Sie Ihre Angaben und schließen Sie die Terminvereinbarung ab.",
+    },
   ],
   fields: [
     {
@@ -168,10 +169,11 @@ const formTest = ref<Form | null>({
       step_index: 3,
       label: "Zusammenfassung",
       field_name: "zusammenfassung",
-      description: "Überprüfen Sie Ihre Angaben und schließen Sie die Terminvereinbarung ab.",
+      description:
+        "Überprüfen Sie Ihre Angaben und schließen Sie die Terminvereinbarung ab.",
       type: "submissionSummary",
       required: false,
-    }
+    },
   ],
 });
 
@@ -181,12 +183,12 @@ const nonce = inject("nonce") as string | undefined;
 const formId = inject("formId") as number | undefined;
 
 onMounted(async () => {
-  if (formTest.value) {
-    submissionStateStore.form.value = formTest.value;
-    return;
-  }
   if (!endpoint || !nonce || !formId) {
     console.error("API endpoint, nonce, or formId is not provided.");
+    if (formTest.value) {
+      submissionStateStore.form.value = formTest.value;
+      return;
+    }
     return;
   }
   await getFormById(endpoint, nonce, formId)

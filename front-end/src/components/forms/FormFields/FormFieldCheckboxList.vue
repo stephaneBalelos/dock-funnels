@@ -34,8 +34,10 @@
           :name="option.label"
           :value="option.value"
         />
-        <label :for="field.field_name + option.value">{{ option.label }}</label>
-        <p class="text-sm text-gray-500">{{ option.description }}</p>
+        <div class="flex flex-col">
+          <label :for="field.field_name + option.value">{{ option.label }}</label>
+          <p class="text-sm text-gray-500">{{ option.description }}</p>
+        </div>
       </div>
     </div>
   </div>

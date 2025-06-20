@@ -1,5 +1,5 @@
 <template>
-<div class="">
+<div class="flex flex-col">
     <div v-if="props.field.type === 'text'" class="form-field-text">
         <FormFieldText :field="props.field" />
     </div>

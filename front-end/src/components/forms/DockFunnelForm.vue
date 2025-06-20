@@ -23,7 +23,7 @@
       </div>
       <div
         v-if="submissionStateStore.fieldsForCurrentStep.value.length > 0"
-        class="mt-8"
+        class="flex flex-col gap-8 mt-8"
       >
         <FormFieldsRoot
           v-for="field in submissionStateStore.fieldsForCurrentStep.value"
