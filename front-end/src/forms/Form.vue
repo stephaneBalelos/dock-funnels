@@ -96,6 +96,8 @@ const formTest = ref<Form | null>({
       description:
         "Bitte stellen Sie sicher, dass Sie alle erforderlichen Dokumente bereit haben.",
       type: "checkboxList",
+      min: 1,
+      max: 1,
       options: [
         {
           value: "roentgenbilder",
@@ -128,8 +130,9 @@ const formTest = ref<Form | null>({
       field_name: "zusatzinfo",
       description: "Geben Sie hier zusätzliche Informationen an.",
       type: "text",
-      input_type: "text",
-      required: false,
+      input_type: "url",
+      placeholder: "Geben Sie hier Ihre Website oder URL ein",
+      required: true,
       default_value: "",
     }
   ],

@@ -90,9 +90,6 @@ function shoulShowOption(option: FormFieldCheckboxListOption) {
     return dependsOnValue === dep.value;
   });
 
-  console.log(
-    `Option ${option.label} dependencies: ${dependencies.join(", ")}`
-  );
   return dependencies.every((dep) => dep);
 }
 

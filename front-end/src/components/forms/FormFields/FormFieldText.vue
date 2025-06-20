@@ -53,7 +53,7 @@
 <script setup lang="ts">
 import { useFormSubmissionStateStore } from "@/forms/stores/form";
 import type { FormFieldText } from "@/types";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { Icon } from "@iconify/vue";
 
 type Props = {
@@ -64,6 +64,17 @@ const textValue = ref<string | null>(null);
 
 const props = defineProps<Props>();
 const submissionStateStore = useFormSubmissionStateStore();
+
+onMounted(() => {
+  const initialValue = submissionStateStore.formSubmissionFields.value[
+    props.field.field_name
+  ]?.value as string | undefined;
+  if (initialValue) {
+    textValue.value = initialValue;
+  } else {
+    textValue.value = props.field.default_value || null;
+  }
+});
 
 const onChange = () => {
   submissionStateStore.setFieldValue(props.field.field_name, textValue.value);

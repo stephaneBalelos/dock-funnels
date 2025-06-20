@@ -64,6 +64,8 @@ export type FormFieldCheckboxList = FormField & {
     type: 'checkboxList'; // Checkbox type
     default_value?: string[]; // Default value(s) for the checkbox
     options: FormFieldCheckboxListOption[]; // Array of options for the checkbox list
+    min?: number; // Minimum number of checkboxes that must be selected
+    max?: number; // Maximum number of checkboxes that can be selected
 }
 
 export type FormFieldCheckboxListOption = {

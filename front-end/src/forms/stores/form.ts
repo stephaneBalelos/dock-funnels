@@ -81,6 +81,10 @@ export const useFormSubmissionStateStore = createGlobalState(
                                 if (isNaN(num)) throw new Error(`${field.label} muss eine gültige Zahl sein`)
                                 return num
                             })
+                        } else if (field.input_type === 'tel') {
+                            fieldSchema = fieldSchema.regex(/^\+?[0-9\s-]+$/, `${field.label} muss eine gültige Telefonnummer sein`)
+                        } else if (field.input_type === 'url') {
+                            fieldSchema = fieldSchema.url(`${field.label} muss eine gültige URL sein`)
                         }
                         break
                     case 'textarea':
@@ -92,7 +96,13 @@ export const useFormSubmissionStateStore = createGlobalState(
                         break
                     case 'checkboxList':
                         const checkboxValues = field.options ? field.options.map(option => option.value) : []
-                        fieldSchema = z.array(z.enum([checkboxValues[0], ...checkboxValues])).min(1, `${field.label} ist erforderlich`)
+                        fieldSchema = z.array(z.enum([checkboxValues[0], ...checkboxValues]))
+                        if (field.min) {
+                            fieldSchema = fieldSchema.min(field.min, `${field.label} muss mindestens ${field.min} ausgewählt sein`)
+                        }
+                        if (field.max) {
+                            fieldSchema = fieldSchema.max(field.max, `${field.label} darf höchstens ${field.max} ausgewählt sein`)
+                        }
                         break
                     default:
                         console.warn(`Unsupported field type}`)
@@ -124,6 +134,8 @@ export const useFormSubmissionStateStore = createGlobalState(
                 }))
                 return false
             }
+            // Clear errors if validation passed
+            currentStepErrors.value = []
             return true // Validation passed
         }
 
