@@ -20,7 +20,7 @@
       <span class="text-xs text-gray-400"
         >Feldname: {{ field.field_name }}</span
       >
-      <span class="text-xs text-gray-400">Type: {{ field.type }}</span>
+      <span class="text-xs text-gray-400">Type: {{ field.type }} <span v-if="field.type ==='text'">[{{ field.input_type }}]</span></span>
       <span v-if="field.default_value" class="text-xs text-gray-400">
         Standardwert: {{ field.default_value }}
       </span>
