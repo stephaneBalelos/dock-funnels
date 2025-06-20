@@ -37,6 +37,7 @@ declare module 'vue' {
     Select: typeof import('primevue/select')['default']
     SpeedDial: typeof import('primevue/speeddial')['default']
     StepItem: typeof import('./src/components/dashboard/sidebar-left/StepItem.vue')['default']
+    Textarea: typeof import('primevue/textarea')['default']
     ToggleSwitch: typeof import('primevue/toggleswitch')['default']
   }
 }

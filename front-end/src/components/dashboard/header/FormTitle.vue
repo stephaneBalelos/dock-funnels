@@ -28,6 +28,33 @@
         <label for="form-description" class="font-semibold w-24">Beschreibung</label>
         <InputText id="form-description" class="flex-auto" autocomplete="off" v-model="state.description" />
       </div>
+      <div class="flex flex-col gap-4 mb-8" v-if="state.intro_step">
+        <label class="font-semibold">Einführungsschritt</label>
+        <div class="flex gap-4">
+          <ToggleSwitch v-model="state.intro_step.enabled" />
+          <span class="text-surface-500 dark:text-surface-400 block mb-2">
+            Einführungsschritt aktivieren
+          </span>
+        </div>
+        <div v-if="state.intro_step.enabled" class="pl-4 border-l border-gray-200">
+          <InputText
+            v-model="state.intro_step.title"
+            placeholder="Titel des Einführungsschritts"
+            class="flex-auto w-full mb-2"
+          />
+          <Textarea
+            v-model="state.intro_step.description"
+            placeholder="Beschreibung des Einführungsschritts"
+            class="flex-auto w-full mb-2"
+            rows="3"
+          />
+          <InputText
+            v-model="state.intro_step.start_button_text"
+            placeholder="Text des Startknopfs"
+            class="flex-auto w-full"
+          />
+        </div>
+      </div>
       <div class="flex justify-end gap-2">
         <Button
           type="button"
@@ -54,11 +81,23 @@ const showEditFormDialog = ref(false);
 const schema = z.object({
   title: z.string().min(1, "Titel ist erforderlich"),
   description: z.string().optional(),
+  intro_step: z.object({
+    enabled: z.boolean().optional(),
+    title: z.string().optional(),
+    description: z.string().optional(),
+    start_button_text: z.string().optional(),
+  }).optional(),
 });
 
 const state = ref<z.infer<typeof schema>>({
   title: editorStore.form?.title || "",
   description: editorStore.form?.description || "",
+  intro_step: {
+    enabled: editorStore.form?.intro_step?.enabled || false,
+    title: editorStore.form?.intro_step?.title || "",
+    description: editorStore.form?.intro_step?.description || "",
+    start_button_text: editorStore.form?.intro_step?.start_button_text || "",
+  }
 });
 
 onMounted(() => {
@@ -74,6 +113,12 @@ const updateForm = () => {
   if (result.success && editorStore.form) {
     editorStore.form.title = result.data.title;
     editorStore.form.description = result.data.description || "";
+    editorStore.form.intro_step = {
+      enabled: result.data.intro_step?.enabled || false,
+      title: result.data.intro_step?.title || "",
+      description: result.data.intro_step?.description || "",
+      start_button_text: result.data.intro_step?.start_button_text || "",
+    };
     showEditFormDialog.value = false;
   } else {
     // Handle validation errors
