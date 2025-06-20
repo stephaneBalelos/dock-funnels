@@ -74,7 +74,7 @@
           Zurück
         </button>
         <button
-          class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-blue-500 text-white hover:bg-blue-600 focus:shadow-[0_0_0_2px] focus:shadow-blue-700 outline-none"
+          class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-blue-500 text-white hover:bg-blue-600 focus:shadow-[0_0_0_2px] focus:shadow-blue-700 outline-none ml-auto"
           @click="submissionStateStore.nextStep"
           v-if="submissionStateStore.currentStepIndex.value < submissionStateStore.form.value?.form_steps.length - 1"
         >
