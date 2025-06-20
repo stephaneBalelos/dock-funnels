@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col gap-4">
-    Selected Values: {{ selectedValues }}
     <div class="flex flex-col gap-2">
       <label
         class="text-stone-700 text-lg leading-none mb-3"

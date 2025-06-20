@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col py-4">
-    Selected Value: {{ selectedValue }}
     <label
+      v-if="field.field_settings?.hide_label !== true"
       class="text-stone-700 text-lg leading-none mb-3"
       :class="{ 'text-red-500': props.field.required }"
     >

@@ -18,6 +18,7 @@ export type FormField = {
     step_index: number; // Index of the step this field belongs to defaults to 0
     required: boolean;
     custom_attributes?: Record<string, string>; // Additional attributes like data-* attributes
+    field_settings?: Record<string, any>; // Additional settings for the field
     css_classes?: string[]; // Custom CSS classes for styling
     error_message?: string;
     depends_on?: FormFieldDependsOn[]; // Conditional logic for showing/hiding the field
