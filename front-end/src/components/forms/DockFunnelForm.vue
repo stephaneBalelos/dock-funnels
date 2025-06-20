@@ -50,10 +50,10 @@
       v-if="submissionStateStore.showIntroStep.value && submissionStateStore.form.value.intro_step"
       class="dockfunnelform-intro absolute inset-0 p-4 min-h-96 flex flex-col items-center justify-center bg-white"
     >
-      <h3 class="text-3xl font-semibold text-gray-800 mb-4">
+      <h3 class="text-3xl font-semibold text-gray-800 mb-4 text-center">
         {{ submissionStateStore.form.value.intro_step.title }}
       </h3>
-      <p class="text-gray-600">
+      <p class="text-gray-600 mb-6 text-center">
         {{ submissionStateStore.form.value.intro_step.description }}
       </p>
       <button
