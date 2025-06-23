@@ -17,6 +17,7 @@ class DockFunnels_Main
         add_action('wp_ajax_dock_funnel_ajax_get_form', ['DockFunnels_Ajax', 'get_form_by_id']);
         add_action('wp_ajax_dock_funnel_ajax_update_form', ['DockFunnels_Ajax', 'update_form']);
         add_action('wp_ajax_dock_funnel_ajax_delete_form', ['DockFunnels_Ajax', 'delete_form']);
+        add_action('wp_ajax_dock_funnel_ajax_submit_form', ['DockFunnels_Ajax', 'handle_form_submission']);
         add_action('wp_ajax_nopriv_dock_funnel_ajax_get_form', ['DockFunnels_Ajax', 'get_form_by_id']);
         add_action('wp_ajax_nopriv_dock_funnel_ajax_submit_form', ['DockFunnels_Ajax', 'handle_form_submission']);
 
