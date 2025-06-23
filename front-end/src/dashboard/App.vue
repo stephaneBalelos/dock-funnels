@@ -16,6 +16,8 @@ import {
 import type { Form } from "@/types";
 import FormExporter from "@/components/dashboard/header/FormExporter.vue";
 import FormImporter from "@/components/dashboard/header/FormImporter.vue";
+import { useToast } from "primevue/usetoast";
+
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
 
@@ -23,6 +25,8 @@ const editorStore = useEditorStore();
 const endpoint = inject("ajaxUrl") as string | undefined;
 const nonce = inject("nonce") as string | undefined;
 const editFormId = inject("editFormId") as number | undefined;
+const toast = useToast();
+
 
 const saveForm = async () => {
   if (!editorStore.form) {
@@ -33,15 +37,19 @@ const saveForm = async () => {
   const formdata: Form = {
     id: editorStore.form.id,
     title: editorStore.form.title,
+    intro_step: editorStore.form.intro_step,
     description: editorStore.form.description,
     form_steps: editorStore.form.form_steps,
     fields: editorStore.form.fields,
   };
 
-  console.log("Saving form data:", JSON.stringify(formdata));
-
   if (!endpoint || !nonce) {
     console.error("API endpoint or nonce not provided");
+    toast.add({
+      severity: "error",
+      summary: "Fehler",
+      detail: "API-Endpunkt oder Nonce nicht verfügbar.",
+    });
     return;
   }
 
@@ -55,7 +63,20 @@ const saveForm = async () => {
         editFormId,
         JSON.stringify(formdata)
       );
-      console.log("Form updated successfully:", response);
+      if (!response.success) {
+        console.error("Failed to update form:", response);
+        toast.add({
+          severity: "error",
+          summary: "Fehler",
+          detail: "Formular konnte nicht aktualisiert werden.",
+        });
+        return;
+      }
+      toast.add({
+        severity: "success",
+        summary: "Erfolg",
+        detail: "Formular erfolgreich aktualisiert.",
+      });
     } else {
       // If no editFormId, we create a new form
       const response = await createForm(
@@ -63,10 +84,32 @@ const saveForm = async () => {
         nonce,
         JSON.stringify(formdata)
       );
-      console.log(response);
+      if (!response.success) {
+        console.error("Failed to create form:", response);
+        toast.add({
+          severity: "error",
+          summary: "Fehler",
+          detail: "Formular konnte nicht erstellt werden.",
+        });
+        return;
+      }
+      // Update the editor store with the new form ID
+      editorStore.form.id = response.data.id;
+      toast.add({
+        severity: "success",
+        summary: "Erfolg",
+        detail: "Formular erfolgreich erstellt.",
+      });
+      // Reload the page or redirect to the form list
+      window.location.href = `/wp-admin/admin.php?page=dock-funnels&form_id=${response.data.form_id}`;
     }
   } catch (error) {
     console.error("Error saving form:", error);
+    toast.add({
+      severity: "error",
+      summary: "Fehler",
+      detail: "Ein Fehler ist beim Speichern des Formulars aufgetreten.",
+    });
   }
 };
 
@@ -93,9 +136,19 @@ const formDelete = async () => {
       window.location.href = "/wp-admin/admin.php?page=dock-funnels";
     } else {
       console.error("Failed to delete form:", response);
+      toast.add({
+        severity: "error",
+        summary: "Fehler",
+        detail: "Formular konnte nicht gelöscht werden.",
+      });
     }
   } catch (error) {
     console.error("Error deleting form:", error);
+    toast.add({
+      severity: "error",
+      summary: "Fehler",
+      detail: "Ein Fehler ist beim Löschen des Formulars aufgetreten.",
+    });
   }
 };
 
@@ -192,6 +245,7 @@ onMounted(() => {
     <div class="sidebar-right flex flex-col">
       <FieldEditor />
     </div>
+    <Toast />
   </div>
 </template>
 

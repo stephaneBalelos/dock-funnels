@@ -4,6 +4,8 @@ import './index.css'
 import App from './App.vue'
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
+import ToastService from 'primevue/toastservice';
+
 
 // DockFunnelsData is provided by the PHP script
 declare global {
@@ -25,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     })
+    app.use(ToastService);
     app.provide('ajaxUrl', window.DockFunnelsAdmin?.ajaxUrl);
     app.provide('nonce', window.DockFunnelsAdmin?.nonce);
     app.provide('editFormId', new URLSearchParams(window.location.search).get('form_id') || null);

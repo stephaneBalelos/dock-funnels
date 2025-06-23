@@ -11,7 +11,6 @@ declare module 'vue' {
     Badge: typeof import('primevue/badge')['default']
     Button: typeof import('primevue/button')['default']
     Card: typeof import('primevue/card')['default']
-    Checkbox: typeof import('primevue/checkbox')['default']
     Dialog: typeof import('primevue/dialog')['default']
     DockFunnelForm: typeof import('./src/components/forms/DockFunnelForm.vue')['default']
     FieldChecklistEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldChecklistEditor.vue')['default']
@@ -36,14 +35,13 @@ declare module 'vue' {
     FormStepFieldPreview: typeof import('./src/components/dashboard/preview/FormStepFieldPreview.vue')['default']
     FormStepPreview: typeof import('./src/components/dashboard/preview/FormStepPreview.vue')['default']
     FormTitle: typeof import('./src/components/dashboard/header/FormTitle.vue')['default']
-    InputGroup: typeof import('primevue/inputgroup')['default']
-    InputGroupAddon: typeof import('primevue/inputgroupaddon')['default']
     InputText: typeof import('primevue/inputtext')['default']
     Message: typeof import('primevue/message')['default']
     Select: typeof import('primevue/select')['default']
     SpeedDial: typeof import('primevue/speeddial')['default']
     StepItem: typeof import('./src/components/dashboard/sidebar-left/StepItem.vue')['default']
     Textarea: typeof import('primevue/textarea')['default']
+    Toast: typeof import('primevue/toast')['default']
     ToggleSwitch: typeof import('primevue/toggleswitch')['default']
   }
 }

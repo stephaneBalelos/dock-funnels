@@ -254,6 +254,8 @@ export const useEditorStore = createGlobalState(() => {
     }
 
 
+    // TODO: Add methods to validate the form, save it, and submit it
+
 
     return {
         form,

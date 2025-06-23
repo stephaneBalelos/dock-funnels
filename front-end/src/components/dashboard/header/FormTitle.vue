@@ -107,9 +107,9 @@ onMounted(() => {
   }
 });
 
-console.log("FormTitle.vue state:", state.value);
 const updateForm = () => {
   const result = schema.safeParse(state.value);
+  console.log("FormTitle.vue updateForm result:", result);
   if (result.success && editorStore.form) {
     editorStore.form.title = result.data.title;
     editorStore.form.description = result.data.description || "";
@@ -120,6 +120,7 @@ const updateForm = () => {
       start_button_text: result.data.intro_step?.start_button_text || "",
     };
     showEditFormDialog.value = false;
+    console.log("Form updated successfully:", editorStore.form);
   } else {
     // Handle validation errors
     console.error(result.error);
