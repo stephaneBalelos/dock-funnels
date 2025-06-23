@@ -18,10 +18,6 @@ const handleSelect = (event: any) => {
         reader.onload = (e) => {
             try {
                 const formData = JSON.parse(e.target?.result as string);
-                console.log("Parsed form data:", formData);
-                // Here you can handle the form data, e.g., save it to a store or
-                // update the editor state.
-                // For example:
                 editorStore.initEditor(formData);
             } catch (error) {
                 console.error("Error parsing JSON:", error);
