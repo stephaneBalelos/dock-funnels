@@ -84,5 +84,6 @@ class DockFunnels_DB {
                 'response' => wp_json_encode($response),
             ]
         );
+        return $wpdb->insert_id;
     }
 }

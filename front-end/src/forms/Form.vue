@@ -3,9 +3,9 @@
     v-if="submissionStateStore.form.value"
     :form="submissionStateStore.form.value"
   />
-  <div class="debug">
+  <!-- <div class="debug">
     formSubmissionFields: {{ submissionStateStore.formSubmissionFields }}
-  </div>
+  </div> -->
 </template>
 
 <script setup lang="ts">
@@ -199,6 +199,7 @@ const formTest = ref<Form | null>({
         "Überprüfen Sie Ihre Angaben und schließen Sie die Terminvereinbarung ab.",
       type: "submissionSummary",
       required: false,
+      show_full_summary: true,
     },
   ],
 });
@@ -217,6 +218,11 @@ onMounted(async () => {
     }
     return;
   }
+  submissionStateStore.submissionSettings.value = {
+    endpoint,
+    nonce,
+    formId,
+  };
   await getFormById(endpoint, nonce, formId)
     .then(({ data }) => {
       console.log("Form loaded:", data.form_data);

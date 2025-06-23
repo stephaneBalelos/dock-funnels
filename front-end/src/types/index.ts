@@ -100,9 +100,7 @@ export type FormSubmission = {
 }
 
 export type FormSubmissionField = {
-    field_label: FormField['label']; // Label of the field
     field_name: FormField['field_name']; // Name of the field, used for form submission
     value: string | string[] | null; // Value(s) submitted for the field
     step_index: number
-    step_title: FormStep['title']; // Title of the step this field belongs to
 }

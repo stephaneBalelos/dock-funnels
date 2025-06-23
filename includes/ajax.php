@@ -9,16 +9,38 @@ class DockFunnels_Ajax
 
     public static function handle_form_submission()
     {
-        check_ajax_referer('dock_funnel_form_nonce', 'nonce');
-
-        $form_id = isset($_POST['form_id']) ? intval($_POST['form_id']) : 0;
-        $fields = isset($_POST['fields']) ? $_POST['fields'] : [];
-
-        if (!$form_id || empty($fields)) {
-            wp_send_json_error(['message' => 'Missing form data.']);
+        // Handle public form submissions
+        $body = file_get_contents('php://input');
+        if (empty($body)) {
+            wp_send_json_error(['message' => 'No data received.']);
+        }
+        $data = json_decode($body, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            wp_send_json_error(['message' => 'Invalid JSON data.']);
+        }
+        $nonce = wp_verify_nonce($data['nonce'], 'dock_funnel_form_nonce');
+        if (!$nonce) {
+            wp_send_json_error(['message' => 'Nicht autorisierte Anfrage.']);
         }
 
-        DockFunnels_DB::save_form_response($form_id, $fields);
+        $submission = isset($data['form_submission']) ? $data['form_submission'] : [];
+        if (empty($submission)) {
+            wp_send_json_error(['message' => 'No form submission data provided.']);
+        }
+
+        $form_id = isset($submission['form_id']) ? intval($submission['form_id']) : 0;
+        if (!$form_id) {
+            wp_send_json_error(['message' => 'Invalid form ID.']);
+        }   
+        $fields = isset($submission['fields']) ? $submission['fields'] : [];
+        if (empty($fields)) {
+            wp_send_json_error(['message' => 'No fields data provided.']);
+        }
+
+        $submission_id = DockFunnels_DB::save_form_response($form_id, $fields);
+        if (!$submission_id) {
+            wp_send_json_error(['message' => 'Failed to save form response.']);
+        }
 
         wp_send_json_success(['message' => 'Thank you! Your response has been recorded.']);
     }

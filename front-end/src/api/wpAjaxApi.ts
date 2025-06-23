@@ -95,3 +95,28 @@ export const getFormById = async (endpoint: string, nonce: string, formId: numbe
         throw error;
     }
 }
+
+
+export const submitFormResponse = async (endpoint: string, nonce: string, formSubmission: Record<string, any>) => {
+    try {
+        const response = await fetch(`${endpoint}?action=dock_funnel_ajax_submit_form`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-WP-Nonce': nonce,
+            },
+            body: JSON.stringify({
+                form_submission: formSubmission,
+                nonce: nonce,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error submitting form response:', error);
+        throw error;
+    }
+}

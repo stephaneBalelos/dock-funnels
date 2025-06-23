@@ -2,14 +2,22 @@ import { createGlobalState } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
 import type { Form, FormSubmissionField } from '@/types'
 import z from 'zod'
+import { submitFormResponse } from '@/api/wpAjaxApi'
 
 type FormFieldError = {
     joined_path: string; // Name of the field with the error
     message: string; // Error message
 }
 
+type FormSubmissionSettings = {
+    endpoint: string; // API endpoint for form submission
+    nonce: string; // Nonce for security
+    formId: number; // ID of the form being submitted
+}
+
 export const useFormSubmissionStateStore = createGlobalState(
     () => {
+        const submissionSettings = ref<FormSubmissionSettings | null>(null) // Settings for form submission
         const form = ref<Form | null>(null)
         const formSubmissionFields = ref<Record<string, FormSubmissionField>>({})
 
@@ -32,8 +40,6 @@ export const useFormSubmissionStateStore = createGlobalState(
                 }
                 if (field) {
                     formSubmissionFields.value[field.field_name] = {
-                        step_title: step.title,
-                        field_label: field.label,
                         field_name: field.field_name,
                         value: value,
                         step_index: field.step_index
@@ -96,7 +102,7 @@ export const useFormSubmissionStateStore = createGlobalState(
                         console.log('select field', field)
                         const selectValues = field.options ? field.options.map(option => option.value) : []
                         const values: z.EnumLike = Object.fromEntries(selectValues.map(value => [value, value]))
-                        fieldSchema = z.nativeEnum(values, {message: `${field.label} ist erforderlich`})
+                        fieldSchema = z.nativeEnum(values, { message: `${field.label} ist erforderlich` })
                         break
                     case 'checkboxList':
                         const checkboxValues = field.options ? field.options.map(option => option.value) : []
@@ -142,6 +148,7 @@ export const useFormSubmissionStateStore = createGlobalState(
                 }))
                 return false
             }
+            // If validation passed, filter out the the fields that are not visible based on their dependencies
             // Clear errors if validation passed
             currentStepErrors.value = []
             return true // Validation passed
@@ -181,8 +188,6 @@ export const useFormSubmissionStateStore = createGlobalState(
                 // Populate formSubmissionFields with default values from the form
                 newForm.fields.forEach(field => {
                     formSubmissionFields.value[field.field_name] = {
-                        step_title: newForm.form_steps[field.step_index || 0].title,
-                        field_label: field.label || field.label,
                         field_name: field.field_name,
                         value: field.default_value ?? null,
                         step_index: field.step_index || 0
@@ -191,9 +196,58 @@ export const useFormSubmissionStateStore = createGlobalState(
             }
         })
 
+        const saveFormSubmission = async () => {
+            if (!form.value) return false // No form to save
+            // Validate the current step before saving
+            if (!validateCurrentStep()) {
+                console.warn(`Validation failed for step ${currentStepIndex.value}. Cannot save form submission.`)
+                return false
+            }
+            // Prepare the submission data
+            const submissionData: Record<string, any> = {
+                form_id: form.value.id,
+                fields: Object.fromEntries(
+                    Object.entries(formSubmissionFields.value)
+                        .filter(([_, field]) => field.value !== undefined) // Filter out fields without values
+                        .filter(([_, field]) => field.value !== null) // Filter out fields with null
+                        .map(([field_name, field]) => [
+                            field_name,
+                            field.value || null // Use null for empty values
+                        ])
+                ),
+            }
+            console.log('Saving form submission:', submissionData)
+            try {
+                if (!submissionSettings.value) {
+                    console.warn('Submission settings are not set. Cannot save form submission.')
+                    return false
+                }
+                if (!submissionSettings.value.endpoint || !submissionSettings.value.nonce || !submissionSettings.value.formId) {
+                    console.warn('Submission settings are incomplete. Cannot save form submission.')
+                    return false
+                }
+                // Call the API to submit the form response
+                const {endpoint, nonce, formId} = submissionSettings.value
+                submissionData.form_id = formId // Ensure form_id is set
+                const res = await submitFormResponse(endpoint, nonce, submissionData)
+                if (res.success) {
+                    console.log('Form submission saved successfully:', res)
+                    return true // Submission successful
+                }
+                else {
+                    console.error('Form submission failed:', res)
+                    return false // Submission failed
+                }
+            } catch (error) {
+                console.error('Error saving form submission:', error)
+                return false // Error occurred during submission
+            }
+        }
+
 
 
         return {
+            submissionSettings,
             form,
             formSubmissionFields,
             currentStepIndex,
@@ -202,6 +256,7 @@ export const useFormSubmissionStateStore = createGlobalState(
             setFieldValue,
             nextStep,
             previousStep,
-            currentStepErrors
+            currentStepErrors,
+            saveFormSubmission
         }
     })

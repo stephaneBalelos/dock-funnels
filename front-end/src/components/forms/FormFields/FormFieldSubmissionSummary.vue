@@ -14,24 +14,31 @@
       </p>
     </label>
     <div
-      v-for="([_, fields], stepIndex) in Object.entries(summary)"
+      v-for="(step, stepIndex) in submissionStateStore.form.value?.form_steps"
       :key="stepIndex"
       class="step-summary"
     >
       <h3 class="text-md font-semibold mb-2">
-        #{{ stepIndex + 1 }} {{ getFieldStepNameByIndex(stepIndex) }}
+        #{{ stepIndex + 1 }} {{ step.title }}
       </h3>
-      <ul class="list-disc pl-5">
+      <ul v-if="summary.filter(
+            ([_, f]) => f.step_index === stepIndex
+          ).length > 0" class="list-disc pl-5">
         <FormFieldSubmissionSummaryItem
-          v-for="field in fields"
-          :key="field.fieldName"
-          :field_name="field.fieldName"
+          v-for="([_, field]) in summary.filter(
+            ([_, f]) => f.step_index === stepIndex
+          )"
+          :key="field.field_name"
+          :field_name="field.field_name"
           :value="field.value"
         />
       </ul>
+      <div v-else class="text-gray-500">
+        Keine Felder in diesem Schritt ausgefüllt.
+      </div>
     </div>
-    <div v-if="Object.keys(summary).length === 0" class="text-gray-500">
-      No fields submitted yet.
+    <div v-if="summary.length === 0" class="text-gray-500">
+      Keine Felder ausgefüllt.
     </div>
   </div>
 </template>
@@ -59,22 +66,9 @@ const summary = computed(() => {
         : field.step_index < props.field.step_index;
     })
     .sort(([_, fieldA], [__, fieldB]) => fieldA.step_index - fieldB.step_index); // Sort by step_index
-  // Group by step_index
-  const groupedFields = submittedFields.reduce((acc, [fieldName, field]) => {
-    if (!acc[field.step_index]) {
-      acc[field.step_index] = [];
-    }
-    acc[field.step_index].push({ fieldName, ...field });
-    return acc;
-  }, {} as Record<number, Array<{ fieldName: string; value: any }>>);
 
-  return groupedFields;
+    return submittedFields
 });
-
-const getFieldStepNameByIndex = (stepIndex: number): string => {
-  const step = submissionStateStore.form.value?.form_steps[stepIndex];
-  return step ? step.title : `Step ${stepIndex + 1}`;
-};
 </script>
 
 <style scoped></style>
