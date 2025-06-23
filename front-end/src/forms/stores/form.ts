@@ -23,6 +23,7 @@ export const useFormSubmissionStateStore = createGlobalState(
 
         const currentStepIndex = ref(0)
         const showIntroStep = ref(false) // Whether to show the intro step
+        const showSuccessStep = ref(false) // Whether to show the success step after submission
 
         const currentStepErrors = ref<FormFieldError[]>([])
 
@@ -232,6 +233,7 @@ export const useFormSubmissionStateStore = createGlobalState(
                 const res = await submitFormResponse(endpoint, nonce, submissionData)
                 if (res.success) {
                     console.log('Form submission saved successfully:', res)
+                    showSuccessStep.value = true // Show success step after submission
                     return true // Submission successful
                 }
                 else {
@@ -252,6 +254,7 @@ export const useFormSubmissionStateStore = createGlobalState(
             formSubmissionFields,
             currentStepIndex,
             showIntroStep,
+            showSuccessStep,
             fieldsForCurrentStep,
             setFieldValue,
             nextStep,

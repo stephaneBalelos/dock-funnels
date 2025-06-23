@@ -63,6 +63,23 @@
         {{ submissionStateStore.form.value.intro_step.start_button_text || 'Loslegen' }}
       </button>
     </div>
+    <div
+      v-if="submissionStateStore.showSuccessStep.value"
+      class="dockfunnelform-intro absolute inset-0 p-4 min-h-96 flex flex-col items-center justify-center bg-white"
+    >
+      <h3 class="text-3xl font-semibold text-gray-800 mb-4 text-center">
+        Danke für Ihre Einreichung!
+      </h3>
+      <p class="text-gray-600 mb-6 text-center">
+        Ihre Daten wurden erfolgreich gespeichert. Wir werden uns in Kürze bei Ihnen melden.
+      </p>
+      <button
+        class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-blue-500 text-white hover:bg-blue-600 focus:shadow-[0_0_0_2px] focus:shadow-blue-700 outline-none"
+        @click="() => refreshPage()"
+      >
+        Schließen
+      </button>
+    </div>
     <div class="dockfunnelform-footer border-t border-gray-200 p-4">
       <div class="flex justify-between">
         <button
@@ -114,6 +131,11 @@ const currentStep = computed(() => {
     ] || null
   );
 });
+
+const refreshPage = () => {
+  // Refresh the page to reset the form state
+  window.location.reload();
+};
 </script>
 
 <style scoped></style>
