@@ -111,11 +111,12 @@ export const useFormSubmissionStateStore = createGlobalState(
                         if (checkboxValues.length === 1 && field.min === 1) {
                             fieldSchema = fieldSchema.nonempty(`${field.label} muss ausgewählt werden`)
                         } else {
-                            if (field.min) {
+                            if (field.min && field.min > 0) {
                                 fieldSchema = fieldSchema.min(field.min, `${field.label}: Sie müssen mindestens ${field.min} auswählen`)
-                            }
-                            if (field.max) {
-                                fieldSchema = fieldSchema.max(field.max, `${field.label}: Sie können maximal ${field.max} auswählen`)
+
+                                if (field.max && field.max >= field.min) {
+                                    fieldSchema = fieldSchema.max(field.max, `${field.label}: Sie können maximal ${field.max} auswählen`)
+                                }
                             }
                         }
                         break
@@ -228,7 +229,7 @@ export const useFormSubmissionStateStore = createGlobalState(
                     return false
                 }
                 // Call the API to submit the form response
-                const {endpoint, nonce, formId} = submissionSettings.value
+                const { endpoint, nonce, formId } = submissionSettings.value
                 submissionData.form_id = formId // Ensure form_id is set
                 const res = await submitFormResponse(endpoint, nonce, submissionData)
                 if (res.success) {

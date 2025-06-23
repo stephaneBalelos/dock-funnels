@@ -41,7 +41,8 @@
             size="small"
             variant="simple"
             >{{
-              errorState?.errors.find((e) => e.path.join('.') === 'label')?.message
+              errorState?.errors.find((e) => e.path.join(".") === "label")
+                ?.message
             }}</Message
           >
         </FormField>
@@ -53,12 +54,15 @@
             v-model="state.field_name"
           />
           <Message
-            v-if="errorState?.errors.find((e) => e.path.join('.') === 'field_name')"
+            v-if="
+              errorState?.errors.find((e) => e.path.join('.') === 'field_name')
+            "
             severity="error"
             size="small"
             variant="simple"
             >{{
-              errorState?.errors.find((e) => e.path.join('.') === 'field_name')?.message
+              errorState?.errors.find((e) => e.path.join(".") === "field_name")
+                ?.message
             }}</Message
           >
         </FormField>
@@ -77,23 +81,23 @@
             size="small"
             variant="simple"
             >{{
-              errorState?.errors.find((e) => e.path.join('.') === 'description')
+              errorState?.errors.find((e) => e.path.join(".") === "description")
                 ?.message
             }}</Message
           >
         </FormField>
         <FormField name="required" class="flex items-center gap-2">
           <ToggleSwitch name="required" v-model="state.required" />
-          <label class="text-sm">
-            Ist dieses Feld erforderlich?
-          </label>
+          <label class="text-sm"> Ist dieses Feld erforderlich? </label>
           <Message
-            v-if="errorState?.errors.find((e) => e.path.join('.') === 'required')"
+            v-if="
+              errorState?.errors.find((e) => e.path.join('.') === 'required')
+            "
             severity="error"
             size="small"
             variant="simple"
             >{{
-              errorState?.errors.find((e) => e.path.join('.') === 'required')
+              errorState?.errors.find((e) => e.path.join(".") === "required")
                 ?.message
             }}</Message
           >
@@ -191,7 +195,11 @@
               severity="secondary"
               size="small"
               @click="
-                state.options.push({ label: `Auswahl ${state.options.length + 1}`, value: `Auswahlwert ${state.options.length + 1}`, description: '' })
+                state.options.push({
+                  label: `Auswahl ${state.options.length + 1}`,
+                  value: `Auswahlwert ${state.options.length + 1}`,
+                  description: '',
+                })
               "
             >
               Auswahl hinzufügen
@@ -204,6 +212,43 @@
             size="small"
             variant="simple"
             >{{ $field.error?.message }}</Message
+          >
+        </FormField>
+        <FormField v-if="state.options.length > 0" name="min" class="flex flex-col gap-1">
+          <InputNumber
+            placeholder="Mindestanzahl der ausgewählten Optionen"
+            size="small"
+            v-model="state.min"
+            :min="0"
+          />
+          <Message
+            v-if="errorState?.errors.find((e) => e.path.join('.') === 'min')"
+            severity="error"
+            size="small"
+            variant="simple"
+            >{{
+              errorState?.errors.find((e) => e.path.join(".") === "min")
+                ?.message
+            }}</Message
+          >
+        </FormField>
+        <FormField v-if="state.options.length > 0 && state.min" name="max" class="flex flex-col gap-1">
+          <InputNumber
+            placeholder="Maximale Anzahl der ausgewählten Optionen"
+            size="small"
+            v-model="state.max"
+            :min="state.min"
+            :max="state.options.length"
+          />
+          <Message
+            v-if="errorState?.errors.find((e) => e.path.join('.') === 'max')"
+            severity="error"
+            size="small"
+            variant="simple"
+            >{{
+              errorState?.errors.find((e) => e.path.join(".") === "max")
+                ?.message
+            }}</Message
           >
         </FormField>
       </div>
@@ -248,6 +293,14 @@ const schema = z.object({
     }),
   description: z.string().optional(),
   required: z.boolean().optional(),
+  min: z
+    .number()
+    .min(0, { message: "Minimum value must be at least 0" })
+    .optional(),
+  max: z
+    .number()
+    .min(0, { message: "Maximum value must be at least 0" })
+    .optional(),
   options: z.array(
     z.object({
       label: z.string().min(1, { message: "Option label is required" }),
@@ -265,6 +318,8 @@ const state = reactive<FormFieldCheckboxList>({
   label: field.value.label,
   description: field.value.description,
   options: field.value.options,
+  min: field.value.min || 1,
+  max: undefined,
 });
 
 const errorState = ref<z.ZodError<FormFieldCheckboxList> | null>(null);

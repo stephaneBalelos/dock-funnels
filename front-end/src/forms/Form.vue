@@ -134,8 +134,8 @@ const formTest = ref<Form | null>({
       description:
         "Bitte stellen Sie sicher, dass Sie alle erforderlichen Dokumente bereit haben.",
       type: "checkboxList",
-      min: 1,
-      max: 1,
+      min: 2,
+      max: 2,
       options: [
         {
           value: "roentgenbilder",
