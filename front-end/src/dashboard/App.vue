@@ -17,6 +17,7 @@ import type { Form } from "@/types";
 import FormExporter from "@/components/dashboard/header/FormExporter.vue";
 import FormImporter from "@/components/dashboard/header/FormImporter.vue";
 import { useToast } from "primevue/usetoast";
+import { FormTestData } from "@/utils";
 
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
@@ -170,13 +171,7 @@ onMounted(() => {
       });
   } else {
     // Initialize with a new form if no editFormId is provided
-    editorStore.initEditor({
-      id: 0,
-      title: "Mein neues Formular",
-      description: "Beschreibung des Formulars",
-      form_steps: [],
-      fields: [],
-    } as Form);
+    editorStore.initEditor(FormTestData);
   }
 });
 </script>
