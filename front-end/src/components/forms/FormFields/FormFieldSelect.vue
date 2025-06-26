@@ -73,7 +73,7 @@ const submissionStateStore = useFormSubmissionStateStore();
 onMounted(() => {
   console.log("FormFieldSelect onMounted", props.field.field_name);
   const field =
-    submissionStateStore.formSubmissionFields.value[props.field.field_name];
+    submissionStateStore.formSubmissionFields.value.get(props.field.field_name);
   if (field) {
     submissionStateStore.setFieldValue(props.field.field_name, field.value);
     selectedValue.value = field.value as string | null;
@@ -88,7 +88,7 @@ function shoulShowOption(option: FormFieldSelectOption): boolean {
   const dependencies: boolean[] = option.depends_on.map((dep) => {
     const field_name = dep.field_name;
     const dependsOnField =
-      submissionStateStore.formSubmissionFields.value[field_name];
+      submissionStateStore.formSubmissionFields.value.get(field_name);
     if (!dependsOnField) {
       return false;
     }

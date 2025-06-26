@@ -3,9 +3,14 @@
     v-if="submissionStateStore.form.value"
     :form="submissionStateStore.form.value"
   />
-  <!-- <div class="debug">
-    formSubmissionFields: {{ submissionStateStore.formSubmissionFields }}
-  </div> -->
+  <div class="debug">
+    formSubmissionFields:
+    <ul>
+      <li v-for="(v, key) in submissionStateStore.formSubmissionFields.value.entries()" :key="key">
+        {{ v[0] }}: {{ v[1] }}
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script setup lang="ts">

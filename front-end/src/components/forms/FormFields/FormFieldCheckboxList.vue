@@ -63,12 +63,14 @@ const selectedValues = ref();
 const submissionStateStore = useFormSubmissionStateStore();
 
 onMounted(() => {
-  const initialValue = submissionStateStore.formSubmissionFields.value[
-    props.field.field_name
-  ]?.value as string[] | undefined;
+  const initialValue = submissionStateStore.formSubmissionFields.value.get(props.field.field_name)?.value as string[] | undefined;
+  const allowedValues = props.field.options.filter(shoulShowOption).map((option) => option.value);
+
   if (initialValue) {
-    submissionStateStore.setFieldValue(props.field.field_name, initialValue);
-    selectedValues.value = initialValue;
+    // Filter initial value to only include allowed values
+    const filteredInitialValue = initialValue.filter(value => allowedValues.includes(value));
+    submissionStateStore.setFieldValue(props.field.field_name, filteredInitialValue);
+    selectedValues.value = filteredInitialValue;
   }
 });
 
@@ -80,7 +82,7 @@ function shoulShowOption(option: FormFieldCheckboxListOption) {
   const dependencies: boolean[] = option.depends_on.map((dep) => {
     const field_name = dep.field_name;
     const dependsOnField =
-      submissionStateStore.formSubmissionFields.value[field_name];
+      submissionStateStore.formSubmissionFields.value.get(field_name);
     if (!dependsOnField) {
       return false;
     }
@@ -98,6 +100,7 @@ watch(
   selectedValues,
   (newValue) => {
     submissionStateStore.setFieldValue(props.field.field_name, newValue);
+    console.log(newValue);
   },
   { deep: true }
 );

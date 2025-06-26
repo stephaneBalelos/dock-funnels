@@ -19,7 +19,7 @@ export const useFormSubmissionStateStore = createGlobalState(
     () => {
         const submissionSettings = ref<FormSubmissionSettings | null>(null) // Settings for form submission
         const form = ref<Form | null>(null)
-        const formSubmissionFields = ref<Record<string, FormSubmissionField>>({})
+        const formSubmissionFields = ref<Map<string, FormSubmissionField>>(new Map()) // Fields for form submission, keyed by field_name
 
         const currentStepIndex = ref(0)
         const showIntroStep = ref(false) // Whether to show the intro step
@@ -40,11 +40,11 @@ export const useFormSubmissionStateStore = createGlobalState(
                     return
                 }
                 if (field) {
-                    formSubmissionFields.value[field.field_name] = {
+                    formSubmissionFields.value.set(field_name, {
                         field_name: field.field_name,
                         value: value,
                         step_index: field.step_index
-                    }
+                    })
                 }
             }
         }
@@ -56,6 +56,14 @@ export const useFormSubmissionStateStore = createGlobalState(
                 console.warn(`Validation failed for step ${currentStepIndex.value}. Cannot proceed to next step.`)
                 return
             }
+            // If validation passed, update formSubmissionFields with the current step fields
+            formSubmissionFields.value.forEach((field, field_name) => {
+                const currentFieldsNames = fieldsForCurrentStep.value.map(f => f.field_name)
+                if (!currentFieldsNames.includes(field_name) && field.step_index === currentStepIndex.value) {
+                    // If the field is not in the current step, remove it from submission fields
+                    formSubmissionFields.value.delete(field_name)
+                }
+            })
             if (form.value && nextStepIndex < form.value.form_steps.length) {
                 currentStepIndex.value = nextStepIndex
                 currentStepErrors.value = [] // Clear errors when moving to the next step
@@ -137,7 +145,7 @@ export const useFormSubmissionStateStore = createGlobalState(
             const stepData = Object.fromEntries(
                 currentFields.map(field => [
                     field.field_name,
-                    formSubmissionFields.value[field.field_name]?.value || (field.type === 'checkboxList' ? [] : '')
+                    formSubmissionFields.value.get(field.field_name)?.value || (field.type === 'checkboxList' ? [] : '')
                 ])
             )
             const result = stepSchema.safeParse(stepData)
@@ -153,6 +161,7 @@ export const useFormSubmissionStateStore = createGlobalState(
             // If validation passed, filter out the the fields that are not visible based on their dependencies
             // Clear errors if validation passed
             currentStepErrors.value = []
+
             return true // Validation passed
         }
 
@@ -166,7 +175,7 @@ export const useFormSubmissionStateStore = createGlobalState(
             return f.filter(field => {
                 if (!field.depends_on) return true // No dependencies, always visible
                 return field.depends_on.every(dependency => {
-                    const dependentField = formSubmissionFields.value[dependency.field_name]
+                    const dependentField = formSubmissionFields.value.get(dependency.field_name)
                     if (!dependentField) return false // Dependency field not set, hide this field
                     if (Array.isArray(dependentField.value)) {
                         return dependentField.value.includes(dependency.value) // Check if value is in array
@@ -179,7 +188,7 @@ export const useFormSubmissionStateStore = createGlobalState(
         // watch changes in form, reset formSubmissionFields and currentStepIndex
         watch(form, (newForm) => {
             if (newForm) {
-                formSubmissionFields.value = {}
+                formSubmissionFields.value.clear() // Clear previous form submission fields
                 currentStepIndex.value = 0
                 if (newForm.intro_step) {
                     showIntroStep.value = newForm.intro_step.enabled // Show intro step if it exists
@@ -187,12 +196,13 @@ export const useFormSubmissionStateStore = createGlobalState(
                 else {
                     showIntroStep.value = false // Hide intro step if it doesn't exist
                 }
-                // Populate formSubmissionFields with default values from the form
-                newForm.fields.forEach(field => {
-                    formSubmissionFields.value[field.field_name] = {
-                        field_name: field.field_name,
-                        value: field.default_value ?? null,
-                        step_index: field.step_index || 0
+
+                // Init First Step Fields with default values
+                fieldsForCurrentStep.value.forEach(field => {
+                    if (field.default_value !== undefined) {
+                        setFieldValue(field.field_name, field.default_value)
+                    } else {
+                        setFieldValue(field.field_name, null) // Set to null if no default value
                     }
                 })
             }

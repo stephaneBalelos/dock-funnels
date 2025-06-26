@@ -66,11 +66,9 @@ const props = defineProps<Props>();
 const submissionStateStore = useFormSubmissionStateStore();
 
 onMounted(() => {
-  const initialValue = submissionStateStore.formSubmissionFields.value[
-    props.field.field_name
-  ]?.value as string | undefined;
+  const initialValue = submissionStateStore.formSubmissionFields.value.get(props.field.field_name)?.value;
   if (initialValue) {
-    textValue.value = initialValue;
+    textValue.value = initialValue as string | null;
   } else {
     textValue.value = props.field.default_value || null;
   }
