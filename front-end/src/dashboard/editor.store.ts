@@ -53,6 +53,12 @@ export const useEditorStore = createGlobalState(() => {
             form_steps: [],
             fields: []
         })
+        if (form.form_steps.length === 0) {
+            addStep() // Ensure at least one step exists
+        }
+        if (form.form_steps.length > 0) {
+            setSelectedStepIndex(0) // Select the first step by default
+        }
     }
 
     const addStep = () => {
