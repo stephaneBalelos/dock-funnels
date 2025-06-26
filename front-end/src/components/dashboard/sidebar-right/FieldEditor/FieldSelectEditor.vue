@@ -33,7 +33,6 @@
             placeholder="Label"
             size="small"
             v-model="state.label"
-            @change="generateSlug"
           />
           <Message
             v-if="errorState?.errors.find((e) => e.path.join('.') === 'label')"
@@ -42,26 +41,6 @@
             variant="simple"
             >{{
               errorState?.errors.find((e) => e.path.join(".") === "label")
-                ?.message
-            }}</Message
-          >
-        </FormField>
-        <FormField name="field_name" class="flex flex-col gap-1">
-          <InputText
-            type="text"
-            placeholder="Field Name (alphanumeric or underscore)"
-            size="small"
-            v-model="state.field_name"
-          />
-          <Message
-            v-if="
-              errorState?.errors.find((e) => e.path.join('.') === 'field_name')
-            "
-            severity="error"
-            size="small"
-            variant="simple"
-            >{{
-              errorState?.errors.find((e) => e.path.join(".") === "field_name")
                 ?.message
             }}</Message
           >
@@ -230,7 +209,6 @@ import type { FormFieldSelect } from "@/types";
 import z from "zod";
 import type { FormSubmitEvent } from "@primevue/forms";
 import { Icon } from "@iconify/vue";
-import { slugify } from "@/utils";
 
 type Props = {
   fieldName: string;
@@ -301,12 +279,6 @@ const validateForm = () => {
     }
   } catch (error) {
     return false;
-  }
-};
-
-const generateSlug = () => {
-  if (state.label) {
-    state.field_name = slugify(state.label);
   }
 };
 </script>
