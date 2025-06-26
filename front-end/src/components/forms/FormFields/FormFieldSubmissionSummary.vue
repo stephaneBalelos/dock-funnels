@@ -56,9 +56,7 @@ const props = defineProps<Props>();
 const submissionStateStore = useFormSubmissionStateStore();
 
 const summary = computed(() => {
-  const submittedFields = Object.entries(
-    submissionStateStore.formSubmissionFields.value
-  )
+  const submittedFields = [...submissionStateStore.formSubmissionFields.value.entries()]
     .filter(([_, field]) => field.value !== null)
     .filter(([_, field]) => {
       return props.field.show_full_summary
