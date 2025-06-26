@@ -16,6 +16,7 @@ declare module 'vue' {
     FieldChecklistEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldChecklistEditor.vue')['default']
     FieldDependencyInput: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldDependencyInput.vue')['default']
     FieldEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor.vue')['default']
+    FieldOptionDependencyInput: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldOptionDependencyInput.vue')['default']
     FieldSelectEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldSelectEditor.vue')['default']
     Fieldset: typeof import('primevue/fieldset')['default']
     FieldSummaryEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldSummaryEditor.vue')['default']

@@ -92,6 +92,21 @@
               :key="index"
               class="flex flex-col gap-2 border p-4 rounded"
             >
+              <div class="flex justify-between items-center">
+                <div class="flex flex-col">
+                  <span class="text-sm font-semibold">
+                    Auswahl {{ index + 1 }}
+                  </span>
+                </div>
+                <Button
+                  v-if="state.options.length > 1"
+                  severity="danger"
+                  size="small"
+                  @click="state.options.splice(index, 1)"
+                >
+                  <Icon icon="heroicons:trash" />
+                </Button>
+              </div>
               <FormField class="flex flex-col gap-1">
                 <InputText
                   type="text"
@@ -111,29 +126,6 @@
                   >{{
                     errorState?.errors.find(
                       (e) => e.path.join(".") === `options.${index}.label`
-                    )?.message
-                  }}</Message
-                >
-              </FormField>
-              <FormField class="flex flex-col gap-1">
-                <InputText
-                  type="text"
-                  placeholder="Option Value"
-                  size="small"
-                  v-model="state.options[index].value"
-                />
-                <Message
-                  v-if="
-                    errorState?.errors.find(
-                      (e) => e.path.join('.') === `options.${index}.value`
-                    )
-                  "
-                  severity="error"
-                  size="small"
-                  variant="simple"
-                  >{{
-                    errorState?.errors.find(
-                      (e) => e.path.join(".") === `options.${index}.value`
                     )?.message
                   }}</Message
                 >
@@ -161,14 +153,15 @@
                   }}</Message
                 >
               </FormField>
-              <Button
-                v-if="state.options.length > 1"
-                severity="danger"
-                size="small"
-                @click="state.options.splice(index, 1)"
-              >
-                <Icon icon="heroicons:trash" />
-              </Button>
+              <div v-if="state.options[index].depends_on && state.options[index].depends_on.length > 0" class="flex flex-col">
+                <div v-for="dep in state.options[index].depends_on" class="flex items-center">
+                  <Badge
+                    severity="info"
+                    class="mr-2"
+                    >{{ dep.field_name }} = {{ dep.value }}</Badge
+                  >
+                </div>
+              </div>
             </div>
             <Button
               severity="secondary"
@@ -176,7 +169,7 @@
               @click="
                 state.options.push({
                   label: `Auswahl ${state.options.length + 1}`,
-                  value: `Auswahlwert ${state.options.length + 1}`,
+                  value: `${fieldName}_${state.options.length + 1}`,
                   description: '',
                 })
               "
