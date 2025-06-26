@@ -61,6 +61,7 @@ export const useEditorStore = createGlobalState(() => {
             title: 'Schritt ' + (stepCount + 1),
             description: '',
         })
+        setSelectedStepIndex(stepCount)
     }
 
     const removeStep = (index: number) => {

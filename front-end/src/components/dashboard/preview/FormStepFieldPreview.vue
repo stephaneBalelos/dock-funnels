@@ -20,13 +20,19 @@
       <span class="text-xs text-gray-400"
         >Feldname: {{ field.field_name }}</span
       >
-      <span class="text-xs text-gray-400">Type: {{ field.type }} <span v-if="field.type ==='text'">[{{ field.input_type }}]</span></span>
+      <span class="text-xs text-gray-400"
+        >Type: {{ field.type }}
+        <span v-if="field.type === 'text'">[{{ field.input_type }}]</span></span
+      >
       <span v-if="field.default_value" class="text-xs text-gray-400">
         Standardwert: {{ field.default_value }}
       </span>
       <div v-if="field.depends_on" class="flex flex-col py-2">
         <p class="text-xs text-gray-400">Abhängigkeit(en):</p>
-        <div v-for="(dep, i) in field.depends_on" class="flex items-center gap-2">
+        <div
+          v-for="(dep, i) in field.depends_on"
+          class="flex items-center gap-2"
+        >
           <Badge>{{ dep.field_name }}</Badge>
           <Button
             class="text-xs"
@@ -34,7 +40,7 @@
             severity="danger"
             size="small"
             aria-label="Abhängigkeit entfernen"
-          > 
+          >
             <Icon icon="heroicons:trash" />
           </Button>
         </div>

@@ -29,7 +29,7 @@ body {
 
 .app-container {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  grid-template-columns: repeat(14, 1fr);
   grid-template-rows: auto 1fr;
 }
 
@@ -41,17 +41,17 @@ body {
   height: 60px;
 }
 .app-container > .sidebar-left {
-  grid-column: 1 / 3;
+  grid-column: 1 / 4;
   background-color: #f8f9fa;
   border-right: 1px solid #dee2e6;
 }
 .app-container > .sidebar-right {
-  grid-column: 10 / -1;
+  grid-column: 11 / -1;
   background-color: #f8f9fa;
   border-left: 1px solid #dee2e6;
 }
 .app-container > .main {
-  grid-column: 3 / 10;
+  grid-column: 4 / 11;
   padding: 1rem;
   background-color: #ffffff;
 }

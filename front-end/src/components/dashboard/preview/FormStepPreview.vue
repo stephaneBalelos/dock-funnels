@@ -1,5 +1,6 @@
 <template>
   <Card
+    v
     class="flex flex-col border rounded-lg shadow-sm mb-4 w-full min-w-[450px] max-w-[600px] mx-auto"
   >
     <template #title>

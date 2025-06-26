@@ -1,5 +1,6 @@
 <template>
-  <Card class="mb-4">
+  <Card @click="editorStore.setSelectedStepIndex(props.stepIndex)" 
+  :class="`mb-4 cursor-pointer ${isActiveStep ? 'border-blue-300 border-2' : 'border-transparent'}`">
     <template #content>
       <div v-if="isEditing">
         <Form
@@ -50,12 +51,12 @@
       <div v-else class="flex flex-col gap-2">
         <div class="flex flex-col gap-2 justify-between w-full">
           <div class="flex flex-col">
+            <span class="text-stone-500 text-xs"> #{{ props.stepIndex + 1 }} </span>
             <span class="text-stone-900 font-semibold text-sm">
               {{ state.title }}
             </span>
-            <span class="text-stone-500 text-xs"> #{{ props.stepIndex }} </span>
-            <div class="text-xs text-stone-600">
-              {{ state.description }}
+            <div class="text-xs text-stone-500">
+              {{ state.description ? state.description : 'Keine Beschreibung' }}
             </div>
           </div>
           <div class="flex gap-2 justify-end items-center">
@@ -78,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import type { FormStep } from "@/types";
 import { useEditorStore } from "@/dashboard/editor.store";
 import { defineProps } from "vue";
@@ -113,6 +114,10 @@ const toggleEdit = () => {
     editorStore.setSelectedStepIndex(props.stepIndex);
   }
 };
+
+const isActiveStep = computed(() => {
+  return editorStore.selectedStepIndex.value === props.stepIndex;
+});
 
 const state = ref({
   title: props.step.title,
