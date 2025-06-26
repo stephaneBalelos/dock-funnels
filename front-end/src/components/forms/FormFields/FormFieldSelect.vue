@@ -57,7 +57,7 @@
 <script setup lang="ts">
 import type { FormFieldSelect, FormFieldSelectOption } from "@/types";
 import { onMounted, ref, watch } from "vue";
-import { useFormSubmissionStateStore } from "@/forms/stores/form.ts";
+import { useFormSubmissionStateStore } from "@/forms/stores/submission.store";
 import { RadioButton } from "primevue";
 
 type Props = {

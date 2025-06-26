@@ -11,15 +11,19 @@
         flex-direction: column;
       }
 
-      #dock-funnels-form {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
+      body .container {
+        width: 100%;
+        
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
       }
     </style>
   </head>
   <body>
-    <div id="dock-funnels-form"></div>
+    <div class="container">
+      <div id="dock-funnels-form"></div>
+    </div>
     <script type="module" src="/src/forms/index.ts"></script>
   </body>
 </html>

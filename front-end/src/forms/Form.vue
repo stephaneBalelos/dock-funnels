@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { inject, onMounted, ref } from "vue";
 import DockFunnelForm from "@/components/forms/DockFunnelForm.vue";
-import { useFormSubmissionStateStore } from "@/forms/stores/form.ts";
+import { useFormSubmissionStateStore } from "@/forms/stores/submission.store";
 import { getFormById } from "@/api/wpAjaxApi.ts";
 import type { Form } from "@/types";
 

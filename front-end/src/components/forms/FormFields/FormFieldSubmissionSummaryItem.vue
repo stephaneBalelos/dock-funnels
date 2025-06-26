@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { useFormSubmissionStateStore } from "@/forms/stores/form";
+import { useFormSubmissionStateStore } from "@/forms/stores/submission.store";
 import type { FormSubmissionField } from "@/types";
 import { computed } from "vue";
 

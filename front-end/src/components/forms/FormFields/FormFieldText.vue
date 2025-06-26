@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { useFormSubmissionStateStore } from "@/forms/stores/form";
+import { useFormSubmissionStateStore } from "@/forms/stores/submission.store";
 import type { FormFieldText } from "@/types";
 import { onMounted, ref } from "vue";
 import { Icon } from "@iconify/vue";

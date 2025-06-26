@@ -110,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { useFormSubmissionStateStore } from "@/forms/stores/form.ts";
+import { useFormSubmissionStateStore } from "@/forms/stores/submission.store.ts";
 import type { Form } from "../../types/index.ts";
 import FormFieldsRoot from "./FormFieldsRoot.vue";
 import { computed } from "vue";

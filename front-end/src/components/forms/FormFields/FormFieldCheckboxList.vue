@@ -48,7 +48,7 @@ import type {
   FormFieldCheckboxList,
   FormFieldCheckboxListOption,
 } from "@/types";
-import { useFormSubmissionStateStore } from "@/forms/stores/form.ts";
+import { useFormSubmissionStateStore } from "@/forms/stores/submission.store";
 import { onMounted, ref, watch } from "vue";
 import { Checkbox } from "primevue";
 
