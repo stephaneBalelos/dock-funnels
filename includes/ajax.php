@@ -42,6 +42,14 @@ class DockFunnels_Ajax
             wp_send_json_error(['message' => 'Failed to save form response.']);
         }
 
+        // Send Response Per Mail
+        DockFunnels_Mailing::send_email(
+            get_option('admin_email'),
+            'New Form Submission',
+            'A new form submission has been received. Form ID: ' . $form_id . ', Submission ID: ' . $submission_id,
+            ['Content-Type: text/html; charset=UTF-8']
+        );
+
         wp_send_json_success(['message' => 'Thank you! Your response has been recorded.']);
     }
 

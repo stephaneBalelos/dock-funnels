@@ -15,6 +15,7 @@ require_once plugin_dir_path(__FILE__) . 'includes/db.php';
 require_once plugin_dir_path(__FILE__) . 'includes/shortcodes.php';
 require_once plugin_dir_path(__FILE__) . 'includes/admin.php';
 require_once plugin_dir_path(__FILE__) . 'includes/ajax.php';
+require_once plugin_dir_path(__FILE__) . 'includes/mailing.php';
 
 // Load main plugin class
 require_once plugin_dir_path(__FILE__) . 'includes/main.php';
