@@ -153,13 +153,53 @@
                   }}</Message
                 >
               </FormField>
-              <div v-if="state.options[index].depends_on && state.options[index].depends_on.length > 0" class="flex flex-col">
-                <div v-for="dep in state.options[index].depends_on" class="flex items-center">
-                  <Badge
-                    severity="info"
-                    class="mr-2"
-                    >{{ dep.field_name }} = {{ dep.value }}</Badge
+              <div class="flex flex-col border p-2 rounded">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm font-semibold">
+                    Abhängigkeiten (optional)
+                  </span>
+                  <FieldOptionDependencyInput
+                    :field_name="state.field_name"
+                    :option_value="state.options[index].value"
+                    v-slot="{ toggleDialog }"
                   >
+                    <Button
+                      severity="secondary"
+                      size="small"
+                      @click="toggleDialog"
+                    >
+                      <Icon icon="heroicons:plus" />
+                    </Button>
+                  </FieldOptionDependencyInput>
+                </div>
+                <div
+                  v-if="
+                    state.options[index].depends_on &&
+                    state.options[index].depends_on.length > 0
+                  "
+                  class="flex flex-col mt-2"
+                >
+                  <div
+                    v-for="(dep, dep_idx) in state.options[index].depends_on"
+                    class="flex items-center"
+                  >
+                    <Badge severity="info" class="mr-2"
+                      >{{ dep.field_name }} ist gleich {{ dep.value }}</Badge
+                    >
+                    <Button
+                      severity="danger"
+                      size="small"
+                      @click="
+                        editorStore.removeOptionDependency(
+                          state.field_name,
+                          state.options[index].value,
+                          dep_idx
+                        )
+                      "
+                    >
+                      <Icon icon="heroicons:trash" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -171,6 +211,7 @@
                   label: `Auswahl ${state.options.length + 1}`,
                   value: `${fieldName}_${state.options.length + 1}`,
                   description: '',
+                  depends_on: [],
                 })
               "
             >
@@ -244,6 +285,7 @@ const state = reactive<FormFieldSelect>({
   label: field.value.label,
   description: field.value.description,
   options: field.value.options ?? [],
+  depends_on: field.value.depends_on || [],
 });
 
 const errorState = ref<z.ZodError<FormFieldSelect> | null>(null);

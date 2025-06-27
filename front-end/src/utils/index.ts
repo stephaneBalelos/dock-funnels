@@ -66,16 +66,19 @@ export const FormTestData: Form = {
           value: "orthopedie",
           label: "Orthopädie",
           description: "Beschreibung für Orthopädie",
+          depends_on: [],
         },
         {
           value: "viszeralchirurgie",
           label: "Viszeralchirurgie",
           description: "Beschreibung für Viszeralchirurgie",
+          depends_on: [],
         },
         {
           value: "handchirurgie",
           label: "Handchirurgie",
           description: "Beschreibung für Handchirurgie",
+          depends_on: [],
         },
       ],
       required: true,
@@ -91,20 +94,20 @@ export const FormTestData: Form = {
           value: "schulter",
           label: "Schulter",
           description: "Schulterbeschwerden und -verletzungen",
+          depends_on: [{
+            field_name: "fachrichtung",
+            value: "orthopedie",
+          }]
         },
         {
           value: "huefte",
           label: "Hüfte",
           description: "Hüftbeschwerden und -verletzungen",
+          depends_on: []
         },
       ],
       required: true,
-      depends_on: [
-        {
-          field_name: "fachrichtung",
-          value: "orthopedie",
-        },
-      ],
+      depends_on: [],
     },
     {
       step_index: 1,
@@ -117,11 +120,13 @@ export const FormTestData: Form = {
           value: "tumor",
           label: "Tumor",
           description: "Tumorbehandlung und -diagnose",
+          depends_on: [],
         },
         {
           value: "schilddruesenprobleme",
           label: "Schilddrüsenprobleme",
           description: "Schilddrüsenprobleme und -behandlungen",
+          depends_on: [],
         },
       ],
       required: true,
@@ -151,19 +156,31 @@ export const FormTestData: Form = {
               field_name: "fachrichtung",
               value: "orthopedie",
             },
+            {
+              field_name: "orthopedie_beschwerde",
+              value: "schulter",
+            }
           ],
         },
         {
           value: "arztberichte",
           label: "Arztberichte",
           description: "Arztberichte und medizinische Gutachten",
+          depends_on: [
+            {
+              field_name: "fachrichtung",
+              value: "viszeralchirurgie",
+            },
+          ],
         },
         {
           value: "vorherige behandlungen",
           label: "Vorherige Behandlungen",
           description:
             "Informationen zu vorherigen Behandlungen oder Operationen",
+            depends_on: []
         },
+
       ],
       required: true,
     },
@@ -190,6 +207,7 @@ export const FormTestData: Form = {
           label: "Ich stimme der Verarbeitung meiner Daten zu.",
           description:
             "Ich habe die Datenschutzerklärung gelesen und akzeptiere sie.",
+          depends_on: [],
         },
       ],
       required: true,

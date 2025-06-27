@@ -192,8 +192,6 @@ const schema = z
     default_value: z.string().optional(),
   })
 
-  console.log("Field Text Editor", field.value);
-
 const state = reactive<FormFieldText>({
   step_index: field.value.step_index,
   type: field.value.type,
@@ -204,6 +202,7 @@ const state = reactive<FormFieldText>({
   description: field.value.description,
   placeholder: field.value.placeholder,
   default_value: field.value.default_value,
+  depends_on: field.value.depends_on || [],
 });
 
 const errorState = ref<z.ZodError<FormFieldText> | null>(null);

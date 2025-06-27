@@ -125,6 +125,7 @@ export const useEditorStore = createGlobalState(() => {
                     placeholder: 'Enter text',
                     required: false,
                     step_index: stepIndex,
+                    depends_on: [],
                 }
                 form.fields.push(textField)
                 return textField.field_name
@@ -136,6 +137,7 @@ export const useEditorStore = createGlobalState(() => {
                     options: [],
                     required: false,
                     step_index: stepIndex,
+                    depends_on: [],
                 }
                 form.fields.push(formFieldSelect)
                 return formFieldSelect.field_name
@@ -147,6 +149,7 @@ export const useEditorStore = createGlobalState(() => {
                     options: [],
                     required: false,
                     step_index: stepIndex,
+                    depends_on: [],
                 }
                 form.fields.push(checkboxListField)
                 return checkboxListField.field_name
@@ -158,6 +161,7 @@ export const useEditorStore = createGlobalState(() => {
                     required: false,
                     show_full_summary: true,
                     step_index: stepIndex,
+                    depends_on: [],
                 }
                 form.fields.push(submissionSummaryField)
                 return submissionSummaryField.field_name
@@ -242,6 +246,85 @@ export const useEditorStore = createGlobalState(() => {
         console.log(`Added dependency to field ${field_name}:`, depends_on)
     }
 
+    const addOptionDependency = (field_name: string, option_value: string, depends_on: FormFieldDependsOn) => {
+        const field = form.fields.find(f => f.field_name === field_name)
+        if (!field) {
+            throw new Error(`Field with name ${field_name} not found`)
+        }
+        // Validate the field type
+        if (field.type !== 'select' && field.type !== 'checkboxList') {
+            throw new Error(`Field ${field_name} must be of type select or checkboxList to add option dependencies`)
+        }
+        // Find the option in the field's options
+        const option = field.options.find(opt => opt.value === option_value)
+        if (!option) {
+            throw new Error(`Option with value ${option_value} not found in field ${field_name}`)
+        }
+        // Validate the depends_on structure
+        if (!depends_on || !depends_on.field_name || !depends_on.value) {
+            throw new Error(`Invalid depends_on structure for field ${field_name}`)
+        }
+        // Find the referenced field
+        const referencedField = form.fields.find(f => f.field_name === depends_on.field_name)
+        if (!referencedField) {
+            throw new Error(`Referenced field ${depends_on.field_name} not found`)
+        }
+        // Ensure the referenced field is of type select or checkboxList
+        if (referencedField.type !== 'select' && referencedField.type !== 'checkboxList') {
+            throw new Error(`Field ${depends_on.field_name} must be of type select or checkboxList`)
+        }
+        // check the value is valid for the referenced field
+        if (referencedField.type === 'select' && !referencedField.options.some(option => option.value === depends_on.value)) {
+            throw new Error(`Value ${depends_on.value} is not a valid option for field ${depends_on.field_name}`)
+        }
+        if (referencedField.type === 'checkboxList' && !referencedField.options.some(option => option.value === depends_on.value)) {
+            throw new Error(`Value ${depends_on.value} is not a valid option for field ${depends_on.field_name}`)
+        }
+        // Ensure the option has a depends_on array
+        if (!option.depends_on || !Array.isArray(option.depends_on)) {
+            option.depends_on = []
+        }
+        // Check if the dependency already exists
+        const existingDep = option.depends_on.find(dep => dep.field_name === depends_on.field_name && dep.value === depends_on.value)
+        if (existingDep) {
+            throw new Error(`Dependency for option ${option_value} in field ${field_name} with value ${depends_on.value} already exists`)
+        }
+        // Add the dependency to the option
+        option.depends_on.push(depends_on)
+        // Update the field with the new options
+        updateField(field.field_name, { options: field.options })
+        console.log(`Added dependency to option ${option_value} in field ${field_name}:`, depends_on)
+    }
+
+    const removeOptionDependency = (field_name: string, option_value: string, dep_index: number) => {
+        const field = form.fields.find(f => f.field_name === field_name)
+        if (!field) {
+            console.warn('Field not found:', field_name)
+            return
+        }
+        if (field.type !== 'select' && field.type !== 'checkboxList') {
+            console.warn(`Field ${field_name} must be of type select or checkboxList to remove option dependencies`)
+            return
+        }
+        const option = field.options.find(opt => opt.value === option_value)
+        if (!option) {
+            console.warn(`Option with value ${option_value} not found in field ${field_name}`)
+            return
+        }
+        if (!option.depends_on || !Array.isArray(option.depends_on)) {
+            console.warn(`No dependencies found for option ${option_value} in field ${field_name}`)
+            return
+        }
+        if (dep_index < 0 || dep_index >= option.depends_on.length) {
+            console.warn('Invalid dependency index:', dep_index)
+            return
+        }
+        option.depends_on.splice(dep_index, 1)
+        // Update the field with the new options
+        updateField(field.field_name, { options: field.options })
+        console.log(`Removed dependency from option ${option_value} in field ${field_name} at index ${dep_index}`)
+    }
+
     const removeFieldDependency = (field_name: string, dep_index: number) => {
         const field = form.fields.find(f => f.field_name === field_name)
         if (!field) {
@@ -281,6 +364,8 @@ export const useEditorStore = createGlobalState(() => {
         updateField,
         removeField,
         addFieldDependency,
-        removeFieldDependency
+        removeFieldDependency,
+        addOptionDependency,
+        removeOptionDependency
     }
 })

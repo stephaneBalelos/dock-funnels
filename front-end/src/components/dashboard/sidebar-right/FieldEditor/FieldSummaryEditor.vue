@@ -118,6 +118,7 @@ const state = reactive<FormFieldSubmissionSummary>({
   field_name: field.value.field_name,
   label: field.value.label,
   description: field.value.description,
+  depends_on: field.value.depends_on || [],
 });
 
 const errorState = ref<z.ZodError<FormFieldSubmissionSummary> | null>(null);

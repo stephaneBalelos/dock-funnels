@@ -4,7 +4,7 @@
       <Dialog
         v-model:visible="visible"
         modal
-        header="Edit Profile"
+        header="Options Abhängigkeit"
         :style="{ width: '25rem' }"
       >
         <div v-if="field && (field.type === 'select' || field.type === 'checkboxList')" class="flex flex-col">
@@ -14,6 +14,7 @@
             </label>
             <Select
               @change="onChangeDependencyField"
+              v-model="model.field_name"
               :options="dependsOnFieldsOptions"
               option-label="label"
               option-value="value"
@@ -31,6 +32,7 @@
             </label>
             <Select
               @change="onChangeDependencyValue"
+              v-model="model.value"
               :options="dependsOnValuesOptions"
               placeholder="Option auswählen"
               size="small"
@@ -46,7 +48,7 @@
             severity="secondary"
             @click="visible = false"
           ></Button>
-          <Button type="button" label="Save" @click="visible = false"></Button>
+          <Button type="button" label="Hinzufügen" @click="addDependency" :disabled="!(model && !!model.field_name && !!model.value)"></Button>
         </div>
       </Dialog>
   </div>
@@ -65,33 +67,53 @@ type Props = {
 
 const props = defineProps<Props>();
 const visible = ref(false);
-
-const model = ref<FormFieldDependsOn>();
-
+const model = ref<FormFieldDependsOn>({
+  field_name: "",
+  value: "",
+});
 const editorStore = useEditorStore();
 
+const $emit = defineEmits(["dependencyAdded"]);
+
 const field = computed(() => {
-  return editorStore.form.fields.find(
+  const field = editorStore.form.fields.find(
     (field) => field.field_name === props.field_name
+  )
+  if(field?.type !== "select" && field?.type !== "checkboxList") {
+    console.warn(`Field ${props.field_name} is not a select or checkboxList field.`);
+    return null;
+  }
+  return field;
+});
+
+const option = computed(() => {
+  if (!field.value) return null;
+  return field.value.options.find(
+    (option) => option.value === props.option_value
   );
 });
 
 const dependsOnFieldsOptions = computed(() => {
   // Get all fields that are not the current field and where the step index is lower or equal to the current field's step index
+  // Make sure the fields are not already selected as dependencies
   // These fields can be used as dependencies if they are select or checkbox fields
   return editorStore.form.fields
     .filter((f) => {
       if (!field.value) return false;
       return (
         f.field_name !== field.value.field_name &&
-        f.step_index <= field.value.step_index
+        f.step_index < field.value.step_index
       );
     })
     .filter((f) => f.type === "select" || f.type === "checkboxList")
-    .map((f) => ({
+    .filter((f) => {
+      if (!option.value) return true;
+      return option.value.depends_on.every(
+        (d) => d.field_name !== f.field_name
+      );
+    }).map((f) => ({
       label: f.label,
       value: f.field_name,
-      description: f.description,
     }));
 });
 
@@ -127,6 +149,32 @@ const onChangeDependencyValue = ($event: SelectChangeEvent) => {
   if (model.value) {
     model.value.value = $event.value as string;
   }
+};
+
+const addDependency = () => {
+  if (!model.value || !model.value.field_name || !model.value.value) {
+    console.warn("Dependency field or value is not set");
+    return;
+  }
+  if (!field.value) {
+    console.warn("Field is not set");
+    return;
+  }
+  if (field.value && (field.value.type === "select" || field.value.type === "checkboxList")) {
+    editorStore.addOptionDependency(props.field_name, props.option_value, {
+      field_name: model.value.field_name,
+      value: model.value.value,
+    });
+  }
+  $emit("dependencyAdded", {
+    field_name: model.value.field_name,
+    value: model.value.value,
+  });
+  visible.value = false;
+  model.value = {
+    field_name: "",
+    value: "",
+  } as FormFieldDependsOn; // Reset the model after adding the dependency
 };
 </script>
 

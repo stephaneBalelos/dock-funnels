@@ -47,10 +47,7 @@ export type FormFieldSelectOption = {
     value: string; // Value of the option
     label: string; // Display label for the option
     description?: string; // Optional description for the option
-    depends_on?: {
-        field_name: string; // name of the field this option depends on
-        value: string; // Value(s) that trigger this option to be shown
-    }[]; // Conditional logic for showing/hiding the option
+    depends_on: FormFieldDependsOn[]; // Conditional logic for showing/hiding the option
 }
 
 export type FormFieldText = FormField & {
@@ -79,10 +76,7 @@ export type FormFieldCheckboxListOption = {
     value: string; // Value of the option
     label: string; // Display label for the option
     description?: string; // Optional description for the option
-    depends_on?: {
-        field_name: string; // name of the field this option depends on
-        value: string; // Value(s) that trigger this option to be shown
-    }[]; // Conditional logic for showing/hiding the option
+    depends_on: FormFieldDependsOn[]; // Conditional logic for showing/hiding the option
 }
 
 export type FormFieldSubmissionSummary = FormField & {

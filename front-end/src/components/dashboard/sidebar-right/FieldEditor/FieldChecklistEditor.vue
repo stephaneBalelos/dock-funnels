@@ -176,12 +176,19 @@
                   class="flex flex-col mt-2"
                 >
                   <div
-                    v-for="dep in state.options[index].depends_on"
+                    v-for="dep, dep_idx in state.options[index].depends_on"
                     class="flex items-center"
                   >
                     <Badge severity="info" class="mr-2"
                       >{{ dep.field_name }} ist gleich {{ dep.value }}</Badge
                     >
+                    <Button
+                      severity="danger"
+                      size="small"
+                      @click="editorStore.removeOptionDependency(state.field_name, state.options[index].value, dep_idx)"
+                    >
+                      <Icon icon="heroicons:trash" />
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -194,6 +201,7 @@
                   label: `Auswahl ${state.options.length + 1}`,
                   value: `Auswahlwert ${state.options.length + 1}`,
                   description: '',
+                  depends_on: []
                 })
               "
             >
@@ -322,6 +330,7 @@ const state = reactive<FormFieldCheckboxList>({
   options: field.value.options,
   min: field.value.min || 1,
   max: undefined,
+  depends_on: field.value.depends_on || [],
 });
 
 const errorState = ref<z.ZodError<FormFieldCheckboxList> | null>(null);
