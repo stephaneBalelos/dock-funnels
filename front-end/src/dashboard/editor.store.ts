@@ -343,7 +343,6 @@ export const useEditorStore = createGlobalState(() => {
         updateField(field.field_name, { depends_on: field.depends_on })
     }
 
-
     // TODO: Add methods to validate the form, save it, and submit it
 
 

@@ -82,7 +82,6 @@
 import { computed, ref } from "vue";
 import type { FormStep } from "@/types";
 import { useEditorStore } from "@/dashboard/editor.store";
-import { defineProps } from "vue";
 import { Icon } from "@iconify/vue";
 import Card from "primevue/card";
 import InputText from "primevue/inputtext";

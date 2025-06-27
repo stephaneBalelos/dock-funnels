@@ -18,7 +18,7 @@ import FormExporter from "@/components/dashboard/header/FormExporter.vue";
 import FormImporter from "@/components/dashboard/header/FormImporter.vue";
 import { useToast } from "primevue/usetoast";
 import { FormTestData } from "@/utils";
-
+import SettingsDialog from "@/components/dashboard/settings/SettingsDialog.vue";
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
 
@@ -27,7 +27,6 @@ const endpoint = inject("ajaxUrl") as string | undefined;
 const nonce = inject("nonce") as string | undefined;
 const editFormId = inject("editFormId") as number | undefined;
 const toast = useToast();
-
 
 const saveForm = async () => {
   if (!editorStore.form) {
@@ -179,7 +178,10 @@ onMounted(() => {
 <template>
   <div class="h-lvh app-container">
     <div class="header flex justify-between items-center p-4 shadow">
-      <FormTitle v-if="editorStore.form.title" />
+      <div class="flex items-center gap-4">
+        <FormTitle v-if="editorStore.form.title" />
+        <SettingsDialog v-if="editorStore.form" />
+      </div>
       <div class="flex gap-2">
         <FormImporter />
         <FormExporter />
