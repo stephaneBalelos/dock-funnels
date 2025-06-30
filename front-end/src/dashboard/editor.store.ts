@@ -1,4 +1,4 @@
-import { createForm, updateForm } from "@/api/wpAjaxApi"
+import { createForm, deleteForm, updateForm } from "@/api/wpAjaxApi"
 import type { FormFieldCheckboxList, FormFieldDependsOn, FormFieldSelect, FormFieldSubmissionSummary, FormFieldText, FormState } from "@/types"
 import { createGlobalState } from "@vueuse/core"
 import { computed, nextTick, reactive, ref } from "vue"
@@ -9,6 +9,11 @@ export const useEditorStore = createGlobalState(() => {
         endpoint: '',
         nonce: '',
         editFormId: 0
+    })
+    const editorState = ref({
+        isLoading: false,
+        isSaving: false,
+        error: null as string | null
     })
     const form = reactive<FormState>({
         title: '',
@@ -384,6 +389,7 @@ export const useEditorStore = createGlobalState(() => {
         const nonce = apiSettings.value.nonce
         const editFormId = apiSettings.value.editFormId
         try {
+            editorState.value.isSaving = true; // Set saving state
             if (!endpoint || !nonce) {
                 throw new Error("Endpoint or nonce not provided");
             }
@@ -407,12 +413,32 @@ export const useEditorStore = createGlobalState(() => {
         } catch (error) {
             console.error('Error saving form state:', error);
             throw error;
+        } finally {
+            editorState.value.isSaving = false; // Reset saving state
         }
     }
+
+    const formDelete = async () => {
+        const endpoint = apiSettings.value.endpoint
+        const nonce = apiSettings.value.nonce
+        const editFormId = apiSettings.value.editFormId
+        if (!endpoint || !nonce) {
+            console.error("API endpoint or nonce not provided");
+            return;
+        }
+
+        if (!editFormId) {
+            console.error("No form ID provided for deletion");
+            return;
+        }
+
+        return await deleteForm(endpoint, nonce, editFormId);
+    };
 
 
     return {
         apiSettings,
+        editorState,
         form,
         initEditor,
         formSteps,
@@ -432,6 +458,7 @@ export const useEditorStore = createGlobalState(() => {
         removeFieldDependency,
         addOptionDependency,
         removeOptionDependency,
-        saveFormState
+        saveFormState,
+        formDelete
     }
 })

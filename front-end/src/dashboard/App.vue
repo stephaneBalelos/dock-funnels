@@ -7,11 +7,10 @@ import { Icon } from "@iconify/vue";
 import FormFlowPreview from "@/components/dashboard/preview/FormFlowPreview.vue";
 import FieldEditor from "@/components/dashboard/sidebar-right/FieldEditor.vue";
 import Button from "primevue/button";
-import { deleteForm, getFormById } from "@/api/wpAjaxApi";
+import { getFormById } from "@/api/wpAjaxApi";
 import type { FormState } from "@/types";
 import FormExporter from "@/components/dashboard/header/FormExporter.vue";
 import FormImporter from "@/components/dashboard/header/FormImporter.vue";
-import { useToast } from "primevue/usetoast";
 import { FormTestData } from "@/utils";
 import SettingsDialog from "@/components/dashboard/settings/SettingsDialog.vue";
 
@@ -21,46 +20,6 @@ const editorStore = useEditorStore();
 const endpoint = inject("ajaxUrl") as string | undefined;
 const nonce = inject("nonce") as string | undefined;
 const editFormId = inject("editFormId") as number | undefined;
-const toast = useToast();
-
-const formDelete = async () => {
-  if (!endpoint || !nonce) {
-    console.error("API endpoint or nonce not provided");
-    return;
-  }
-
-  if (!editFormId) {
-    console.error("No form ID provided for deletion");
-    return;
-  }
-
-  if (!confirm("Sind Sie sicher, dass Sie dieses Formular löschen möchten?")) {
-    return;
-  }
-
-  try {
-    const response = await deleteForm(endpoint, nonce, editFormId);
-    if (response.success) {
-      console.log("Form deleted successfully");
-      // Redirect the user to the forms list or another page
-      window.location.href = "/wp-admin/admin.php?page=dock-funnels";
-    } else {
-      console.error("Failed to delete form:", response);
-      toast.add({
-        severity: "error",
-        summary: "Fehler",
-        detail: "Formular konnte nicht gelöscht werden.",
-      });
-    }
-  } catch (error) {
-    console.error("Error deleting form:", error);
-    toast.add({
-      severity: "error",
-      summary: "Fehler",
-      detail: "Ein Fehler ist beim Löschen des Formulars aufgetreten.",
-    });
-  }
-};
 
 onMounted(() => {
   // This is a good place to initialize any global state or perform side effects
@@ -92,30 +51,37 @@ onMounted(() => {
     <div class="header flex justify-between items-center p-4 shadow">
       <div class="flex items-center gap-4">
         <FormTitle v-if="editorStore.form.title" />
-        <SettingsDialog v-if="editorStore.form" />
+        <SettingsDialog v-if="editorStore.form" v-slot="{ openDialog }">
+          <Button
+            aria-label="Form Settings"
+            @click="openDialog"
+            size="small"
+            severity="secondary"
+            class="flex items-center"
+          >
+            <Icon icon="heroicons:adjustments-horizontal" class="mr-2" />
+            Einstellungen
+          </Button>
+        </SettingsDialog>
       </div>
       <div class="flex gap-2">
         <FormImporter />
         <FormExporter />
+        <div v-if="editorStore.editorState.value.isSaving" class="flex items-center">
+          <Badge severity="secondary">
+            Wird gespeichert
+          </Badge>
+        </div>
         <Button
           v-if="editorStore.form"
           @click="editorStore.saveFormState"
           size="small"
           severity="secondary"
           class="flex items-center"
+          :loading="editorStore.editorState.value.isSaving"
         >
           <Icon icon="heroicons:arrow-down-tray" class="mr-2" />
           Speichern
-        </Button>
-        <Button
-          v-if="editorStore.form"
-          @click="formDelete"
-          size="small"
-          severity="danger"
-          class="flex items-center"
-        >
-          <Icon icon="heroicons:trash" class="mr-2" />
-          Löschen
         </Button>
       </div>
     </div>
