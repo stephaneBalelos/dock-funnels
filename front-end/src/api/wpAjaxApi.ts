@@ -1,4 +1,4 @@
-export const createForm = async (endpoint: string, nonce: string, formData: string) => {
+export const createForm = async (endpoint: string, nonce: string, formState: string) => {
     try {
         const response = await fetch(`${endpoint}?action=dock_funnel_ajax_create_form`, {
             method: 'POST',
@@ -7,7 +7,7 @@ export const createForm = async (endpoint: string, nonce: string, formData: stri
                 'X-WP-Nonce': nonce,
             },
             body: JSON.stringify({
-                form_data: formData,
+                form_state: formState,
                 nonce: nonce,
             }),
         });
@@ -22,7 +22,7 @@ export const createForm = async (endpoint: string, nonce: string, formData: stri
     }
 }
 
-export const updateForm = async (endpoint: string, nonce: string, form_id: number, formData: string) => {
+export const updateForm = async (endpoint: string, nonce: string, form_id: number, formState: string) => {
     try {
         const response = await fetch(`${endpoint}?action=dock_funnel_ajax_update_form`, {
             method: 'POST',
@@ -32,7 +32,7 @@ export const updateForm = async (endpoint: string, nonce: string, form_id: numbe
             },
             body: JSON.stringify({
                 form_id: form_id,
-                form_data: formData,
+                form_state: formState,
                 nonce: nonce,
             }),
         });

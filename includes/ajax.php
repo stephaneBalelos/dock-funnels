@@ -31,7 +31,7 @@ class DockFunnels_Ajax
         $form_id = isset($submission['form_id']) ? intval($submission['form_id']) : 0;
         if (!$form_id) {
             wp_send_json_error(['message' => 'Invalid form ID.']);
-        }   
+        }
         $fields = isset($submission['fields']) ? $submission['fields'] : [];
         if (empty($fields)) {
             wp_send_json_error(['message' => 'No fields data provided.']);
@@ -67,15 +67,16 @@ class DockFunnels_Ajax
         if (!current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'You do not have permission to create forms.']);
         }
-        $form_data = json_decode($data['form_data'], true); // see @/types.index.ts for Form type
+        $form_state = json_decode($data['form_state'], true); // see @/types.index.ts for Form type
 
-        // Validate form data
-        if (!self::validate_form_data($form_data)) {
-            wp_send_json_error(['message' => 'Invalid form data.']);
-        }
+        $form_data = ['form_steps' => $form_state['form_steps'], 'form_fields' => $form_state['form_fields']];
+        $form_settings = $form_state['form_settings'];
+
+        // TODO: Validate form data
 
         // Save form data
-        $form_id = DockFunnels_DB::create_form($form_data['title'], $form_data['description'], $form_data);
+        $form_id = DockFunnels_DB::create_form($form_state['title'], $form_state['description'], $form_data, $form_settings);
+        // Check if form was created successfully
         if (!$form_id) {
             wp_send_json_error(['message' => 'Failed to create form.']);
         }
@@ -105,7 +106,56 @@ class DockFunnels_Ajax
         if (!$form) {
             return wp_send_json_error(['message' => 'Form not found.']);
         }
-        wp_send_json_success($form);
+        $form_data = json_decode($form->form_data, true);
+        $form_settings = json_decode($form->form_settings, true);
+
+        $form_state = [
+            'id' => $form->id,
+            'title' => $form->name,
+            'description' => $form->description,
+            'form_steps' => $form_data['form_steps'],
+            'form_fields' => $form_data['form_fields'],
+            'form_settings' => $form_settings,
+            'status' => $form->status,
+        ];
+        wp_send_json_success($form_state);
+    }
+
+    /**
+     * Get form data by ID
+     */
+    public static function get_form_data_by_id()
+    {
+        $body = file_get_contents('php://input');
+        if (empty($body)) {
+            wp_send_json_error(['message' => 'No data received.']);
+        }
+        $data = json_decode($body, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            wp_send_json_error(['message' => 'Invalid JSON data.']);
+        }
+        wp_verify_nonce($data['nonce'], 'dock_funnel_form_nonce');
+        $form_id = isset($data['form_id']) ? intval($data['form_id']) : 0;
+        if (!$form_id) {
+            wp_send_json_error(['message' => 'Invalid form ID.']);
+        }
+        $form = DockFunnels_DB::get_form_by_id($form_id);
+        if (!$form) {
+            return wp_send_json_error(['message' => 'Form not found.']);
+        }
+        $form_data = json_decode($form->form_data, true);
+        if (!$form_data) {
+            return wp_send_json_error(['message' => 'Form data is invalid.']);
+        }
+        $form_data = [
+            'id' => $form->id,
+            'title' => $form->name,
+            'description' => $form->description,
+            'form_steps' => $form_data['form_steps'],
+            'form_fields' => $form_data['form_fields'],
+        ];
+
+        return wp_send_json_success($form_data);
     }
 
     /**
@@ -129,14 +179,23 @@ class DockFunnels_Ajax
         if (!$form_id) {
             wp_send_json_error(['message' => 'Invalid form ID.']);
         }
-        $form_data = json_decode($data['form_data'], true); // see @/types.index.ts for Form type
 
-        // Validate form data
-        if (!self::validate_form_data($form_data)) {
-            wp_send_json_error(['message' => 'Invalid form data.']);
+        $saved_form = DockFunnels_DB::get_form_by_id($form_id);
+        if (!$saved_form) {
+            wp_send_json_error(['message' => 'Form not found.']);
         }
-        // Update form data
-        $updated = DockFunnels_DB::update_form($form_id, $form_data['title'], $form_data['description'], $form_data);
+        // Check If the saved form status is published
+        if ($saved_form->status === 'published') {
+            wp_send_json_error(['message' => 'Cannot update a published form. Please create a new version instead.']);
+        }
+
+        // TODO: Validate form data
+
+        // Format the data
+        $form_state = json_decode($data['form_state'], true); // see @/types.index.ts for Form type
+        $form_data = ['form_steps' => $form_state['form_steps'], 'form_fields' => $form_state['form_fields']];
+        $form_settings = $form_state['form_settings'];
+        $updated = DockFunnels_DB::update_form($form_id, $form_state['title'], $form_state['description'], $form_data, $form_settings);
         if (!$updated) {
             wp_send_json_error(['message' => 'Failed to update form.']);
         }
@@ -168,7 +227,7 @@ class DockFunnels_Ajax
         if (!$form) {
             return wp_send_json_error(['message' => 'Form not found.']);
         }
-        
+
         $deleted = DockFunnels_DB::delete_form($form_id);
         if (!$deleted) {
             wp_send_json_error(['message' => 'Failed to delete form.']);
@@ -209,7 +268,7 @@ class DockFunnels_Ajax
         $f_data['form_steps'] = $steps_data;
 
         // Check Fields
-        if (!isset($data['fields']) || !is_array($data['fields']) || empty($data['fields'])) {
+        if (!isset($data['form_fields']) || !is_array($data['form_fields']) || empty($data['form_fields'])) {
             return false;
         }
 

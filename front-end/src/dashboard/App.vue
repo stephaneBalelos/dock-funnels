@@ -7,12 +7,7 @@ import { Icon } from "@iconify/vue";
 import FormFlowPreview from "@/components/dashboard/preview/FormFlowPreview.vue";
 import FieldEditor from "@/components/dashboard/sidebar-right/FieldEditor.vue";
 import Button from "primevue/button";
-import {
-  createForm,
-  deleteForm,
-  getFormById,
-  updateForm,
-} from "@/api/wpAjaxApi";
+import { deleteForm, getFormById } from "@/api/wpAjaxApi";
 import type { FormState } from "@/types";
 import FormExporter from "@/components/dashboard/header/FormExporter.vue";
 import FormImporter from "@/components/dashboard/header/FormImporter.vue";
@@ -27,91 +22,6 @@ const endpoint = inject("ajaxUrl") as string | undefined;
 const nonce = inject("nonce") as string | undefined;
 const editFormId = inject("editFormId") as number | undefined;
 const toast = useToast();
-
-const saveForm = async () => {
-  if (!editorStore.form) {
-    console.error("No form to save");
-    return;
-  }
-
-  const formdata: FormState = {
-    id: editorStore.form.id,
-    title: editorStore.form.title,
-    description: editorStore.form.description,
-    form_steps: editorStore.form.form_steps,
-    form_fields: editorStore.form.form_fields,
-    form_settings: editorStore.form.form_settings,
-  };
-
-  if (!endpoint || !nonce) {
-    console.error("API endpoint or nonce not provided");
-    toast.add({
-      severity: "error",
-      summary: "Fehler",
-      detail: "API-Endpunkt oder Nonce nicht verfügbar.",
-    });
-    return;
-  }
-
-  try {
-    // If editFormId is provided, we update the existing form
-    if (editFormId) {
-      formdata.id = editFormId;
-      const response = await updateForm(
-        endpoint,
-        nonce,
-        editFormId,
-        JSON.stringify(formdata)
-      );
-      if (!response.success) {
-        console.error("Failed to update form:", response);
-        toast.add({
-          severity: "error",
-          summary: "Fehler",
-          detail: "Formular konnte nicht aktualisiert werden.",
-        });
-        return;
-      }
-      toast.add({
-        severity: "success",
-        summary: "Erfolg",
-        detail: "Formular erfolgreich aktualisiert.",
-      });
-    } else {
-      // If no editFormId, we create a new form
-      const response = await createForm(
-        endpoint,
-        nonce,
-        JSON.stringify(formdata)
-      );
-      if (!response.success) {
-        console.error("Failed to create form:", response);
-        toast.add({
-          severity: "error",
-          summary: "Fehler",
-          detail: "Formular konnte nicht erstellt werden.",
-        });
-        return;
-      }
-      // Update the editor store with the new form ID
-      editorStore.form.id = response.data.id;
-      toast.add({
-        severity: "success",
-        summary: "Erfolg",
-        detail: "Formular erfolgreich erstellt.",
-      });
-      // Reload the page or redirect to the form list
-      window.location.href = `/wp-admin/admin.php?page=dock-funnels&form_id=${response.data.form_id}`;
-    }
-  } catch (error) {
-    console.error("Error saving form:", error);
-    toast.add({
-      severity: "error",
-      summary: "Fehler",
-      detail: "Ein Fehler ist beim Speichern des Formulars aufgetreten.",
-    });
-  }
-};
 
 const formDelete = async () => {
   if (!endpoint || !nonce) {
@@ -154,22 +64,25 @@ const formDelete = async () => {
 
 onMounted(() => {
   // This is a good place to initialize any global state or perform side effects
+  if (!endpoint || !nonce) {
+    console.error("API endpoint or nonce not provided");
+    editorStore.initEditor(FormTestData); // Initialize with test data if endpoint or nonce is missing
+    return;
+  }
+  editorStore.apiSettings.value.endpoint = endpoint;
+  editorStore.apiSettings.value.nonce = nonce;
   if (editFormId) {
-    if (!endpoint || !nonce) {
-      console.error("API endpoint or nonce not provided");
-      return;
-    }
+    editorStore.apiSettings.value.editFormId = editFormId;
     getFormById(endpoint, nonce, editFormId)
       .then(({ data }) => {
-        editorStore.initEditor(JSON.parse(data.form_data) as FormState);
-        console.log("Form loaded:", editorStore.form);
+        editorStore.initEditor(data as FormState);
       })
       .catch((error) => {
         console.error("Error loading form:", error);
       });
   } else {
     // Initialize with a new form if no editFormId is provided
-    editorStore.initEditor(FormTestData);
+    editorStore.initEditor();
   }
 });
 </script>
@@ -186,7 +99,7 @@ onMounted(() => {
         <FormExporter />
         <Button
           v-if="editorStore.form"
-          @click="saveForm"
+          @click="editorStore.saveFormState"
           size="small"
           severity="secondary"
           class="flex items-center"

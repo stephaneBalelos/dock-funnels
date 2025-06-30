@@ -1,9 +1,15 @@
+import { createForm, updateForm } from "@/api/wpAjaxApi"
 import type { FormFieldCheckboxList, FormFieldDependsOn, FormFieldSelect, FormFieldSubmissionSummary, FormFieldText, FormState } from "@/types"
 import { createGlobalState } from "@vueuse/core"
 import { computed, nextTick, reactive, ref } from "vue"
 
 
 export const useEditorStore = createGlobalState(() => {
+    const apiSettings = ref({
+        endpoint: '',
+        nonce: '',
+        editFormId: 0
+    })
     const form = reactive<FormState>({
         title: '',
         description: '',
@@ -368,10 +374,45 @@ export const useEditorStore = createGlobalState(() => {
         updateField(field.field_name, { depends_on: field.depends_on })
     }
 
-    // TODO: Add methods to validate the form, save it, and submit it
+    /**
+     * Saves the current form state to the server.
+     * @returns {Promise<any>} The response from the server.
+     */
+    const saveFormState = async (): Promise<any> => {
+        const formState = form
+        const endpoint = apiSettings.value.endpoint
+        const nonce = apiSettings.value.nonce
+        const editFormId = apiSettings.value.editFormId
+        try {
+            if (!endpoint || !nonce) {
+                throw new Error("Endpoint or nonce not provided");
+            }
+            if (!editFormId) {
+                const response = await createForm(endpoint, nonce, JSON.stringify(formState));
+                if (!response.success) {
+                    console.error('Error creating form:', response.data);
+                    throw new Error(`Error creating form: ${response.data}`);
+                }
+                console.log('Form created successfully:', response.data);
+                // Redirect to the edit page with the new form ID
+                window.location.href = `/wp-admin/admin.php?page=dock-funnels&form_id=${response.data.form_id}`;
+            } else {
+                const response = await updateForm(endpoint, nonce, editFormId, JSON.stringify(formState));
+                if (!response.success) {
+                    console.error('Error updating form:', response.data);
+                    throw new Error(`Error updating form: ${response.data}`);
+                }
+                console.log('Form updated successfully:', response.data);
+            }
+        } catch (error) {
+            console.error('Error saving form state:', error);
+            throw error;
+        }
+    }
 
 
     return {
+        apiSettings,
         form,
         initEditor,
         formSteps,
@@ -390,6 +431,7 @@ export const useEditorStore = createGlobalState(() => {
         addFieldDependency,
         removeFieldDependency,
         addOptionDependency,
-        removeOptionDependency
+        removeOptionDependency,
+        saveFormState
     }
 })

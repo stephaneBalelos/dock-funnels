@@ -9,13 +9,7 @@ export type FormState = {
 }
 
 // Form is form data that is used to submit the form
-export type Form = {
-    id: number; // ID of the form
-    title: string; // Title of the form
-    description: string; // Description of the form
-    form_steps: FormStep[]; // Array of steps in the form
-    form_fields: (FormFieldSelect | FormFieldText | FormFieldTextarea | FormFieldCheckboxList | FormFieldSubmissionSummary)[]; // Array of fields in this step
-}
+export type Form = Omit<FormState, 'form_settings'>
 
 // Form Settings Types, these are the settings for the form
 export type FormSettings = {

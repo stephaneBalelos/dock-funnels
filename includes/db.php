@@ -23,7 +23,7 @@ class DockFunnels_DB {
         return $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}dock_funnels WHERE id = %d", $id));
     }
 
-    public static function create_form($title, $description, $form_data) {
+    public static function create_form($title, $description, $form_data, $form_settings = []) {
         global $wpdb;
         $table_name = $wpdb->prefix . 'dock_funnels';
 
@@ -33,13 +33,15 @@ class DockFunnels_DB {
                 'name' => $title,
                 'description' => $description,
                 'form_data' => wp_json_encode($form_data),
+                'form_settings' => wp_json_encode($form_settings),
+                'status' => 'draft', // Default status is draft
             ]
         );
 
         return $wpdb->insert_id;
     }
 
-    public static function update_form($id, $title, $description, $form_data) {
+    public static function update_form($id, $title, $description, $form_data, $form_settings = []) {
         global $wpdb;
         $table_name = $wpdb->prefix . 'dock_funnels';
 
@@ -49,6 +51,7 @@ class DockFunnels_DB {
                 'name' => $title,
                 'description' => $description,
                 'form_data' => wp_json_encode($form_data),
+                'form_settings' => wp_json_encode($form_settings),
             ],
             ['id' => $id]
         );
