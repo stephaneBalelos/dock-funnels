@@ -1,3 +1,48 @@
+// Editor State Types, this is the state of the form editor in the dashboard
+export type FormState = {
+    title: string; // Title of the form
+    description: string; // Description of the form
+    form_steps: FormStep[]; // Array of steps in the form
+    form_fields: (FormFieldSelect | FormFieldText | FormFieldTextarea | FormFieldCheckboxList | FormFieldSubmissionSummary)[]; // Array of fields in this step
+    form_settings: FormSettings; // Settings for the form
+}
+
+// Form Settings Types, these are the settings for the form
+export type FormSettings = {
+    smtp_settings: FormSmtpSettings; // SMTP settings for sending emails
+    notifications_settings: FormNotificationSettings
+    email_settings: FormEmailSettings; // Settings to notify users via email when a form is submitted
+}
+
+// SMTP settings for sending emails
+export type FormSmtpSettings = {
+    enabled: boolean; // Whether SMTP is enabled
+    host: string; // SMTP server host
+    port: number; // SMTP server port
+    username: string; // SMTP username
+    password: string; // SMTP password
+    encryption: 'none' | 'ssl' | 'tls'; // Encryption type
+    from_name: string; // Name of the sender
+    from_email: string; // Email address of the sender
+    reply_to: string; // Reply-to email address
+}
+
+// Settings to notify Form Admins via email when a form is submitted
+export type FormNotificationSettings = {
+    email: string; // Email address to send notifications to
+    subject: string; // Subject of the notification email
+    body: string; // Message body of the notification email
+}
+
+// Settings to notify users via email when a form is submitted
+export type FormEmailSettings = {
+    enabled: boolean; // Whether email notifications are enabled
+    email_field_name: string; // Name of the field that contains the user's email address
+    subject: string; // Subject of the notification email
+    message: string; // Message body of the notification email
+}
+
+// This is the form object saved in the database, und used
 export type Form = {
     id: number;
     title: string;

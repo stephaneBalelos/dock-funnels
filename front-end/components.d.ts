@@ -13,6 +13,7 @@ declare module 'vue' {
     Card: typeof import('primevue/card')['default']
     Dialog: typeof import('primevue/dialog')['default']
     DockFunnelForm: typeof import('./src/components/forms/DockFunnelForm.vue')['default']
+    Editor: typeof import('primevue/editor')['default']
     EmailSettingTab: typeof import('./src/components/dashboard/settings/EmailSettingTab.vue')['default']
     FieldChecklistEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldChecklistEditor.vue')['default']
     FieldDependencyInput: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldDependencyInput.vue')['default']
