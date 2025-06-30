@@ -46,8 +46,7 @@ onMounted(async () => {
   };
   await getFormById(endpoint, nonce, formId)
     .then(({ data }) => {
-      console.log("Form loaded:", data.form_data);
-      submissionStateStore.form.value = JSON.parse(data.form_data) as Form;
+      submissionStateStore.form.value = data as Form;
     })
     .catch((error) => {
       console.error("Error loading form:", error);
