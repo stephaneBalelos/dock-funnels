@@ -76,7 +76,7 @@ const step = computed(() => {
 });
 
 const fields = computed(() => {
-  return editorStore.form.fields.filter(
+  return editorStore.form.form_fields.filter(
     (fields) => fields.step_index === props.step_index
   );
 });

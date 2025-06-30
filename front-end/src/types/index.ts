@@ -1,5 +1,6 @@
 // Editor State Types, this is the state of the form editor in the dashboard
 export type FormState = {
+    id?: number; // ID of the form, optional for new forms
     title: string; // Title of the form
     description: string; // Description of the form
     form_steps: FormStep[]; // Array of steps in the form
@@ -37,24 +38,11 @@ export type FormNotificationSettings = {
 // Settings to notify users via email when a form is submitted
 export type FormEmailSettings = {
     enabled: boolean; // Whether email notifications are enabled
-    email_field_name: string; // Name of the field that contains the user's email address
+    send_to_admin: boolean; // Whether to send notifications to the admin
+    send_to_user: boolean; // Whether to send notifications to the user
+    user_email_field: string; // Name of the field that contains the user's email address
     subject: string; // Subject of the notification email
-    message: string; // Message body of the notification email
-}
-
-// This is the form object saved in the database, und used
-export type Form = {
-    id: number;
-    title: string;
-    description: string;
-    form_steps: FormStep[];
-    fields: (FormFieldSelect | FormFieldText | FormFieldTextarea | FormFieldCheckboxList | FormFieldSubmissionSummary)[]; // Array of fields in this step
-    intro_step?: {
-        enabled: boolean; // Whether the intro step is enabled
-        title: string; // Title of the intro step
-        description: string; // Description of the intro step
-        start_button_text?: string; // Text for the start button
-    }
+    body: string; // Message body of the notification email
 }
 
 export type FormStep = {

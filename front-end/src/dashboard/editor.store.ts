@@ -1,22 +1,47 @@
-import type { Form, FormFieldCheckboxList, FormFieldDependsOn, FormFieldSelect, FormFieldSubmissionSummary, FormFieldText } from "@/types"
+import type { FormFieldCheckboxList, FormFieldDependsOn, FormFieldSelect, FormFieldSubmissionSummary, FormFieldText, FormState } from "@/types"
 import { createGlobalState } from "@vueuse/core"
 import { computed, nextTick, reactive, ref } from "vue"
 
 
 export const useEditorStore = createGlobalState(() => {
-    const form = reactive<Form>({
-        id: 0,
+    const form = reactive<FormState>({
         title: '',
         description: '',
         form_steps: [],
-        fields: []
+        form_fields: [],
+        form_settings: {
+            smtp_settings: {
+                enabled: false,
+                host: '',
+                port: 587,
+                username: '',
+                password: '',
+                encryption: 'tls',
+                from_name: '',
+                from_email: '',
+                reply_to: ''
+            },
+            notifications_settings: {
+                email: '',
+                subject: '',
+                body: ''
+            },
+            email_settings: {
+                enabled: false,
+                send_to_admin: false,
+                send_to_user: false,
+                user_email_field: '',
+                subject: '',
+                body: ''
+            }
+        }
     })
 
     const formSteps = computed(() => {
         return form.form_steps.map((step, index) => ({
             ...step,
             index: index,
-            fields: form.fields.filter(field => field.step_index === index)
+            fields: form.form_fields.filter(field => field.step_index === index)
         }))
     })
 
@@ -28,12 +53,12 @@ export const useEditorStore = createGlobalState(() => {
         if (stepIndex < 0 || stepIndex >= form.form_steps.length) {
             return []
         }
-        return form.fields.filter(field => field.step_index === stepIndex)
+        return form.form_fields.filter(field => field.step_index === stepIndex)
     }
 
     const selectedFieldName = ref<string | null>(null)
     const setSelectedFieldName = (field_name: string) => {
-        const field = form.fields.find(f => f.field_name === field_name)
+        const field = form.form_fields.find(f => f.field_name === field_name)
         if (field) {
             selectedFieldName.value = null // Reset before setting to avoid stale state
             nextTick(() => {
@@ -45,7 +70,7 @@ export const useEditorStore = createGlobalState(() => {
         }
     }
 
-    const initEditor = (initialForm?: Form) => {
+    const initEditor = (initialForm?: FormState) => {
         Object.assign(form, initialForm || {
             id: 0,
             title: 'Mein Dock Funnel Formular',
@@ -73,9 +98,9 @@ export const useEditorStore = createGlobalState(() => {
     const removeStep = (index: number) => {
         if (index >= 0 && index < form.form_steps.length) {
             // Remove all fields associated with this step
-            form.fields = form.fields.filter(field => field.step_index !== index)
+            form.form_fields = form.form_fields.filter(field => field.step_index !== index)
             // Update step indices for remaining fields
-            form.fields.forEach(field => {
+            form.form_fields.forEach(field => {
                 if (field.step_index > index) {
                     field.step_index -= 1
                 }
@@ -114,7 +139,7 @@ export const useEditorStore = createGlobalState(() => {
             console.warn('Step not found for index:', stepIndex)
             return null
         }
-        const newFieldId = form.fields.length + 1
+        const newFieldId = form.form_fields.length + 1
 
         switch (type) {
             case 'text':
@@ -127,7 +152,7 @@ export const useEditorStore = createGlobalState(() => {
                     step_index: stepIndex,
                     depends_on: [],
                 }
-                form.fields.push(textField)
+                form.form_fields.push(textField)
                 return textField.field_name
             case 'select':
                 const formFieldSelect: FormFieldSelect = {
@@ -139,7 +164,7 @@ export const useEditorStore = createGlobalState(() => {
                     step_index: stepIndex,
                     depends_on: [],
                 }
-                form.fields.push(formFieldSelect)
+                form.form_fields.push(formFieldSelect)
                 return formFieldSelect.field_name
             case 'checkboxList':
                 const checkboxListField: FormFieldCheckboxList = {
@@ -151,7 +176,7 @@ export const useEditorStore = createGlobalState(() => {
                     step_index: stepIndex,
                     depends_on: [],
                 }
-                form.fields.push(checkboxListField)
+                form.form_fields.push(checkboxListField)
                 return checkboxListField.field_name
             case 'submissionSummary':
                 const submissionSummaryField: FormFieldSubmissionSummary = {
@@ -163,7 +188,7 @@ export const useEditorStore = createGlobalState(() => {
                     step_index: stepIndex,
                     depends_on: [],
                 }
-                form.fields.push(submissionSummaryField)
+                form.form_fields.push(submissionSummaryField)
                 return submissionSummaryField.field_name
             default:
                 console.warn('Unsupported field type:', type)
@@ -172,7 +197,7 @@ export const useEditorStore = createGlobalState(() => {
     }
 
     const updateField = (fieldName: string, fieldData: Partial<FormFieldText | FormFieldSelect | FormFieldCheckboxList | FormFieldSubmissionSummary>) => {
-        const field = form.fields.find(f => f.field_name === fieldName)
+        const field = form.form_fields.find(f => f.field_name === fieldName)
         if (!field) {
             console.warn('Field not found:', fieldName)
             return
@@ -184,18 +209,18 @@ export const useEditorStore = createGlobalState(() => {
 
         setSelectedFieldName(field.field_name)
 
-        console.log(form.fields)
+        console.log(form.form_fields)
     }
 
     const removeField = (field_name: string) => {
-        const fieldIndex = form.fields.findIndex(f => f.field_name === field_name)
+        const fieldIndex = form.form_fields.findIndex(f => f.field_name === field_name)
         if (fieldIndex === -1) {
             console.warn('Field not found:', field_name)
             return
         }
         // TODO: Check if the field is a dependency for other fields
         // Remove the field from the form
-        form.fields.splice(fieldIndex, 1)
+        form.form_fields.splice(fieldIndex, 1)
         // Reset selected field name if it was the deleted field
         if (selectedFieldName.value === field_name) {
             selectedFieldName.value = null
@@ -204,7 +229,7 @@ export const useEditorStore = createGlobalState(() => {
     }
 
     const addFieldDependency = (field_name: string, depends_on: FormFieldDependsOn) => {
-        const field = form.fields.find(f => f.field_name === field_name)
+        const field = form.form_fields.find(f => f.field_name === field_name)
         if (!field) {
             throw new Error(`Field with name ${field_name} not found`)
         }
@@ -225,7 +250,7 @@ export const useEditorStore = createGlobalState(() => {
             throw new Error(`Invalid depends_on structure for field ${field_name}`)
         }
         // Find the referenced field
-        const referencedField = form.fields.find(f => f.field_name === depends_on.field_name)
+        const referencedField = form.form_fields.find(f => f.field_name === depends_on.field_name)
         if (!referencedField) {
             throw new Error(`Referenced field ${depends_on.field_name} not found`)
         }
@@ -247,7 +272,7 @@ export const useEditorStore = createGlobalState(() => {
     }
 
     const addOptionDependency = (field_name: string, option_value: string, depends_on: FormFieldDependsOn) => {
-        const field = form.fields.find(f => f.field_name === field_name)
+        const field = form.form_fields.find(f => f.field_name === field_name)
         if (!field) {
             throw new Error(`Field with name ${field_name} not found`)
         }
@@ -265,7 +290,7 @@ export const useEditorStore = createGlobalState(() => {
             throw new Error(`Invalid depends_on structure for field ${field_name}`)
         }
         // Find the referenced field
-        const referencedField = form.fields.find(f => f.field_name === depends_on.field_name)
+        const referencedField = form.form_fields.find(f => f.field_name === depends_on.field_name)
         if (!referencedField) {
             throw new Error(`Referenced field ${depends_on.field_name} not found`)
         }
@@ -297,7 +322,7 @@ export const useEditorStore = createGlobalState(() => {
     }
 
     const removeOptionDependency = (field_name: string, option_value: string, dep_index: number) => {
-        const field = form.fields.find(f => f.field_name === field_name)
+        const field = form.form_fields.find(f => f.field_name === field_name)
         if (!field) {
             console.warn('Field not found:', field_name)
             return
@@ -326,7 +351,7 @@ export const useEditorStore = createGlobalState(() => {
     }
 
     const removeFieldDependency = (field_name: string, dep_index: number) => {
-        const field = form.fields.find(f => f.field_name === field_name)
+        const field = form.form_fields.find(f => f.field_name === field_name)
         if (!field) {
             console.warn('Field not found:', field_name)
             return

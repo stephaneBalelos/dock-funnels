@@ -164,7 +164,7 @@ const props = defineProps<Props>();
 const editorStore = useEditorStore();
 
 const field = computed(() => {
-  return editorStore.form.fields.find(
+  return editorStore.form.form_fields.find(
     (field) => field.field_name === props.fieldName
   ) as FormFieldText;
 });

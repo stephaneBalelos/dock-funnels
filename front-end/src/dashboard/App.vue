@@ -13,7 +13,7 @@ import {
   getFormById,
   updateForm,
 } from "@/api/wpAjaxApi";
-import type { Form } from "@/types";
+import type { FormState } from "@/types";
 import FormExporter from "@/components/dashboard/header/FormExporter.vue";
 import FormImporter from "@/components/dashboard/header/FormImporter.vue";
 import { useToast } from "primevue/usetoast";
@@ -34,13 +34,13 @@ const saveForm = async () => {
     return;
   }
 
-  const formdata: Form = {
+  const formdata: FormState = {
     id: editorStore.form.id,
     title: editorStore.form.title,
-    intro_step: editorStore.form.intro_step,
     description: editorStore.form.description,
     form_steps: editorStore.form.form_steps,
-    fields: editorStore.form.fields,
+    form_fields: editorStore.form.form_fields,
+    form_settings: editorStore.form.form_settings,
   };
 
   if (!endpoint || !nonce) {
@@ -154,7 +154,6 @@ const formDelete = async () => {
 
 onMounted(() => {
   // This is a good place to initialize any global state or perform side effects
-  console.log(window.DockFunnelsAdmin);
   if (editFormId) {
     if (!endpoint || !nonce) {
       console.error("API endpoint or nonce not provided");
@@ -162,7 +161,7 @@ onMounted(() => {
     }
     getFormById(endpoint, nonce, editFormId)
       .then(({ data }) => {
-        editorStore.initEditor(JSON.parse(data.form_data) as Form);
+        editorStore.initEditor(JSON.parse(data.form_data) as FormState);
         console.log("Form loaded:", editorStore.form);
       })
       .catch((error) => {

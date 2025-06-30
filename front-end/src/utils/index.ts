@@ -1,4 +1,4 @@
-import type { Form } from "@/types";
+import type { FormState } from "@/types";
 
 export const slugify = (text: string): string => {
     // Convert the input text to a slug format
@@ -20,18 +20,11 @@ export const slugify = (text: string): string => {
 
 }
 
-export const FormTestData: Form = {
+export const FormTestData: FormState = {
   id: 1,
   title: "Online Terminvereinbarung [Test]",
   description:
     "Bitte füllen Sie das Formular aus, um einen Termin zu vereinbaren.",
-  intro_step: {
-    enabled: false,
-    title: "Willkommen zur Online Terminvereinbarung [Test]",
-    description:
-      "Bitte folgen Sie den Schritten, um einen Termin zu vereinbaren.",
-    start_button_text: "Starten",
-  },
   form_steps: [
     {
       title: "Wählen Sie Ihre Fachrichtung",
@@ -53,7 +46,7 @@ export const FormTestData: Form = {
         "Überprüfen Sie Ihre Angaben und schließen Sie die Terminvereinbarung ab.",
     },
   ],
-  fields: [
+  form_fields: [
     {
       step_index: 0,
       label: "Fahrichtung",
@@ -225,4 +218,30 @@ export const FormTestData: Form = {
       show_full_summary: true,
     },
   ],
+  form_settings: {
+    notifications_settings: {
+      email: "",
+      subject: "Neue Terminvereinbarung",
+      body: "Sie haben eine neue Terminvereinbarung erhalten.",
+    },
+    smtp_settings: {
+      host: "",
+      port: 587,
+      username: "",
+      password: "",
+      encryption: "tls",
+      from_email: "",
+      from_name: "",
+      enabled: false,
+      reply_to: "",
+    },
+    email_settings: {
+      enabled: true,
+      send_to_admin: true,
+      send_to_user: true,
+      user_email_field: "email",
+      subject: "Ihre Terminvereinbarung",
+      body: "Vielen Dank für Ihre Terminvereinbarung. Wir werden uns in Kürze bei Ihnen melden.",
+    }
+  }
 }

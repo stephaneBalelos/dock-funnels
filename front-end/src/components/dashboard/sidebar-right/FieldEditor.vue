@@ -43,7 +43,7 @@ import FieldSummaryEditor from "./FieldEditor/FieldSummaryEditor.vue";
 const editorStore = useEditorStore();
 
 const field = computed(() => {
-  return editorStore.form.fields.find(
+  return editorStore.form.form_fields.find(
     (f) => f.field_name === editorStore.selectedFieldName.value
   );
 });

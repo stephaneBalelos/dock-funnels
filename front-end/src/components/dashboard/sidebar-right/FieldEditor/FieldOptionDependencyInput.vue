@@ -76,7 +76,7 @@ const editorStore = useEditorStore();
 const $emit = defineEmits(["dependencyAdded"]);
 
 const field = computed(() => {
-  const field = editorStore.form.fields.find(
+  const field = editorStore.form.form_fields.find(
     (field) => field.field_name === props.field_name
   )
   if(field?.type !== "select" && field?.type !== "checkboxList") {
@@ -97,7 +97,7 @@ const dependsOnFieldsOptions = computed(() => {
   // Get all fields that are not the current field and where the step index is lower or equal to the current field's step index
   // Make sure the fields are not already selected as dependencies
   // These fields can be used as dependencies if they are select or checkbox fields
-  return editorStore.form.fields
+  return editorStore.form.form_fields
     .filter((f) => {
       if (!field.value) return false;
       return (
@@ -119,7 +119,7 @@ const dependsOnFieldsOptions = computed(() => {
 
 const dependsOnValuesOptions = computed(() => {
   // Get the currentlly selected field_name's options if it is a select or checkboxList field
-  const currentField = editorStore.form.fields.find(
+  const currentField = editorStore.form.form_fields.find(
     (f) => f.field_name === model.value?.field_name
   );
   if (!currentField) return [];
