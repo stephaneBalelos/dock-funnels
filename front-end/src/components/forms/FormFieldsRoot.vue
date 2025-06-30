@@ -29,7 +29,7 @@ import FormFieldCheckboxList from "./FormFields/FormFieldCheckboxList.vue";
 import FormFieldSubmissionSummary from "./FormFields/FormFieldSubmissionSummary.vue";
 
 type Props = {
-    field: Form["fields"][number];
+    field: Form["form_fields"][number];
 }
 
 const props = defineProps<Props>();

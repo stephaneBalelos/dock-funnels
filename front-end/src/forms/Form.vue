@@ -14,14 +14,13 @@
 </template>
 
 <script setup lang="ts">
-import { inject, onMounted, ref } from "vue";
+import { inject, onMounted } from "vue";
 import DockFunnelForm from "@/components/forms/DockFunnelForm.vue";
 import { useFormSubmissionStateStore } from "@/forms/stores/submission.store";
 import { getFormById } from "@/api/wpAjaxApi.ts";
 import type { Form } from "@/types";
 import { FormTestData } from "@/utils";
 
-const formTest = ref<Form | null>(FormTestData);
 
 const submissionStateStore = useFormSubmissionStateStore();
 const endpoint = inject("ajaxUrl") as string | undefined;
@@ -31,9 +30,12 @@ const formId = inject("formId") as number | undefined;
 onMounted(async () => {
   if (!endpoint || !nonce || !formId) {
     console.error("API endpoint, nonce, or formId is not provided.");
-    if (formTest.value) {
-      submissionStateStore.form.value = formTest.value;
-      return;
+    submissionStateStore.form.value = {
+      id: FormTestData.id || 0,
+      title: FormTestData.title,
+      description: FormTestData.description,
+      form_steps: FormTestData.form_steps,
+      form_fields: FormTestData.form_fields,
     }
     return;
   }

@@ -37,7 +37,7 @@ const props = defineProps<Props>();
 const submissionStateStore = useFormSubmissionStateStore();
 
 const field = computed(() => {
-  return submissionStateStore.form.value?.fields.find(
+  return submissionStateStore.form.value?.form_fields.find(
     (f) => f.field_name === props.field_name
   );
 });

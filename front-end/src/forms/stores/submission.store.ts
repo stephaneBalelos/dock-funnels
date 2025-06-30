@@ -20,16 +20,14 @@ export const useFormSubmissionStateStore = createGlobalState(
         const submissionSettings = ref<FormSubmissionSettings | null>(null) // Settings for form submission
         const form = ref<Form | null>(null)
         const formSubmissionFields = ref<Map<string, FormSubmissionField>>(new Map()) // Fields for form submission, keyed by field_name
-
         const currentStepIndex = ref(0)
-        const showIntroStep = ref(false) // Whether to show the intro step
-        const showSuccessStep = ref(false) // Whether to show the success step after submission
+        const isFormSubmitted = ref(false) // Flag to indicate if the form has been submitted
 
         const currentStepErrors = ref<FormFieldError[]>([])
 
         function setFieldValue(field_name: string, value: string | string[] | null) {
             if (form.value) {
-                const field = form.value.fields.find(f => f.field_name === field_name)
+                const field = form.value.form_fields.find(f => f.field_name === field_name)
                 if (!field) {
                     console.warn(`Field with name "${field_name}" not found in form.`)
                     return
@@ -170,7 +168,7 @@ export const useFormSubmissionStateStore = createGlobalState(
         const fieldsForCurrentStep = computed(() => {
             if (!form.value) return []
             // Filter fields that belong to the current step
-            const f = form.value.fields.filter(field => field.step_index === currentStepIndex.value)
+            const f = form.value.form_fields.filter(field => field.step_index === currentStepIndex.value)
             // filter out fields that are not visible based on their dependencies
             return f.filter(field => {
                 if (!field.depends_on) return true // No dependencies, always visible
@@ -190,12 +188,7 @@ export const useFormSubmissionStateStore = createGlobalState(
             if (newForm) {
                 formSubmissionFields.value.clear() // Clear previous form submission fields
                 currentStepIndex.value = 0
-                if (newForm.intro_step) {
-                    showIntroStep.value = newForm.intro_step.enabled // Show intro step if it exists
-                }
-                else {
-                    showIntroStep.value = false // Hide intro step if it doesn't exist
-                }
+                isFormSubmitted.value = false // Reset submission state
 
                 // Init First Step Fields with default values
                 fieldsForCurrentStep.value.forEach(field => {
@@ -244,7 +237,7 @@ export const useFormSubmissionStateStore = createGlobalState(
                 const res = await submitFormResponse(endpoint, nonce, submissionData)
                 if (res.success) {
                     console.log('Form submission saved successfully:', res)
-                    showSuccessStep.value = true // Show success step after submission
+                    isFormSubmitted.value = true // Set form as submitted
                     return true // Submission successful
                 }
                 else {
@@ -264,8 +257,7 @@ export const useFormSubmissionStateStore = createGlobalState(
             form,
             formSubmissionFields,
             currentStepIndex,
-            showIntroStep,
-            showSuccessStep,
+            isFormSubmitted,
             fieldsForCurrentStep,
             setFieldValue,
             nextStep,
