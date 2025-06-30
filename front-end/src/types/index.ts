@@ -33,7 +33,7 @@ export type FormSmtpSettings = {
 
 // Settings to notify Form Admins via email when a form is submitted
 export type FormNotificationSettings = {
-    email: string; // Email address to send notifications to
+    emails: string; // Email addresses to notify, comma-separated
     subject: string; // Subject of the notification email
     body: string; // Message body of the notification email
 }

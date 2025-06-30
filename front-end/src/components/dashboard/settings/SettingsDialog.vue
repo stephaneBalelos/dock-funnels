@@ -24,9 +24,7 @@
             <EmailSettingTab />
           </TabPanel>
           <TabPanel value="2">
-            <div>
-              Header III Content
-            </div>
+            <NotificationsSettingsTab />
           </TabPanel>
         </TabPanels>
       </Tabs>
@@ -38,6 +36,7 @@
 import { ref } from "vue";
 import GeneralSettingsTab from "./GeneralSettingsTab.vue";
 import EmailSettingTab from "./EmailSettingTab.vue";
+import NotificationsSettingsTab from "./NotificationsSettingsTab.vue";
 
 const visible = ref(false);
 

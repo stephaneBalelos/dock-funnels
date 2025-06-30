@@ -42,6 +42,7 @@ declare module 'vue' {
     InputNumber: typeof import('primevue/inputnumber')['default']
     InputText: typeof import('primevue/inputtext')['default']
     Message: typeof import('primevue/message')['default']
+    NotificationsSettingsTab: typeof import('./src/components/dashboard/settings/NotificationsSettingsTab.vue')['default']
     Select: typeof import('primevue/select')['default']
     SettingsDialog: typeof import('./src/components/dashboard/settings/SettingsDialog.vue')['default']
     SpeedDial: typeof import('primevue/speeddial')['default']
