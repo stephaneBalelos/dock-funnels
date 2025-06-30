@@ -120,7 +120,7 @@ onMounted(() => {
     <div class="sidebar-right flex flex-col">
       <FieldEditor />
     </div>
-    <Toast />
+    <Toast position="top-center" />
   </div>
 </template>
 

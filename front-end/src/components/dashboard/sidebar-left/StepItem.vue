@@ -129,6 +129,7 @@ const updateStep = () => {
     description: state.value.description,
   });
   toggleEdit();
+  editorStore.saveFormState();
 };
 const cancelEdit = () => {
   state.value.title = props.step.title;

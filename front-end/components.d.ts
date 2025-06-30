@@ -39,6 +39,8 @@ declare module 'vue' {
     FormStepPreview: typeof import('./src/components/dashboard/preview/FormStepPreview.vue')['default']
     FormTitle: typeof import('./src/components/dashboard/header/FormTitle.vue')['default']
     GeneralSettingsTab: typeof import('./src/components/dashboard/settings/GeneralSettingsTab.vue')['default']
+    InputGroup: typeof import('primevue/inputgroup')['default']
+    InputGroupAddon: typeof import('primevue/inputgroupaddon')['default']
     InputNumber: typeof import('primevue/inputnumber')['default']
     InputText: typeof import('primevue/inputtext')['default']
     Message: typeof import('primevue/message')['default']
@@ -51,6 +53,7 @@ declare module 'vue' {
     TabPanel: typeof import('primevue/tabpanel')['default']
     TabPanels: typeof import('primevue/tabpanels')['default']
     Tabs: typeof import('primevue/tabs')['default']
+    Textarea: typeof import('primevue/textarea')['default']
     Toast: typeof import('primevue/toast')['default']
     ToggleSwitch: typeof import('primevue/toggleswitch')['default']
   }
