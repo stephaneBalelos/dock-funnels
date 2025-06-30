@@ -7,7 +7,8 @@
     "dev": "vite",
     "build:forms": "vue-tsc -b && vite build",
     "build:dashboard": "vue-tsc -b && vite build --config vite.dashboard.config.ts",
-    "build": "npm run build:forms && npm run build:dashboard",
+    "build": "pnpm build:forms && pnpm build:dashboard",
+    "build:dashboard:watch": "pnpm build --config vite.dashboard.config.ts --watch",
     "preview": "vite preview"
   },
   "dependencies": {
