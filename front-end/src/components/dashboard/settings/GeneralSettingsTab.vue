@@ -1,9 +1,11 @@
 <template>
   <div v-if="editorStore.form" class="flex flex-col">
     <Form
+      v-if="initialValues"
       v-slot="$form"
       :resolver="resolver"
       :initialValues="initialValues"
+      :validateOnSubmit="true"
       @submit="$e => onFormSubmit($e as FormSubmitEvent<Schema>)"
       class="flex justify-center flex-col gap-4"
     >
@@ -73,10 +75,10 @@ import type { FormSubmitEvent } from "@primevue/forms";
 import { useEditorStore } from "@/dashboard/editor.store";
 import { Icon } from "@iconify/vue";
 
-const initialValues = ref({
-  title: "",
-  description: "",
-});
+const initialValues = ref<{
+  title: string;
+  description?: string;
+}>();
 
 const schema = z.object({
   title: z.string().min(1, { message: "Geben Sie einen Titel ein." }),

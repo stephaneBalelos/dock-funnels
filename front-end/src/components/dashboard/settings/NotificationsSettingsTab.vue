@@ -1,9 +1,14 @@
 <template>
-  <Form
+  <div class="flex flex-col">
+    <h2 class="text-xl font-semibold mb-2">E-Mail Benachrichtigungen</h2>
+    <p class="text-sm text-gray-600 mb-6">
+      Konfigurieren Sie die E-Mail-Benachrichtigungen, die an die Formularadministratoren gesendet werden, wenn ein Formular eingereicht wird.
+    </p>
+  </div>
+  <Form v-if="initialValues"
     v-slot="$form"
     :resolver="resolver"
     :initialValues="initialValues"
-    :validate-on-blur="true"
     @submit="$e => onFormSubmit($e as FormSubmitEvent<Schema>)"
     class="flex justify-center flex-col gap-4"
   >
@@ -44,6 +49,9 @@
     </div>
     <div class="flex flex-col gap-1">
       <label for="form-body" class="font-semibold">E-Mail Inhalt</label>
+      <p class="text-sm text-gray-600 mb-2">
+        Sie können Platzhalter wie {summary} verwenden, um die Formulardaten einzufügen.
+      </p>
       <Editor name="body" editorStyle="height: 320px" />
       <Message
         v-if="$form.content?.invalid"
@@ -71,12 +79,9 @@ import { useToast } from "primevue/usetoast";
 import { z } from "zod";
 import type { FormSubmitEvent } from "@primevue/forms";
 import { useEditorStore } from "@/dashboard/editor.store";
+import type { FormNotificationSettings } from "@/types";
 
-const initialValues = ref({
-  emails: "",
-  subject: "",
-  body: "",
-});
+const initialValues = ref<FormNotificationSettings>();
 
 const schema = z
   .object({
@@ -116,6 +121,7 @@ const toast = useToast();
 const editorStore = useEditorStore();
 
 const onFormSubmit = ($event: FormSubmitEvent<Schema>) => {
+  console.log($event);
   if (!$event.valid) {
     return;
   }
@@ -138,6 +144,7 @@ onMounted(() => {
       body: editorStore.form.form_settings.notifications_settings.body || "",
     };
   }
+  console.log("Initial values:", initialValues.value);
 })
 </script>
 
