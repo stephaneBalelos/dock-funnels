@@ -47,7 +47,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="h-lvh app-container">
+  <div class="h-lvh app-container pb-16">
     <div class="header flex justify-between items-center p-4 shadow">
       <div class="flex items-center gap-4">
         <FormTitle v-if="editorStore.form.title" />
