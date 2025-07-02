@@ -30,7 +30,7 @@ body {
 .app-container {
   display: grid;
   grid-template-columns: repeat(14, 1fr);
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto 1fr;
 }
 
 .app-container > .header {
@@ -40,18 +40,40 @@ body {
   border-bottom: 1px solid #dee2e6;
   height: 60px;
 }
-.app-container > .sidebar-left {
-  grid-column: 1 / 4;
+
+.app-container > .toolbar {
+  grid-column: 1 / -1;
+  padding: 0.5rem 1rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.app-container > .main-content {
+  grid-column: 1 / -1;
+  background-color: #ffffff;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: row;
+  grid-template-rows: 1fr;
+}
+
+.main-content > .sidebar-left {
+  width: 100%;
+  max-width: 300px;
   background-color: #f8f9fa;
   border-right: 1px solid #dee2e6;
 }
-.app-container > .sidebar-right {
-  grid-column: 11 / -1;
+.main-content > .sidebar-right {
+  width: 100%;
+  max-width: 300px;
   background-color: #f8f9fa;
   border-left: 1px solid #dee2e6;
 }
-.app-container > .main {
-  grid-column: 4 / 11;
+.main-content > .main {
+  flex-grow: 1;
+  width: 100%;
   padding: 1rem;
   background-color: #ffffff;
 }

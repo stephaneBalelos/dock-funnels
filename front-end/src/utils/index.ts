@@ -224,6 +224,7 @@ export const FormTestData: FormState = {
       subject: "Neue Terminvereinbarung",
       body: "Sie haben eine neue Terminvereinbarung erhalten.",
     },
+    onSubmitAction: [],
     smtp_settings: {
       host: "",
       port: 587,

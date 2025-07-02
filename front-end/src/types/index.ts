@@ -16,6 +16,22 @@ export type FormSettings = {
     smtp_settings: FormSmtpSettings; // SMTP settings for sending emails
     notifications_settings: FormNotificationSettings
     email_settings: FormEmailSettings; // Settings to notify users via email when a form is submitted
+    onSubmitAction: FormOnSubmitAction[]; // Actions to perform when the form is submitted
+}
+
+// Form On Submit Action Types, these are the actions that can be performed when the form is submitted
+export type FormOnSubmitAction = FormOnSubmitActionRedirect | FormOnSubmitActionMail;
+
+export type FormOnSubmitActionRedirect = {
+    type: 'redirect'; // Type of action is redirect
+    url: string; // URL to redirect to after form submission
+}
+
+export type FormOnSubmitActionMail = {
+    type: 'mail'; // Type of action is mail
+    subject: string; // Subject of the email to send
+    body: string; // Body of the email to send
+    email_field: string; // Name of the field that contains the user's email address
 }
 
 // SMTP settings for sending emails

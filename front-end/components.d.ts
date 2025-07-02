@@ -48,6 +48,10 @@ declare module 'vue' {
     SettingsDialog: typeof import('./src/components/dashboard/settings/SettingsDialog.vue')['default']
     SpeedDial: typeof import('primevue/speeddial')['default']
     StepItem: typeof import('./src/components/dashboard/sidebar-left/StepItem.vue')['default']
+    SubmissionActionEditor: typeof import('./src/components/dashboard/submissions-actions/SubmissionActionEditor.vue')['default']
+    SubmissionActionEditorMail: typeof import('./src/components/dashboard/submissions-actions/SubmissionActionEditorMail.vue')['default']
+    SubmissionActionEditorRedirect: typeof import('./src/components/dashboard/submissions-actions/SubmissionActionEditorRedirect.vue')['default']
+    SubmissionsActions: typeof import('./src/components/dashboard/submissions-actions/SubmissionsActions.vue')['default']
     Tab: typeof import('primevue/tab')['default']
     TabList: typeof import('primevue/tablist')['default']
     TabPanel: typeof import('primevue/tabpanel')['default']
@@ -55,5 +59,6 @@ declare module 'vue' {
     Tabs: typeof import('primevue/tabs')['default']
     Toast: typeof import('primevue/toast')['default']
     ToggleSwitch: typeof import('primevue/toggleswitch')['default']
+    Toolbar: typeof import('primevue/toolbar')['default']
   }
 }

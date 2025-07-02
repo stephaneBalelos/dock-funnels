@@ -1,8 +1,14 @@
 import { createForm, deleteForm, updateForm } from "@/api/wpAjaxApi"
-import type { FormFieldCheckboxList, FormFieldDependsOn, FormFieldSelect, FormFieldSubmissionSummary, FormFieldText, FormState } from "@/types"
+import type { FormFieldCheckboxList, FormFieldDependsOn, FormFieldSelect, FormFieldSubmissionSummary, FormFieldText, FormOnSubmitAction, FormState } from "@/types"
 import { createGlobalState } from "@vueuse/core"
 import { computed, nextTick, reactive, ref } from "vue"
 
+type EditorState = {
+    editorMode: 'edit' | 'preview' | 'submission-actions', // 'edit',
+    isLoading: boolean,
+    isSaving: boolean,
+    error: string | null
+}
 
 export const useEditorStore = createGlobalState(() => {
     const apiSettings = ref({
@@ -10,7 +16,8 @@ export const useEditorStore = createGlobalState(() => {
         nonce: '',
         editFormId: 0
     })
-    const editorState = ref({
+    const editorState = ref<EditorState>({
+        editorMode: 'edit', // 'edit', 'preview', flow
         isLoading: false,
         isSaving: false,
         error: null as string | null
@@ -37,6 +44,7 @@ export const useEditorStore = createGlobalState(() => {
                 subject: 'Neue Formularübermittlung',
                 body: 'Hallo Admin, \n\nEs wurde ein neues Formular übermittelt. Hier sind die Details:\n\n{submission_details}\n\nVielen Dank!'
             },
+            onSubmitAction: [],
             email_settings: {
                 enabled: false,
                 send_to_admin: false,
@@ -380,6 +388,32 @@ export const useEditorStore = createGlobalState(() => {
     }
 
     /**
+     * Saves the onSubmit action at the specified index.
+     * push action to the form's onSubmitAction array when index is not found
+     * @param {number} index - The index of the action to save.
+     * @param {FormOnSubmitAction} action - The action to save.
+     */
+    const saveSubmissionAction = (index: number, action: FormOnSubmitAction) => {
+        if (index < 0 || index >= form.form_settings.onSubmitAction.length) {
+            // If index is out of bounds, push the action to the array
+            form.form_settings.onSubmitAction.push(action)
+        } else {
+            // Otherwise, update the existing action at the specified index
+            form.form_settings.onSubmitAction[index] = action
+        }
+    }
+
+    const removeSubmissionAction = (index: number) => {
+        if (index < 0 || index >= form.form_settings.onSubmitAction.length) {
+            console.warn('Invalid index for submission action:', index)
+            return
+        }
+        // Remove the action at the specified index
+        form.form_settings.onSubmitAction.splice(index, 1)
+    }
+
+
+    /**
      * Saves the current form state to the server.
      * @returns {Promise<any>} The response from the server.
      */
@@ -391,6 +425,7 @@ export const useEditorStore = createGlobalState(() => {
         try {
             editorState.value.isSaving = true; // Set saving state
             if (!endpoint || !nonce) {
+                console.log(formState)
                 throw new Error("Endpoint or nonce not provided");
             }
             if (!editFormId) {
@@ -458,6 +493,8 @@ export const useEditorStore = createGlobalState(() => {
         removeFieldDependency,
         addOptionDependency,
         removeOptionDependency,
+        saveSubmissionAction,
+        removeSubmissionAction,
         saveFormState,
         formDelete
     }
