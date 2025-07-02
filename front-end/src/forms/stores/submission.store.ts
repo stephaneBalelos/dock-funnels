@@ -232,7 +232,8 @@ export const useFormSubmissionStateStore = createGlobalState(
                 if (res.success) {
                     console.log('Form submission saved successfully:', res)
                     isFormSubmitted.value = true // Set form as submitted
-                    return true // Submission successful
+                    
+                    return res.data// Submission successful
                 }
                 else {
                     console.error('Form submission failed:', res)

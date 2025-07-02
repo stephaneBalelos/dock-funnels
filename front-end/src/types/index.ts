@@ -25,6 +25,7 @@ export type FormOnSubmitAction = FormOnSubmitActionRedirect | FormOnSubmitAction
 export type FormOnSubmitActionRedirect = {
     type: 'redirect'; // Type of action is redirect
     url: string; // URL to redirect to after form submission
+    open_in_new_tab: boolean; // Whether to open the URL in a new tab
 }
 
 export type FormOnSubmitActionMail = {

@@ -97,7 +97,16 @@ export const getFormById = async (endpoint: string, nonce: string, formId: numbe
 }
 
 
-export const submitFormResponse = async (endpoint: string, nonce: string, formSubmission: Record<string, any>) => {
+
+type FormSubmitResponseType = {
+    success: boolean;
+    data: {
+        message: string;
+        redirect_url?: string; // Optional redirect URL
+        submission_id?: number; // Optional submission ID
+    }
+}
+export const submitFormResponse = async (endpoint: string, nonce: string, formSubmission: Record<string, any>) : Promise<FormSubmitResponseType> => {
     try {
         const response = await fetch(`${endpoint}?action=dock_funnel_ajax_submit_form`, {
             method: 'POST',

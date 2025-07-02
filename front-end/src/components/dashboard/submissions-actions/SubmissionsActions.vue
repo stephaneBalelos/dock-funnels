@@ -10,6 +10,8 @@
         <div
           v-for="(action, index) in editStore.form.form_settings.onSubmitAction"
           :key="index"
+          :class="selectedActionIdx == index ? 'border border-blue-300' : ''"
+          class="rounded-lg shadow hover:shadow-lg transition-shadow duration-200 cursor-pointer"
         >
           <Card v-if="action.type == 'mail'" style="overflow: hidden">
             <template #title>{{ action.type }}</template>
@@ -101,7 +103,8 @@ const addAction = (actionType: FormOnSubmitAction['type']) => {
     } else if (actionType === 'redirect') {
         newAction = {
             type: 'redirect',
-            url: ''
+            url: '',
+            open_in_new_tab: false
         };
     } else {
         return;

@@ -82,8 +82,9 @@
         </button>
         <button
           class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-blue-500 text-white hover:bg-blue-600 focus:shadow-[0_0_0_2px] focus:shadow-blue-700 outline-none"
-          @click="submissionStateStore.saveFormSubmission"
+          @click="() => submitForm()"
           v-if="submissionStateStore.currentStepIndex.value === submissionStateStore.form.value?.form_steps.length - 1"
+          :disabled="isSubmitting"
         >
           Abschließen
         </button>
@@ -96,7 +97,7 @@
 import { useFormSubmissionStateStore } from "@/forms/stores/submission.store.ts";
 import type { Form } from "../../types/index.ts";
 import FormFieldsRoot from "./FormFieldsRoot.vue";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 
 type Props = {
   form: Form;
@@ -104,6 +105,7 @@ type Props = {
 
 const props = defineProps<Props>();
 const submissionStateStore = useFormSubmissionStateStore();
+const isSubmitting = ref(false);
 
 const currentStep = computed(() => {
   if (!submissionStateStore.form.value) return null;
@@ -114,6 +116,28 @@ const currentStep = computed(() => {
     ] || null
   );
 });
+
+const submitForm = async () => {
+  isSubmitting.value = true;
+  try {
+    // Validate the form before submission
+    const res = await submissionStateStore.saveFormSubmission()
+    if (res) {
+      if (res.redirect_url) {
+        // If a redirect URL is provided, navigate to it
+        window.location.href = res.redirect_url;
+      }
+    } else {
+      console.error("Form submission failed");
+    }
+  } catch (error) {
+    // Handle validation errors
+    console.error("Form validation failed:", error);
+    return;
+  } finally {
+    isSubmitting.value = false;
+  }
+};
 
 const refreshPage = () => {
   // Refresh the page to reset the form state
