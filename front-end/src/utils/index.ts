@@ -220,7 +220,7 @@ export const FormTestData: FormState = {
   ],
   form_settings: {
     notifications_settings: {
-      email: "",
+      emails: "",
       subject: "Neue Terminvereinbarung",
       body: "Sie haben eine neue Terminvereinbarung erhalten.",
     },

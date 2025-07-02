@@ -32,6 +32,12 @@ class DockFunnels_Ajax
         if (!$form_id) {
             wp_send_json_error(['message' => 'Invalid form ID.']);
         }
+
+        $form = DockFunnels_DB::get_form_by_id($form_id);
+        if (!$form) {
+            wp_send_json_error(['message' => 'Form not found.']);
+        }
+
         $fields = isset($submission['fields']) ? $submission['fields'] : [];
         if (empty($fields)) {
             wp_send_json_error(['message' => 'No fields data provided.']);
@@ -43,12 +49,7 @@ class DockFunnels_Ajax
         }
 
         // Send Response Per Mail
-        DockFunnels_Mailing::send_email(
-            get_option('admin_email'),
-            'New Form Submission',
-            'A new form submission has been received. Form ID: ' . $form_id . ', Submission ID: ' . $submission_id,
-            ['Content-Type: text/html; charset=UTF-8']
-        );
+        DockFunnels_Mailing::send_notifications_emails($form, $fields);
 
         wp_send_json_success(['message' => 'Thank you! Your response has been recorded.']);
     }

@@ -209,17 +209,11 @@ export const useFormSubmissionStateStore = createGlobalState(
                 return false
             }
             // Prepare the submission data
+            const fields = Object.fromEntries(formSubmissionFields.value.entries())
+            console.log('Form submission fields:', fields)
             const submissionData: Record<string, any> = {
                 form_id: form.value.id,
-                fields: Object.fromEntries(
-                    Object.entries(formSubmissionFields.value)
-                        .filter(([_, field]) => field.value !== undefined) // Filter out fields without values
-                        .filter(([_, field]) => field.value !== null) // Filter out fields with null
-                        .map(([field_name, field]) => [
-                            field_name,
-                            field.value || null // Use null for empty values
-                        ])
-                ),
+                fields: fields,
             }
             console.log('Saving form submission:', submissionData)
             try {
