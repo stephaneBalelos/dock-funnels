@@ -51,7 +51,34 @@ class DockFunnels_Ajax
         // Send Response Per Mail
         DockFunnels_Mailing::send_notifications_emails($form, $fields);
 
-        wp_send_json_success(['message' => 'Thank you! Your response has been recorded.']);
+        // Run Form On Submit Actions
+        $form_settings = json_decode($form->form_settings, true);
+        $on_submit_actions = isset($form_settings['onSubmitAction']) ? $form_settings['onSubmitAction'] : [];
+        $redirect_url = '';
+        if (!empty($on_submit_actions)) {
+            foreach ($on_submit_actions as $action) {
+                if ($action['type'] === 'redirect') {
+                    // Redirect to the specified URL
+                    $redirect_url = isset($action['url']) ? esc_url_raw($action['url']) : '';
+                } elseif ($action['type'] === 'mail') {
+                    // Send email notification
+                    DockFunnels_Mailing::handleOnSubmitActionMail($form, $fields, $action);
+                } else {
+                    continue; // Skip unsupported action types
+                }
+            }
+        }
+
+        $response = [
+            'message' => 'success',
+            'submission_id' => $submission_id,
+        ];
+
+        if (!empty($redirect_url)) {
+            $response['redirect_url'] = $redirect_url;
+        }
+
+        wp_send_json_success($response);
     }
 
     public static function create_form()

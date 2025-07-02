@@ -52,6 +52,31 @@ class DockFunnels_Mailing {
         ]);
     }
 
+    public static function handleOnSubmitActionMail($form, $submission, $action) {
+        $email_field = $action['email_field'] ?? '';
+        if (empty($email_field)) {
+            return false; // No email field specified
+        }
+        $email_to = isset($submission[$email_field]) ? $submission[$email_field]['value'] : '';
+        if (empty($email_to)) {
+            return false; // No email value found in submission
+        }
+        $subject = isset($action['subject']) ? $action['subject'] : '';
+        $body = isset($action['body']) ? $action['body'] : '';
+        $placeholders = [
+            '{form_name}' => $form->name,
+            '{form_description}' => $form->description,
+            '{submission_data}' => self::get_submission_html($form, $submission),
+        ];
+        $subject = strtr($subject, $placeholders);
+        $body = strtr($body, $placeholders);
+        $headers = [
+            'Content-Type: text/html; charset=UTF-8',
+        ];
+        // Send the email
+        return self::send_email($email_to, $subject, $body, $headers);
+    }
+
 
     private static function get_submission_html($form, $submission_fields) {
         // Generate HTML for the submission data
