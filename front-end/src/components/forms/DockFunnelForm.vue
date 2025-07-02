@@ -42,7 +42,7 @@
           class="mt-4"
           @click="submissionStateStore.nextStep"
           label="Weiter"
-          variant="primary"
+          :severity="'primary'"
         />
       </div>
     </div>
@@ -65,29 +65,27 @@
     </div>
     <div class="dockfunnelform-footer border-t border-gray-200 p-4">
       <div class="flex justify-between">
-        <button
-          class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-gray-500 text-white hover:bg-gray-600 focus:shadow-[0_0_0_2px] focus:shadow-blue-700 outline-none"
+        <Button
           @click="submissionStateStore.previousStep"
           :disabled="submissionStateStore.currentStepIndex.value === 0"
           v-if="submissionStateStore.currentStepIndex.value > 0"
         >
           Zurück
-        </button>
-        <button
-          class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-blue-500 text-white hover:bg-blue-600 focus:shadow-[0_0_0_2px] focus:shadow-blue-700 outline-none ml-auto"
+        </Button>
+        <Button
+          class="ml-auto"
           @click="submissionStateStore.nextStep"
           v-if="submissionStateStore.currentStepIndex.value < submissionStateStore.form.value?.form_steps.length - 1"
         >
           Weiter
-        </button>
-        <button
-          class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-blue-500 text-white hover:bg-blue-600 focus:shadow-[0_0_0_2px] focus:shadow-blue-700 outline-none"
+        </Button>
+        <Button
           @click="() => submitForm()"
           v-if="submissionStateStore.currentStepIndex.value === submissionStateStore.form.value?.form_steps.length - 1"
           :disabled="isSubmitting"
         >
           Abschließen
-        </button>
+        </Button>
       </div>
     </div>
   </div>

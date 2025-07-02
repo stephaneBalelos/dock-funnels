@@ -219,6 +219,14 @@ export const FormTestData: FormState = {
     },
   ],
   form_settings: {
+    design_settings: {
+      colors: {
+        primary: "#0073aa", // Primary color for the form
+        secondary: "#005177", // Secondary color for the form
+        background: "#f7f7f7", // Background color for the form
+        text: "#333333", // Text color for the form
+      },
+    },
     notifications_settings: {
       emails: "",
       subject: "Neue Terminvereinbarung",

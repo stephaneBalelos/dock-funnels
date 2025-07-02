@@ -17,6 +17,16 @@ export type FormSettings = {
     notifications_settings: FormNotificationSettings
     email_settings: FormEmailSettings; // Settings to notify users via email when a form is submitted
     onSubmitAction: FormOnSubmitAction[]; // Actions to perform when the form is submitted
+    design_settings: FormDesignSettings; // Design settings for the form
+}
+
+export type FormDesignSettings = {
+    colors: {
+        primary: string; // Primary color for the form
+        secondary: string; // Secondary color for the form
+        background: string; // Background color for the form
+        text: string; // Text color for the form
+    }
 }
 
 // Form On Submit Action Types, these are the actions that can be performed when the form is submitted
