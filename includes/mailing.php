@@ -74,9 +74,6 @@ class DockFunnels_Mailing {
                     continue; // Skip fields that were not submitted
                 }
                 $field_value = $submitted_field['value'];
-                if (is_array($field_value)) {
-                    $field_value = implode(', ', $field_value); // Handle multi-select fields
-                }
                 // Handle Select fields with options
                 if ($field['type'] === 'select' && isset($field['options']) && is_array($field['options'])) {
                     $selected_option_label = array_find($field['options'], function ($option) use ($field_value) {
@@ -87,6 +84,21 @@ class DockFunnels_Mailing {
                     } else {
                         $field_value = 'N/A'; // If no matching option found
                     }
+                }
+                // Handle Checkbox fields with multiple values
+                if ($field['type'] === 'checkboxList' && is_array($field_value)) {
+                    $field_options = isset($field['options']) ? $field['options'] : [];
+                    $field_value = array_map(function ($value) use ($field_options) {
+                        $option = array_find($field_options, function ($option) use ($value) {
+                            return $option['value'] === $value;
+                        });
+                        return $option ? $option['label'] : $value; // Use label if available, otherwise use value
+                    }, $field_value);
+                    $field_value = implode(', ', $field_value); // Join multiple values with a comma
+                }
+
+                if (is_array($field_value)) {
+                    $field_value = implode(', ', $field_value); // Handle multi-select fields
                 }
 
                 
