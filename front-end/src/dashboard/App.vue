@@ -9,10 +9,9 @@ import FieldEditor from "@/components/dashboard/sidebar-right/FieldEditor.vue";
 import Button from "primevue/button";
 import { getFormById } from "@/api/wpAjaxApi";
 import type { FormState } from "@/types";
-import FormExporter from "@/components/dashboard/header/FormExporter.vue";
-import FormImporter from "@/components/dashboard/header/FormImporter.vue";
 import { FormTestData } from "@/utils";
 import SettingsDialog from "@/components/dashboard/settings/SettingsDialog.vue";
+import ImportExportDialog from "@/components/dashboard/header/ImportExportDialog.vue";
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
 
@@ -65,8 +64,18 @@ onMounted(() => {
         </SettingsDialog>
       </div>
       <div class="flex gap-2">
-        <FormImporter />
-        <FormExporter />
+        <ImportExportDialog v-if="editorStore.form" v-slot="{ openDialog }">
+          <Button
+            aria-label="Import/Export Form"
+            @click="openDialog"
+            size="small"
+            severity="secondary"
+            class="flex items-center"
+          >
+            <Icon icon="heroicons:arrow-up-tray" class="mr-2" />
+            Import/Export
+          </Button>
+        </ImportExportDialog>
         <div v-if="editorStore.editorState.value.isSaving" class="flex items-center">
           <Badge severity="secondary">
             Wird gespeichert

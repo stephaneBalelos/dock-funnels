@@ -39,6 +39,7 @@ declare module 'vue' {
     FormStepPreview: typeof import('./src/components/dashboard/preview/FormStepPreview.vue')['default']
     FormTitle: typeof import('./src/components/dashboard/header/FormTitle.vue')['default']
     GeneralSettingsTab: typeof import('./src/components/dashboard/settings/GeneralSettingsTab.vue')['default']
+    ImportExportDialog: typeof import('./src/components/dashboard/header/ImportExportDialog.vue')['default']
     InputNumber: typeof import('primevue/inputnumber')['default']
     InputText: typeof import('primevue/inputtext')['default']
     Message: typeof import('primevue/message')['default']

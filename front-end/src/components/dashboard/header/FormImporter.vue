@@ -11,7 +11,6 @@ const fileupload = ref();
 const editorStore = useEditorStore();
 
 const handleSelect = (event: any) => {
-    console.log("Selected files:", event.files);
     const file = event.files[0];
     if (file) {
         const reader = new FileReader();
