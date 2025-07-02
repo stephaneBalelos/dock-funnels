@@ -24,7 +24,7 @@
         {{ submissionStateStore.currentStepErrors.value.find(e => e.joined_path === props.field.field_name)?.message }}
       </Message>
       <div
-        v-for="option in props.field.options.filter(shoulShowOption)"
+        v-for="option in props.field.options.filter(submissionStateStore.shoulShowChechboxListOption)"
         :key="field.field_name + option.value"
         class="flex items-center gap-2"
       >
@@ -46,7 +46,6 @@
 <script setup lang="ts">
 import type {
   FormFieldCheckboxList,
-  FormFieldCheckboxListOption,
 } from "@/types";
 import { useFormSubmissionStateStore } from "@/forms/stores/submission.store";
 import { onMounted, ref, watch } from "vue";
@@ -64,7 +63,7 @@ const submissionStateStore = useFormSubmissionStateStore();
 
 onMounted(() => {
   const initialValue = submissionStateStore.formSubmissionFields.value.get(props.field.field_name)?.value as string[] | undefined;
-  const allowedValues = props.field.options.filter(shoulShowOption).map((option) => option.value);
+  const allowedValues = props.field.options.filter(submissionStateStore.shoulShowChechboxListOption).map((option) => option.value);
 
   if (initialValue) {
     // Filter initial value to only include allowed values
@@ -74,27 +73,6 @@ onMounted(() => {
   }
 });
 
-function shoulShowOption(option: FormFieldCheckboxListOption) {
-  if (!option.depends_on) {
-    return true;
-  }
-  // Check dependencies
-  const dependencies: boolean[] = option.depends_on.map((dep) => {
-    const field_name = dep.field_name;
-    const dependsOnField =
-      submissionStateStore.formSubmissionFields.value.get(field_name);
-    if (!dependsOnField) {
-      return false;
-    }
-    const dependsOnValue = dependsOnField.value;
-    if (Array.isArray(dependsOnValue)) {
-      return dependsOnValue.includes(dep.value as string);
-    }
-    return dependsOnValue === dep.value;
-  });
-
-  return dependencies.every((dep) => dep);
-}
 
 watch(
   selectedValues,

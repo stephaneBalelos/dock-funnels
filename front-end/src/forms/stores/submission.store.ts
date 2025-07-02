@@ -1,6 +1,6 @@
 import { createGlobalState } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
-import type { Form, FormSubmissionField } from '@/types'
+import type { Form, FormFieldCheckboxListOption, FormFieldSelectOption, FormSubmissionField } from '@/types'
 import z from 'zod'
 import { submitFormResponse } from '@/api/wpAjaxApi'
 
@@ -112,15 +112,17 @@ export const useFormSubmissionStateStore = createGlobalState(
                         fieldSchema = z.nativeEnum(values, { message: `${field.label} ist erforderlich` })
                         break
                     case 'checkboxList':
-                        const checkboxValues = field.options ? field.options.map(option => option.value) : []
+                        const checkboxValues = field.options.filter(shoulShowChechboxListOption).map(option => option.value)
+                        console.log('checkboxList field', field, checkboxValues)
                         fieldSchema = z.array(z.enum([checkboxValues[0], ...checkboxValues]))
                         if (checkboxValues.length === 1 && field.min === 1) {
                             fieldSchema = fieldSchema.nonempty(`${field.label} muss ausgewählt werden`)
                         } else {
                             if (field.min && field.min > 0) {
-                                fieldSchema = fieldSchema.min(field.min, `${field.label}: Sie müssen mindestens ${field.min} auswählen`)
+                                const min = Math.min(field.min, checkboxValues.length)
+                                fieldSchema = fieldSchema.min(min, `${field.label}: Sie müssen mindestens ${field.min} auswählen`)
 
-                                if (field.max && field.max >= field.min) {
+                                if (field.max && field.max >= min) {
                                     fieldSchema = fieldSchema.max(field.max, `${field.label}: Sie können maximal ${field.max} auswählen`)
                                 }
                             }
@@ -183,6 +185,52 @@ export const useFormSubmissionStateStore = createGlobalState(
             })
         })
 
+        // Filter checkbox list options based on their dependencies
+        function shoulShowChechboxListOption(option: FormFieldCheckboxListOption) {
+            if (!option.depends_on) {
+                return true;
+            }
+            // Check dependencies
+            const dependencies: boolean[] = option.depends_on.map((dep) => {
+                const field_name = dep.field_name;
+                const dependsOnField =
+                    formSubmissionFields.value.get(field_name);
+                if (!dependsOnField) {
+                    return false;
+                }
+                const dependsOnValue = dependsOnField.value;
+                if (Array.isArray(dependsOnValue)) {
+                    return dependsOnValue.includes(dep.value as string);
+                }
+                return dependsOnValue === dep.value;
+            });
+
+            return dependencies.every((dep) => dep);
+        }
+
+        // Filter select options based on their dependencies
+        function shoulShowSelectOption(option: FormFieldSelectOption): boolean {
+            if (!option.depends_on) {
+                return true;
+            }
+            // Check dependencies
+            const dependencies: boolean[] = option.depends_on.map((dep) => {
+                const field_name = dep.field_name;
+                const dependsOnField =
+                    formSubmissionFields.value.get(field_name);
+                if (!dependsOnField) {
+                    return false;
+                }
+                const dependsOnValue = dependsOnField.value;
+                if (Array.isArray(dependsOnValue)) {
+                    return dependsOnValue.includes(dep.value as string);
+                }
+                return dependsOnValue === dep.value;
+            });
+
+            return dependencies.every((dep) => dep);
+        }
+
         // watch changes in form, reset formSubmissionFields and currentStepIndex
         watch(form, (newForm) => {
             if (newForm) {
@@ -232,7 +280,7 @@ export const useFormSubmissionStateStore = createGlobalState(
                 if (res.success) {
                     console.log('Form submission saved successfully:', res)
                     isFormSubmitted.value = true // Set form as submitted
-                    
+
                     return res.data// Submission successful
                 }
                 else {
@@ -254,6 +302,8 @@ export const useFormSubmissionStateStore = createGlobalState(
             currentStepIndex,
             isFormSubmitted,
             fieldsForCurrentStep,
+            shoulShowChechboxListOption,
+            shoulShowSelectOption,
             setFieldValue,
             nextStep,
             previousStep,
