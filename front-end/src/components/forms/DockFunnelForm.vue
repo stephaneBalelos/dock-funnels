@@ -3,8 +3,9 @@
   v-if="submissionStateStore.form.value"
     class="dockfunnelform-container w-full mx-auto flex flex-col relative border border-gray-200 rounded-lg shadow-lg"
   >
-    <div class="dockfunnelform-header border-b border-gray-200 p-4">
-      <h3 class="text-2xl font-semibold text-surface-900">
+    <div v-if="headerSettings.show" class="dockfunnelform-header border-b border-gray-200 p-4">
+      <h3 :class="`text-2xl font-semibold text-surface-900 text-${headerSettings.align}`">
+        
         {{ props.form.title }}
       </h3>
     </div>
@@ -138,6 +139,13 @@ const submitForm = async () => {
     isSubmitting.value = false;
   }
 };
+
+const headerSettings = computed(() => {
+  return submissionStateStore.form.value?.form_settings.design_settings.header || {
+    show: true,
+    align: "left",
+  };
+});
 
 const refreshPage = () => {
   // Refresh the page to reset the form state
