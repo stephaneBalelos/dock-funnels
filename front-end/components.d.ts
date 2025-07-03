@@ -8,9 +8,14 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Accordion: typeof import('primevue/accordion')['default']
+    AccordionContent: typeof import('primevue/accordioncontent')['default']
+    AccordionHeader: typeof import('primevue/accordionheader')['default']
+    AccordionPanel: typeof import('primevue/accordionpanel')['default']
     Badge: typeof import('primevue/badge')['default']
     Button: typeof import('primevue/button')['default']
     Card: typeof import('primevue/card')['default']
+    ColorPicker: typeof import('primevue/colorpicker')['default']
     Dialog: typeof import('primevue/dialog')['default']
     DockFunnelForm: typeof import('./src/components/forms/DockFunnelForm.vue')['default']
     Editor: typeof import('primevue/editor')['default']
@@ -26,6 +31,7 @@ declare module 'vue' {
     FileUpload: typeof import('primevue/fileupload')['default']
     Form: typeof import('@primevue/forms/form')['default']
     FormDesignPreview: typeof import('./src/components/dashboard/preview/FormDesignPreview.vue')['default']
+    FormDesignSettingsColors: typeof import('./src/components/dashboard/preview/FormDesignSettingsColors.vue')['default']
     FormExporter: typeof import('./src/components/dashboard/header/FormExporter.vue')['default']
     FormField: typeof import('@primevue/forms/formfield')['default']
     FormFieldCheckboxList: typeof import('./src/components/forms/FormFields/FormFieldCheckboxList.vue')['default']

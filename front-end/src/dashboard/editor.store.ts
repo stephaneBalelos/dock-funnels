@@ -485,6 +485,11 @@ export const useEditorStore = createGlobalState(() => {
 
     const updateEditorThemePreset = () => {
         const designSettings = form.form_settings.design_settings
+        if (!designSettings || !designSettings.colors) {
+            console.warn('Design settings or colors not defined, using default preset');
+            return;
+        }
+        // Ensure colors are defined
         const preset = getThemePreset(designSettings.colors.primary, designSettings.colors.surface)
         updatePreset(preset)
     }
@@ -515,6 +520,7 @@ export const useEditorStore = createGlobalState(() => {
         saveSubmissionAction,
         removeSubmissionAction,
         saveFormState,
-        formDelete
+        formDelete,
+        updateEditorThemePreset
     }
 })

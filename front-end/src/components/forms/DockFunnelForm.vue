@@ -1,7 +1,7 @@
 <template>
   <div
   v-if="submissionStateStore.form.value"
-    class="dockfunnelform-container h-full w-full mx-auto flex flex-col relative border border-gray-200 rounded-lg shadow-lg"
+    class="dockfunnelform-container w-full mx-auto flex flex-col relative border border-gray-200 rounded-lg shadow-lg"
   >
     <div class="dockfunnelform-header border-b border-gray-200 p-4">
       <h3 class="text-2xl font-semibold text-surface-900">
