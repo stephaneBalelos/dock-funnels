@@ -1,18 +1,18 @@
 <template>
-  <li v-if="field">
+  <li v-if="field" class="text-surface-900">
     <strong>{{ field?.label }}:</strong>
 
-    <div v-if="value === null" class="text-gray-500">
+    <div v-if="value === null" class="text-surface-500">
       <em>Nicht ausgefüllt</em>
     </div>
-    <div v-else-if="field.type === 'select'" class="text-gray-700">
+    <div v-else-if="field.type === 'select'" class="text-surface-700">
       <em>{{ field.options.find(o => o.value === props.value)?.label || value }}</em>
     </div>
-    <div v-else-if="field.type === 'text'" class="text-gray-700">
+    <div v-else-if="field.type === 'text'" class="text-surface-700">
       <em v-if="field.input_type === 'date' && typeof value === 'string'">{{ new Date(value).toLocaleDateString('de-DE') }}</em>
         <em v-else>{{ value }}</em>
     </div>
-    <div v-else-if="field.type === 'checkboxList' && Array.isArray(value) " class="text-gray-700">
+    <div v-else-if="field.type === 'checkboxList' && Array.isArray(value) " class="text-surface-700">
       <em>
         {{ field.options
           .filter(o => (value ? value : []).includes(o.value))

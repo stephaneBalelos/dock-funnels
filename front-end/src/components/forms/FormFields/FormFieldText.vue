@@ -1,14 +1,13 @@
 <template>
   <div class="flex flex-col flex-wrap py-4">
     <label
-      class="text-stone-700 text-lg leading-none mb-3"
-      :class="{ 'text-red-500': props.field.required }"
+      class="text-surface-700 text-lg leading-none mb-3"
     >
       {{ props.field.label }}
       <span v-if="props.field.required" class="text-red-500">*</span>
       <p
         v-if="props.field.description"
-        class="text-stone-500 text-sm leading-none mt-1"
+        class="text-surface-500 text-sm leading-none mt-1"
       >
         {{ props.field.description }}
       </p>

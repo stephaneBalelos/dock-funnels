@@ -2,14 +2,13 @@
   <div class="flex flex-col py-4">
     <label
       v-if="field.field_settings?.hide_label !== true"
-      class="text-stone-700 text-lg leading-none mb-3"
-      :class="{ 'text-red-500': props.field.required }"
+      class="text-surface-900 text-lg leading-none mb-3"
     >
       {{ props.field.label }}
       <span v-if="props.field.required" class="text-red-500">*</span>
       <p
         v-if="props.field.description"
-        class="text-stone-500 text-sm leading-none mt-1"
+        class="text-surface-600 text-sm leading-none mt-1"
       >
         {{ props.field.description }}
       </p>
@@ -44,10 +43,10 @@
           :value="option.value"
         />
         <div class="flex flex-col">
-          <label :for="props.field.field_name + option.value">{{
+          <label class="text-surface-900" :for="props.field.field_name + option.value">{{
             option.label
           }}</label>
-          <p class="text-sm text-gray-500">{{ option.description }}</p>
+          <p class="text-sm text-surface-600">{{ option.description }}</p>
         </div>
       </div>
     </div>

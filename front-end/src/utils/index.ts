@@ -224,7 +224,7 @@ export const FormTestData: FormState = {
     design_settings: {
       colors: {
         primary: "#0073aa", // Primary color for the form
-        surface: "#84cc16", // Secondary color for the form
+        surface: "#737373", // Secondary color for the form
       },
       header: {
         show: true, // Whether to show the header

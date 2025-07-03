@@ -4,20 +4,22 @@
     class="dockfunnelform-container h-full w-full mx-auto flex flex-col relative border border-gray-200 rounded-lg shadow-lg"
   >
     <div class="dockfunnelform-header border-b border-gray-200 p-4">
-      <h3>{{ props.form.title }}</h3>
+      <h3 class="text-2xl font-semibold text-surface-900">
+        {{ props.form.title }}
+      </h3>
     </div>
     <div
       v-if="currentStep"
       class="dockfunnelform-content flex-1 p-4 overflow-y-auto"
     >
       <div class="flex flex-col">
-        <span class="text-sm text-gray-500 mb-2">
+        <span class="text-sm text-surface-700 font-semibold mb-2">
           Schritt {{ submissionStateStore.currentStepIndex.value + 1 }}
         </span>
-        <h3 class="text-lg font-semibold text-gray-800">
+        <h3 class="text-lg text-surface-800 font-semibold">
           {{ currentStep.title }}
         </h3>
-        <p class="text-gray-600">
+        <p class="text-surface-600 mt-1 mb-4">
           {{ currentStep.description }}
         </p>
       </div>
@@ -35,7 +37,7 @@
         v-else
         class="mt-8 flex flex-col items-center py-8 bg-gray-50 rounded-lg"
       >
-        <h3 class="text-gray-600 text-lg font-semibold">
+        <h3 class="text-surface-600 text-lg font-semibold">
           Dieser Schritt können Sie überspringen.
         </h3>
         <Button
@@ -50,10 +52,10 @@
       v-if="submissionStateStore.isFormSubmitted.value"
       class="dockfunnelform-intro absolute inset-0 p-4 min-h-96 flex flex-col items-center justify-center bg-white"
     >
-      <h3 class="text-3xl font-semibold text-gray-800 mb-4 text-center">
+      <h3 class="text-3xl font-semibold text-surface-800 mb-4 text-center">
         Danke für Ihre Einreichung!
       </h3>
-      <p class="text-gray-600 mb-6 text-center">
+      <p class="text-surface-600 mb-6 text-center">
         Ihre Daten wurden erfolgreich gespeichert. Wir werden uns in Kürze bei Ihnen melden.
       </p>
       <button

@@ -2,14 +2,13 @@
   <div class="flex flex-col gap-4">
     <div class="flex flex-col gap-2">
       <label
-        class="text-stone-700 text-lg leading-none mb-3"
-        :class="{ 'text-red-500': props.field.required }"
+        class="text-surface-900 text-lg leading-none mb-3"
       >
         {{ props.field.label }}
         <span v-if="props.field.required" class="text-red-500">*</span>
         <p
           v-if="props.field.description"
-          class="text-stone-500 text-sm leading-none mt-1"
+          class="text-surface-500 text-sm leading-none mt-1"
         >
           {{ props.field.description }}
         </p>
@@ -35,8 +34,8 @@
           :value="option.value"
         />
         <div class="flex flex-col">
-          <label :for="field.field_name + option.value">{{ option.label }}</label>
-          <p class="text-sm text-gray-500">{{ option.description }}</p>
+          <label class="text-surface-900" :for="field.field_name + option.value">{{ option.label }}</label>
+          <p class="text-sm text-surface-500">{{ option.description }}</p>
         </div>
       </div>
     </div>

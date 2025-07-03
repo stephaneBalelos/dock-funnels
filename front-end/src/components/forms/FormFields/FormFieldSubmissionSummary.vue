@@ -1,14 +1,13 @@
 <template>
-  <div class="flex flex-col gap-6 p-4 px-6 border rounded-lg bg-white shadow">
+  <div class="flex flex-col gap-6 p-4 px-6 border border-surface-200 rounded-lg shadow bg-surface-50">
     <label
       v-if="field.field_settings?.hide_label !== true"
-      class="text-stone-700 text-lg leading-none mb-2"
-      :class="{ 'text-red-500': props.field.required }"
+      class="text-surface-900 text-lg leading-none mb-2"
     >
       {{ props.field.label }}
       <p
         v-if="props.field.description"
-        class="text-stone-500 text-sm leading-none mt-1"
+        class="text-surface-600 text-sm leading-none mt-1"
       >
         {{ props.field.description }}
       </p>
@@ -18,7 +17,7 @@
       :key="stepIndex"
       class="step-summary"
     >
-      <h3 class="text-md font-semibold mb-2">
+      <h3 class="text-md text-surface-900 font-semibold mb-2">
         #{{ stepIndex + 1 }} {{ step.title }}
       </h3>
       <ul v-if="summary.filter(
@@ -33,11 +32,11 @@
           :value="field.value"
         />
       </ul>
-      <div v-else class="text-gray-500">
+      <div v-else class="text-surface-500">
         Keine Felder in diesem Schritt ausgefüllt.
       </div>
     </div>
-    <div v-if="summary.length === 0" class="text-gray-500">
+    <div v-if="summary.length === 0" class="text-surface-500">
       Keine Felder ausgefüllt.
     </div>
   </div>
