@@ -3,6 +3,7 @@ import '../style.css'
 import './index.css'
 import Form from './Form.vue'
 import PrimeVue from 'primevue/config';
+import Aura from '@primeuix/themes/aura';
 
 
 
@@ -22,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const app = createApp(Form)
     app.use(PrimeVue, {
         theme: {
+            preset: Aura,
             options: {
                 darkModeSelector: '', // Selector for dark mode, leave empty to disable
             }
