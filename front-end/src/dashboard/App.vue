@@ -13,6 +13,7 @@ import { FormTestData } from "@/utils";
 import SettingsDialog from "@/components/dashboard/settings/SettingsDialog.vue";
 import ImportExportDialog from "@/components/dashboard/header/ImportExportDialog.vue";
 import SubmissionsActions from "@/components/dashboard/submissions-actions/SubmissionsActions.vue";
+import FormDesignPreview from "@/components/dashboard/preview/FormDesignPreview.vue";
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
 
@@ -152,7 +153,7 @@ onMounted(() => {
       </div>
     </div>
     <div v-else-if="editorStore.editorState.value.editorMode == 'preview'" class="main-content">
-      Preview
+      <FormDesignPreview />
     </div>
     <div v-else-if="editorStore.editorState.value.editorMode == 'submission-actions'" class="main-content">
       <SubmissionsActions />

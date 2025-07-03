@@ -1,22 +1,24 @@
 import type { FormState } from "@/types";
+import { definePreset, palette } from "@primeuix/themes";
+import Aura from '@primeuix/themes/aura';
 
 export const slugify = (text: string): string => {
-    // Convert the input text to a slug format
-    // Slug format: lowercase, spaces replaced with unsderscores, non-word characters removed, and trimmed, special characters like hyphens and umlauts handled
-    return text
-        .toString()
-        .toLowerCase()
-        .replace(/\s+/g, '_') // Replace spaces with underscores
-        .replace(/--+/g, '_') // Replace multiple hyphens
-        .replace(/^-+/, '') // Trim hyphens from the start
-        .replace(/-+$/, '') // Trim hyphens from the end
-        .replace(/ä/g, 'ae') // Replace umlaut 'ä' with 'ae'
-        .replace(/ö/g, 'oe') // Replace umlaut 'ö' with 'oe'
-        .replace(/ü/g, 'ue') // Replace umlaut 'ü' with 'ue'
-        .replace(/ß/g, 'ss') // Replace sharp s 'ß' with 'ss'
-        .replace(/[^\w\-]+/g, '') // Remove all non-word characters except hyphens
-        .replace(/[^a-z0-9\-]/g, '') // Remove any remaining non-alphanumeric characters except hyphens
-        .trim(); // Trim whitespace
+  // Convert the input text to a slug format
+  // Slug format: lowercase, spaces replaced with unsderscores, non-word characters removed, and trimmed, special characters like hyphens and umlauts handled
+  return text
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, '_') // Replace spaces with underscores
+    .replace(/--+/g, '_') // Replace multiple hyphens
+    .replace(/^-+/, '') // Trim hyphens from the start
+    .replace(/-+$/, '') // Trim hyphens from the end
+    .replace(/ä/g, 'ae') // Replace umlaut 'ä' with 'ae'
+    .replace(/ö/g, 'oe') // Replace umlaut 'ö' with 'oe'
+    .replace(/ü/g, 'ue') // Replace umlaut 'ü' with 'ue'
+    .replace(/ß/g, 'ss') // Replace sharp s 'ß' with 'ss'
+    .replace(/[^\w\-]+/g, '') // Remove all non-word characters except hyphens
+    .replace(/[^a-z0-9\-]/g, '') // Remove any remaining non-alphanumeric characters except hyphens
+    .trim(); // Trim whitespace
 
 }
 
@@ -171,7 +173,7 @@ export const FormTestData: FormState = {
           label: "Vorherige Behandlungen",
           description:
             "Informationen zu vorherigen Behandlungen oder Operationen",
-            depends_on: []
+          depends_on: []
         },
 
       ],
@@ -222,9 +224,11 @@ export const FormTestData: FormState = {
     design_settings: {
       colors: {
         primary: "#0073aa", // Primary color for the form
-        secondary: "#005177", // Secondary color for the form
-        background: "#f7f7f7", // Background color for the form
-        text: "#333333", // Text color for the form
+        surface: "#84cc16", // Secondary color for the form
+      },
+      header: {
+        show: true, // Whether to show the header
+        align: "center", // Alignment of the header
       },
     },
     notifications_settings: {
@@ -253,4 +257,47 @@ export const FormTestData: FormState = {
       body: "Vielen Dank für Ihre Terminvereinbarung. Wir werden uns in Kürze bei Ihnen melden.",
     }
   }
+}
+
+export const getThemePreset = (primaryColor: string, surfaceColor: string) => {
+  const customPrimary = palette(primaryColor)
+  const customSurface = palette(surfaceColor)
+
+  const preset = definePreset(Aura, {
+    semantic: {
+      primary: {
+        50: customPrimary[50],
+        100: customPrimary[100],
+        200: customPrimary[200],
+        300: customPrimary[300],
+        400: customPrimary[400],
+        500: customPrimary[500],
+        600: customPrimary[600],
+        700: customPrimary[700],
+        800: customPrimary[800],
+        900: customPrimary[900],
+        950: customPrimary[950],
+      },
+      colorScheme: {
+        light: {
+          surface: {
+            50: customSurface[50],
+            100: customSurface[100],
+            200: customSurface[200],
+            300: customSurface[300],
+            400: customSurface[400],
+            500: customSurface[500],
+            600: customSurface[600],
+            700: customSurface[700],
+            800: customSurface[800],
+            900: customSurface[900],
+            950: customSurface[950],
+          }
+        }
+      }
+    },
+    
+  })
+
+  return preset
 }

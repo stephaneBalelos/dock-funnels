@@ -1,5 +1,7 @@
 import { createForm, deleteForm, updateForm } from "@/api/wpAjaxApi"
 import type { FormFieldCheckboxList, FormFieldDependsOn, FormFieldSelect, FormFieldSubmissionSummary, FormFieldText, FormOnSubmitAction, FormState } from "@/types"
+import { getThemePreset } from "@/utils"
+import { updatePreset } from "@primeuix/themes"
 import { createGlobalState } from "@vueuse/core"
 import { computed, nextTick, reactive, ref } from "vue"
 
@@ -28,6 +30,16 @@ export const useEditorStore = createGlobalState(() => {
         form_steps: [],
         form_fields: [],
         form_settings: {
+            design_settings: {
+                colors: {
+                    primary: '#0073aa',
+                    surface: '#737373',
+                },
+                header: {
+                    show: true,
+                    align: 'center'
+                }
+            },
             smtp_settings: {
                 enabled: false,
                 host: '',
@@ -103,6 +115,7 @@ export const useEditorStore = createGlobalState(() => {
         if (form.form_steps.length > 0) {
             setSelectedStepIndex(0) // Select the first step by default
         }
+        updateEditorThemePreset() // Initialize the theme preset based on the form settings
     }
 
     const addStep = () => {
@@ -469,6 +482,12 @@ export const useEditorStore = createGlobalState(() => {
 
         return await deleteForm(endpoint, nonce, editFormId);
     };
+
+    const updateEditorThemePreset = () => {
+        const designSettings = form.form_settings.design_settings
+        const preset = getThemePreset(designSettings.colors.primary, designSettings.colors.surface)
+        updatePreset(preset)
+    }
 
 
     return {

@@ -23,9 +23,11 @@ export type FormSettings = {
 export type FormDesignSettings = {
     colors: {
         primary: string; // Primary color for the form
-        secondary: string; // Secondary color for the form
-        background: string; // Background color for the form
-        text: string; // Text color for the form
+        surface: string; // Surface color for the form
+    }
+    header: {
+        show: boolean; // Whether to show the header
+        align: 'left' | 'center' | 'right'; // Alignment of the header
     }
 }
 
