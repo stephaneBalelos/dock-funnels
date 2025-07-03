@@ -3,6 +3,8 @@ import { computed, ref, watch } from 'vue'
 import type { Form, FormFieldCheckboxListOption, FormFieldSelectOption, FormSubmissionField } from '@/types'
 import z from 'zod'
 import { submitFormResponse } from '@/api/wpAjaxApi'
+import { updatePreset } from '@primeuix/themes'
+import { getThemePreset } from '@/utils'
 
 type FormFieldError = {
     joined_path: string; // Name of the field with the error
@@ -246,6 +248,11 @@ export const useFormSubmissionStateStore = createGlobalState(
                         setFieldValue(field.field_name, null) // Set to null if no default value
                     }
                 })
+
+                if (newForm.design_settings) {
+                    const preset = getThemePreset(newForm.design_settings.colors.primary, newForm.design_settings.colors.surface)
+                    updatePreset(preset)
+                }
             }
         })
 
