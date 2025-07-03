@@ -72,6 +72,9 @@ const form = computed(() => {
     description: editorStore.form.description,
     form_steps: editorStore.form.form_steps,
     form_fields: editorStore.form.form_fields,
+    form_settings: {
+      design_settings: editorStore.form.form_settings.design_settings
+    }
   };
   return f;
 });
@@ -83,7 +86,7 @@ onMounted(() => {
     editorStore.form.form_settings.design_settings = {
       colors: {
         primary: "#4CAF50", // Default primary color
-        surface: "#6b7280", // Default surface color
+        surface: "#64748B", // Default surface color
       },
       header: {
         show: true, // Default header visibility

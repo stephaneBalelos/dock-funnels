@@ -33,7 +33,7 @@ export const useEditorStore = createGlobalState(() => {
             design_settings: {
                 colors: {
                     primary: '#0073aa',
-                    surface: '#737373',
+                    surface: '#64748b',
                 },
                 header: {
                     show: true,
@@ -487,7 +487,7 @@ export const useEditorStore = createGlobalState(() => {
         const designSettings = form.form_settings.design_settings
         if (!designSettings || !designSettings.colors) {
             console.warn('Design settings or colors not defined, using default preset');
-            return;
+            return
         }
         // Ensure colors are defined
         const preset = getThemePreset(designSettings.colors.primary, designSettings.colors.surface)

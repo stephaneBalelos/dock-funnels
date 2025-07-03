@@ -10,7 +10,7 @@ export type FormState = {
 
 // Form is form data that is used to submit the form
 export type Form = Omit<FormState, 'form_settings'> & {
-    design_settings?: FormDesignSettings; // Settings for the form
+    form_settings: Pick<FormSettings, 'design_settings'>
 }
 
 // Form Settings Types, these are the settings for the form

@@ -224,7 +224,7 @@ export const FormTestData: FormState = {
     design_settings: {
       colors: {
         primary: "#0073aa", // Primary color for the form
-        surface: "#6b7280", // Secondary color for the form
+        surface: "#64748b", // Secondary color for the form
       },
       header: {
         show: true, // Whether to show the header
@@ -293,10 +293,24 @@ export const getThemePreset = (primaryColor: string, surfaceColor: string) => {
             900: customSurface[900],
             950: customSurface[950],
           }
+        },
+        dark: {
+          surface: {
+            50: customSurface[50],
+            100: customSurface[100],
+            200: customSurface[200],
+            300: customSurface[300],
+            400: customSurface[400],
+            500: customSurface[500],
+            600: customSurface[600],
+            700: customSurface[700],
+            800: customSurface[800],
+            900: customSurface[900],
+            950: customSurface[950],
+          }
         }
       }
     },
-    
   })
 
   return preset

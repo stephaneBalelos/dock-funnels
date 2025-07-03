@@ -172,6 +172,7 @@ class DockFunnels_Ajax
             return wp_send_json_error(['message' => 'Form not found.']);
         }
         $form_data = json_decode($form->form_data, true);
+        $form_settings = json_decode($form->form_settings, true);
         if (!$form_data) {
             return wp_send_json_error(['message' => 'Form data is invalid.']);
         }
@@ -181,6 +182,9 @@ class DockFunnels_Ajax
             'description' => $form->description,
             'form_steps' => $form_data['form_steps'],
             'form_fields' => $form_data['form_fields'],
+            'form_settings' => [
+                'design_settings' => $form_settings['design_settings'] ?? [],
+            ],
         ];
 
         return wp_send_json_success($form_data);

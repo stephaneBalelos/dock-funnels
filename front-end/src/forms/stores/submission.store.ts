@@ -249,8 +249,8 @@ export const useFormSubmissionStateStore = createGlobalState(
                     }
                 })
 
-                if (newForm.design_settings) {
-                    const preset = getThemePreset(newForm.design_settings.colors.primary, newForm.design_settings.colors.surface)
+                if (newForm.form_settings.design_settings && newForm.form_settings.design_settings.colors) {
+                    const preset = getThemePreset(newForm.form_settings.design_settings.colors.primary, newForm.form_settings.design_settings.colors.surface)
                     updatePreset(preset)
                 }
             }
