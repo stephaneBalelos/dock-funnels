@@ -102,7 +102,7 @@
 import { useFormSubmissionStateStore } from "@/forms/stores/submission.store.ts";
 import type { Form } from "../../types/index.ts";
 import FormFieldsRoot from "./FormFieldsRoot.vue";
-import { computed, inject, ref } from "vue";
+import { computed, ref } from "vue";
 
 type Props = {
   form: Form;

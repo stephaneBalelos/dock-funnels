@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import type { FormFieldSelect } from "@/types";
-import { computed, inject, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { useFormSubmissionStateStore } from "@/forms/stores/submission.store";
 import OptionBox from "./Inputs/OptionSelectBox.vue";
 
@@ -63,7 +63,6 @@ const settings = props.field.field_settings || {};
 const selectedValue = ref<string | null>(null);
 
 const submissionStateStore = useFormSubmissionStateStore();
-const isFormDesignPreview = inject("isFormDesignPreview", false);
 
 onMounted(() => {
   console.log("FormFieldSelect onMounted", props.field.field_name);
