@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-4">
-    <div class="flex flex-col gap-2">
-      <label class="text-surface-900 text-lg leading-none mb-3">
+    <div :class="classSettings.base">
+      <label :class="classSettings.label">
         {{ props.field.label }}
         <span v-if="props.field.required" class="text-red-500">*</span>
         <p
@@ -28,7 +28,7 @@
           )?.message
         }}
       </Message>
-      <div class="flex items-center gap-2">
+      <div :class="classSettings.optionsContainer">
         <OptionCheckboxBox
           v-for="option in props.field.options.filter(
             submissionStateStore.shoulShowChechboxListOption
@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import type { FormFieldCheckboxList } from "@/types";
 import { useFormSubmissionStateStore } from "@/forms/stores/submission.store";
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import OptionCheckboxBox from "./Inputs/OptionCheckboxBox.vue";
 
 type Props = {
@@ -59,6 +59,8 @@ type Props = {
 const props = defineProps<Props>();
 
 const selectedValues = ref([] as string[]);
+const settings = props.field.field_settings || {};
+
 
 const submissionStateStore = useFormSubmissionStateStore();
 
@@ -91,6 +93,26 @@ watch(
   },
   { deep: true }
 );
+
+const classSettings = computed(() => {
+  let base = `flex flex-col py-4`;
+  let label = `text-surface-900 text-lg leading-none mb-3`;
+  let optionsContainer = `w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4`;
+  if(settings.align) {
+    base += ` text-${settings.align}`;
+    base += ` items-${settings.align}`;
+    optionsContainer += ` items-${settings.align}`;
+  }
+  if (settings.text_align) {
+    label += ` text-${settings.text_align}`;
+  }
+
+  return {
+    base,
+    label,
+    optionsContainer
+  }
+})
 </script>
 
 <style scoped></style>
