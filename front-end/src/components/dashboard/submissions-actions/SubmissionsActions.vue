@@ -1,13 +1,14 @@
 <template>
   <div class="flex gap-4 p-4 items-start w-full">
-    <div class="flex flex-1 flex-col gap-4 bg-gray-100 p-4 rounded-lg">
+    <div class="flex flex-2 flex-col gap-4 bg-gray-100 p-4 rounded-lg h-full">
       <h2 class="text-xl font-semibold">Aktionen bei Einreichungen</h2>
       <p class="text-gray-600">
         Hier können Sie Aktionen konfigurieren, die ausgeführt werden, wenn ein
         Formular eingereicht wird.
       </p>
-      <div class="flex flex-col gap-4">
-        <div
+      <div class="relative flex flex-col flex-1 h-full gap-4">
+        <div class="absolute overflow-auto h-full inset-0 p-4 flex flex-col gap-4">
+                  <div
           v-for="(action, index) in editStore.form.form_settings.onSubmitAction"
           :key="index"
           :class="selectedActionIdx == index ? 'border border-blue-300' : ''"
@@ -73,6 +74,7 @@
             </div>
           </template>
         </Card>
+        </div>
       </div>
     </div>
     <div class="flex-1 h-full bg-white p-4 rounded-lg shadow">
