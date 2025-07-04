@@ -270,15 +270,14 @@ export const useFormSubmissionStateStore = createGlobalState(
             }
             // Prepare the submission data
             const fields = Object.fromEntries(formSubmissionFields.value.entries())
-            console.log('Form submission fields:', fields)
             const submissionData: Record<string, any> = {
                 form_id: form.value.id,
                 fields: fields,
             }
-            console.log('Saving form submission:', submissionData)
             try {
                 if (!submissionSettings.value) {
                     console.warn('Submission settings are not set. Cannot save form submission.')
+                    isFormSubmitted.value = true
                     return false
                 }
                 if (!submissionSettings.value.endpoint || !submissionSettings.value.nonce || !submissionSettings.value.formId) {

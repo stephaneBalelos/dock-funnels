@@ -1,16 +1,16 @@
 <template>
   <div
   v-if="submissionStateStore.form.value"
-    class="dockfunnelform-container w-full mx-auto flex flex-col relative border border-gray-200 rounded-lg shadow-lg"
+    class="dockfunnelform-container relative w-full mx-auto flex flex-col relative border border-surface-100 rounded-lg shadow-lg"
   >
-    <div v-if="headerSettings.show" class="dockfunnelform-header border-b border-gray-200 p-4">
+    <div v-if="headerSettings.show" class="dockfunnelform-header border-b border-surface-100 p-4">
       <h3 :class="`text-2xl font-semibold text-surface-900 text-${headerSettings.align}`">
         
         {{ props.form.title }}
       </h3>
     </div>
     <div
-      v-if="currentStep"
+      v-if="currentStep && !submissionStateStore.isFormSubmitted.value"
       class="dockfunnelform-content flex-1 p-4 overflow-y-auto"
     >
       <div class="flex flex-col">
@@ -36,7 +36,7 @@
       </div>
       <div
         v-else
-        class="mt-8 flex flex-col items-center py-8 bg-gray-50 rounded-lg"
+        class="mt-8 flex flex-col items-center py-8 bg-surface-50 rounded-lg"
       >
         <h3 class="text-surface-600 text-lg font-semibold">
           Dieser Schritt können Sie überspringen.
@@ -51,7 +51,7 @@
     </div>
     <div
       v-if="submissionStateStore.isFormSubmitted.value"
-      class="dockfunnelform-intro absolute inset-0 p-4 min-h-96 flex flex-col items-center justify-center bg-white"
+      class="outro inset-0 p-4 min-h-96 flex flex-col items-center justify-center bg-white"
     >
       <h3 class="text-3xl font-semibold text-surface-800 mb-4 text-center">
         Danke für Ihre Einreichung!
@@ -66,8 +66,8 @@
         Schließen
       </button>
     </div>
-    <div class="dockfunnelform-footer border-t border-gray-200 p-4">
-      <div class="flex justify-between items-center">
+    <div class="dockfunnelform-footer border-t border-surface-100 p-4">
+      <div v-if="!submissionStateStore.isFormSubmitted" class="flex justify-between items-center">
         <Button
         severity="secondary"
           @click="submissionStateStore.previousStep"
