@@ -16,6 +16,7 @@ declare module 'vue' {
     Button: typeof import('primevue/button')['default']
     Card: typeof import('primevue/card')['default']
     ColorPicker: typeof import('primevue/colorpicker')['default']
+    DependencyBadge: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/DependencyBadge.vue')['default']
     Dialog: typeof import('primevue/dialog')['default']
     DockFunnelForm: typeof import('./src/components/forms/DockFunnelForm.vue')['default']
     DockFunnelFormContent: typeof import('./src/components/forms/DockFunnelFormContent.vue')['default']

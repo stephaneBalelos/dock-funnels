@@ -54,7 +54,7 @@ body {
 }
 .main-content > .sidebar-right {
   width: 100%;
-  max-width: 300px;
+  max-width: 350px;
   background-color: #f8f9fa;
   border-left: 1px solid #dee2e6;
 }

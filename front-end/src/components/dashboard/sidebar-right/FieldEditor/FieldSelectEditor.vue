@@ -179,27 +179,15 @@
                   "
                   class="flex flex-col mt-2"
                 >
-                  <div
+                  <DependencyBadge
                     v-for="(dep, dep_idx) in state.options[index].depends_on"
-                    class="flex items-center"
-                  >
-                    <Badge severity="info" class="mr-2"
-                      >{{ dep.field_name }} ist gleich {{ dep.value }}</Badge
-                    >
-                    <Button
-                      severity="danger"
-                      size="small"
-                      @click="
-                        editorStore.removeOptionDependency(
-                          state.field_name,
-                          state.options[index].value,
-                          dep_idx
-                        )
-                      "
-                    >
-                      <Icon icon="heroicons:trash" />
-                    </Button>
-                  </div>
+                    :dep_idx="dep_idx"
+                    :key="dep_idx"
+                    :field_name="dep.field_name"
+                    :field_value="dep.value"
+                    :option_value="state.options[index].value"
+                    @onRemoveDependency="() => editorStore.removeOptionDependency(state.field_name, state.options[index].value, dep_idx)"
+                  />
                 </div>
               </div>
             </div>
