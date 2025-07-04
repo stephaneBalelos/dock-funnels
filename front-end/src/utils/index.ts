@@ -233,7 +233,7 @@ export const FormTestData: FormState = {
       },
       header: {
         show: true, // Whether to show the header
-        align: "center", // Alignment of the header
+        align: "left", // Alignment of the header
       },
     },
     notifications_settings: {
