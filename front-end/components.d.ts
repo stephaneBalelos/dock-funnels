@@ -18,6 +18,7 @@ declare module 'vue' {
     ColorPicker: typeof import('primevue/colorpicker')['default']
     Dialog: typeof import('primevue/dialog')['default']
     DockFunnelForm: typeof import('./src/components/forms/DockFunnelForm.vue')['default']
+    DockFunnelFormContent: typeof import('./src/components/forms/DockFunnelFormContent.vue')['default']
     Editor: typeof import('primevue/editor')['default']
     EmailSettingTab: typeof import('./src/components/dashboard/settings/EmailSettingTab.vue')['default']
     FieldChecklistEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldChecklistEditor.vue')['default']

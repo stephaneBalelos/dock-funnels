@@ -100,9 +100,21 @@ export const FormTestData: FormState = {
           }]
         },
         {
+          value: "arm",
+          label: "Arm",
+          description: "Armbeschwerden und -verletzungen",
+          depends_on: []
+        },
+        {
           value: "huefte",
           label: "Hüfte",
           description: "Hüftbeschwerden und -verletzungen",
+          depends_on: []
+        },
+        {
+          value: "fueße",
+          label: "Füße",
+          description: "Fußbeschwerden und -verletzungen",
           depends_on: []
         },
       ],
