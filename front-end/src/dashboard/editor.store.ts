@@ -3,6 +3,7 @@ import type { FormFieldCheckboxList, FormFieldDependsOn, FormFieldSelect, FormFi
 import { getThemePreset } from "@/utils"
 import { updatePreset } from "@primeuix/themes"
 import { createGlobalState } from "@vueuse/core"
+import { useToast } from "primevue"
 import { computed, nextTick, reactive, ref } from "vue"
 
 type EditorState = {
@@ -13,6 +14,9 @@ type EditorState = {
 }
 
 export const useEditorStore = createGlobalState(() => {
+
+    const toast = useToast()
+
     const apiSettings = ref({
         endpoint: '',
         nonce: '',
@@ -450,7 +454,13 @@ export const useEditorStore = createGlobalState(() => {
                     console.error('Error creating form:', response.data);
                     throw new Error(`Error creating form: ${response.data}`);
                 }
-                console.log('Form created successfully:', response.data);
+                toast.add({
+                    severity: 'success',
+                    summary: 'Formular erstellt',
+                    detail: 'Das Formular wurde erfolgreich erstellt.',
+                    life: 3000,
+                });
+                await nextTick(); // Ensure the DOM updates before redirecting
                 // Redirect to the edit page with the new form ID
                 window.location.href = `/wp-admin/admin.php?page=dock-funnels&form_id=${response.data.form_id}`;
             } else {
@@ -459,9 +469,20 @@ export const useEditorStore = createGlobalState(() => {
                     console.error('Error updating form:', response.data);
                     throw new Error(`Error updating form: ${response.data}`);
                 }
-                console.log('Form updated successfully:', response.data);
+                toast.add({
+                    severity: 'success',
+                    summary: 'Formular gespeichert',
+                    detail: 'Das Formular wurde erfolgreich gespeichert.',
+                    life: 3000
+                });
             }
         } catch (error) {
+            toast.add({
+                severity: 'error',
+                summary: 'Fehler beim Speichern des Formulars',
+                detail: error instanceof Error ? error.message : 'Unbekannter Fehler',
+                life: 5000
+            });
             console.error('Error saving form state:', error);
             throw error;
         } finally {
