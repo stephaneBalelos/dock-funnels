@@ -43,6 +43,12 @@ export const useEditorStore = createGlobalState(() => {
                     show: true,
                     align: 'center'
                 },
+                steps: {
+                    hide_step_header: false,
+                    text_align: 'text-left', // Default text alignment for steps
+                    items_align: 'items-start', // Default alignment for step items
+                    step_transition: 'slide' // Default transition effect for steps
+                },
                 footer: {
                     show_progress_bar: true
                 }

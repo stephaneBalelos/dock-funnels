@@ -247,6 +247,12 @@ export const FormTestData: FormState = {
         show: true, // Whether to show the header
         align: "left", // Alignment of the header
       },
+      steps: {
+        hide_step_header: false, // Whether to show the steps header
+        text_align: "text-left", // Text alignment for steps
+        items_align: "items-end", // Alignment of step items
+        step_transition: "slide", // Transition effect for steps
+      },
       footer: {
         show_progress_bar: true, // Whether to show the progress bar in the footer
       },

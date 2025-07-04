@@ -31,6 +31,12 @@ export type FormDesignSettings = {
         show: boolean; // Whether to show the header
         align: 'left' | 'center' | 'right'; // Alignment of the header
     },
+    steps: {
+        hide_step_header: boolean; // Whether to show the steps header
+        text_align: 'text-left' | 'text-center' | 'text-right'; // Text alignment for steps
+        items_align: 'items-start' | 'items-center' | 'items-end'; //
+        step_transition: 'default' | 'slide'
+    },
     footer: {
         show_progress_bar: boolean; // Whether to show the progress bar in the footer
     }

@@ -35,6 +35,7 @@ declare module 'vue' {
     FormDesignSettingsColors: typeof import('./src/components/dashboard/preview/FormDesignSettingsColors.vue')['default']
     FormDesignSettingsFooter: typeof import('./src/components/dashboard/preview/FormDesignSettingsFooter.vue')['default']
     FormDesignSettingsHeader: typeof import('./src/components/dashboard/preview/FormDesignSettingsHeader.vue')['default']
+    FormDesignSettingsSteps: typeof import('./src/components/dashboard/preview/FormDesignSettingsSteps.vue')['default']
     FormExporter: typeof import('./src/components/dashboard/header/FormExporter.vue')['default']
     FormField: typeof import('@primevue/forms/formfield')['default']
     FormFieldCheckboxList: typeof import('./src/components/forms/FormFields/FormFieldCheckboxList.vue')['default']

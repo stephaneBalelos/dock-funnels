@@ -31,6 +31,16 @@
           </AccordionContent>
         </AccordionPanel>
         <AccordionPanel value="2">
+          <AccordionHeader>Schritte Einstellungen</AccordionHeader>
+          <AccordionContent>
+            <FormDesignSettingsSteps
+              v-if="editorStore.form.form_settings.design_settings"
+              :steps="editorStore.form.form_settings.design_settings.steps"
+            />
+          </AccordionContent>
+        </AccordionPanel>
+
+        <AccordionPanel value="3">
           <AccordionHeader>Footer Einstellungen</AccordionHeader>
           <AccordionContent>
             <FormDesignSettingsFooter
@@ -83,6 +93,12 @@ onMounted(() => {
       header: {
         show: true, // Default header visibility
         align: "left", // Default header alignment
+      },
+      steps: {
+        hide_step_header: false, // Default step header visibility
+        text_align: "text-left", // Default text alignment for steps
+        items_align: "items-start", // Default alignment for step items
+        step_transition: "slide", // Default step transition effect
       },
       footer: {
         show_progress_bar: true, // Default footer visibility

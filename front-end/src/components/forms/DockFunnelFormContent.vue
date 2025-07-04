@@ -4,7 +4,7 @@
     :class="`${slideDirection === 1 ? 'slide-left' : 'slide-right'}`"
   >
     <Transition
-        name="slide"
+        :name="settings.step_transition"
     >
       <div
         v-if="currentStep"
@@ -12,7 +12,7 @@
         class="dockfunnelform-content flex-1 p-4 inset-0"
         :key="`step-${submissionStateStore.currentStepIndex.value}`"
       >
-        <div class="flex flex-col">
+        <div v-if="!settings.hide_step_header" :class="`flex flex-col mb-8 ${settings.text_align} ${settings.items_align}`">
           <span class="text-sm text-surface-700 font-semibold mb-2">
             Schritt {{ submissionStateStore.currentStepIndex.value + 1 }}
           </span>
@@ -25,7 +25,7 @@
         </div>
         <div
           v-if="submissionStateStore.fieldsForCurrentStep.value.length > 0"
-          class="flex flex-col gap-8 mt-8"
+          class="flex flex-col gap-8"
         >
           <FormFieldsRoot
             v-for="field in submissionStateStore.fieldsForCurrentStep.value"
@@ -68,6 +68,15 @@ const currentStep = computed(() => {
 });
 
 const slideDirection = ref(1); // 1 for forward, -1 for backward
+
+const settings = computed(() => {
+  return submissionStateStore.form.value?.form_settings.design_settings.steps || {
+    hide_step_header: false,
+    text_align: "text-left",
+    items_align: "items-start",
+    step_transition: "slide",
+  };
+});
 
 watch(
   () => submissionStateStore.currentStepIndex.value,
