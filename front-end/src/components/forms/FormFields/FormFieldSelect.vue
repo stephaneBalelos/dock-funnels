@@ -1,8 +1,8 @@
 <template>
-  <div class="flex flex-col py-4">
+  <div :class="classSettings.base">
     <label
-      v-if="field.field_settings?.hide_label !== true"
-      class="text-surface-900 text-lg leading-none mb-3"
+      v-if="settings?.hide_label !== true"
+      :class="classSettings.label"
     >
       {{ props.field.label }}
       <span v-if="props.field.required" class="text-red-500">*</span>
@@ -30,49 +30,46 @@
         )?.message
       }}
     </Message>
-    <div class="flex flex-col gap-4">
-      <div
-        v-for="option in props.field.options.filter(submissionStateStore.shoulShowSelectOption)"
+    <div :class="classSettings.optionsContainer">
+      <OptionBox
+        v-for="option in props.field.options.filter(
+          submissionStateStore.shoulShowSelectOption
+        )"
         :key="props.field.field_name + option.value"
-        class="flex items-center gap-2"
-      >
-        <RadioButton
-          v-model="selectedValue"
-          :inputId="props.field.field_name + option.value"
-          :name="option.label"
-          :value="option.value"
-        />
-        <div class="flex flex-col">
-          <label class="text-surface-900" :for="props.field.field_name + option.value">{{
-            option.label
-          }}</label>
-          <p class="text-sm text-surface-600">{{ option.description }}</p>
-        </div>
-      </div>
+        :label="option.label"
+        :description="option.description"
+        v-model="selectedValue"
+        :inputId="props.field.field_name + option.value"
+        :name="option.label"
+        :value="option.value"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { FormFieldSelect } from "@/types";
-import { onMounted, ref, watch } from "vue";
+import { computed, inject, onMounted, ref, watch } from "vue";
 import { useFormSubmissionStateStore } from "@/forms/stores/submission.store";
-import { RadioButton } from "primevue";
+import OptionBox from "./Inputs/OptionBox.vue";
 
 type Props = {
   field: FormFieldSelect;
 };
 
 const props = defineProps<Props>();
+const settings = props.field.field_settings || {};
 
 const selectedValue = ref<string | null>(null);
 
 const submissionStateStore = useFormSubmissionStateStore();
+const isFormDesignPreview = inject("isFormDesignPreview", false);
 
 onMounted(() => {
   console.log("FormFieldSelect onMounted", props.field.field_name);
-  const field =
-    submissionStateStore.formSubmissionFields.value.get(props.field.field_name);
+  const field = submissionStateStore.formSubmissionFields.value.get(
+    props.field.field_name
+  );
   if (field) {
     submissionStateStore.setFieldValue(props.field.field_name, field.value);
     selectedValue.value = field.value as string | null;
@@ -82,6 +79,27 @@ onMounted(() => {
 watch(selectedValue, (newValue) => {
   submissionStateStore.setFieldValue(props.field.field_name, newValue);
 });
+
+
+const classSettings = computed(() => {
+  let base = `flex flex-col py-4`;
+  let label = `text-surface-900 text-lg leading-none mb-3`;
+  let optionsContainer = `w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4`;
+  if(settings.align) {
+    base += ` text-${settings.align}`;
+    base += ` items-${settings.align}`;
+    optionsContainer += ` items-${settings.align}`;
+  }
+  if (settings.text_align) {
+    label += ` text-${settings.text_align}`;
+  }
+
+  return {
+    base,
+    label,
+    optionsContainer
+  }
+})
 </script>
 
 <style scoped></style>

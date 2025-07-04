@@ -56,6 +56,11 @@ export const FormTestData: FormState = {
       field_name: "fachrichtung",
       default_value: "orthopedie",
       type: "select",
+      field_settings: {
+        hide_label: false,
+        align: 'start', // stretch, left, center, right
+        text_align: 'start', // start, center, end
+      },
       options: [
         {
           value: "orthopedie",
