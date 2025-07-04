@@ -56,6 +56,8 @@ declare module 'vue' {
     Message: typeof import('primevue/message')['default']
     NotificationsSettingsTab: typeof import('./src/components/dashboard/settings/NotificationsSettingsTab.vue')['default']
     OptionBox: typeof import('./src/components/forms/FormFields/Inputs/OptionBox.vue')['default']
+    OptionCheckboxBox: typeof import('./src/components/forms/FormFields/Inputs/OptionCheckboxBox.vue')['default']
+    OptionSelectBox: typeof import('./src/components/forms/FormFields/Inputs/OptionSelectBox.vue')['default']
     ProgressBar: typeof import('primevue/progressbar')['default']
     Select: typeof import('primevue/select')['default']
     SelectBox: typeof import('./src/components/forms/FormFields/Inputs/SelectBox.vue')['default']

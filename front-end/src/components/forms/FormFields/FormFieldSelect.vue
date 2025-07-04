@@ -51,7 +51,7 @@
 import type { FormFieldSelect } from "@/types";
 import { computed, inject, onMounted, ref, watch } from "vue";
 import { useFormSubmissionStateStore } from "@/forms/stores/submission.store";
-import OptionBox from "./Inputs/OptionBox.vue";
+import OptionBox from "./Inputs/OptionSelectBox.vue";
 
 type Props = {
   field: FormFieldSelect;
