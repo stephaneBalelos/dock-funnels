@@ -30,6 +30,9 @@ export type FormDesignSettings = {
     header: {
         show: boolean; // Whether to show the header
         align: 'left' | 'center' | 'right'; // Alignment of the header
+    },
+    footer: {
+        show_progress_bar: boolean; // Whether to show the progress bar in the footer
     }
 }
 

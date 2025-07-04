@@ -233,6 +233,11 @@ export const useFormSubmissionStateStore = createGlobalState(
             return dependencies.every((dep) => dep);
         }
 
+        const progressPercentage = computed(() => {
+            if (!form.value || form.value.form_steps.length === 0) return 0
+            return Math.round(((currentStepIndex.value + 1) / form.value.form_steps.length) * 100)
+        })
+
         // watch changes in form, reset formSubmissionFields and currentStepIndex
         watch(form, (newForm) => {
             if (newForm) {
@@ -305,6 +310,7 @@ export const useFormSubmissionStateStore = createGlobalState(
         return {
             submissionSettings,
             form,
+            progressPercentage,
             formSubmissionFields,
             currentStepIndex,
             isFormSubmitted,

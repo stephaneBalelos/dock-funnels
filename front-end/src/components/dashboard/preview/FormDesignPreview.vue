@@ -29,17 +29,12 @@
           </AccordionContent>
         </AccordionPanel>
         <AccordionPanel value="2">
-          <AccordionHeader>Header III</AccordionHeader>
+          <AccordionHeader>Footer Einstellungen</AccordionHeader>
           <AccordionContent>
-            <p class="m-0">
-              At vero eos et accusamus et iusto odio dignissimos ducimus qui
-              blanditiis praesentium voluptatum deleniti atque corrupti quos
-              dolores et quas molestias excepturi sint occaecati cupiditate non
-              provident, similique sunt in culpa qui officia deserunt mollitia
-              animi, id est laborum et dolorum fuga. Et harum quidem rerum
-              facilis est et expedita distinctio. Nam libero tempore, cum soluta
-              nobis est eligendi optio cumque nihil impedit quo minus.
-            </p>
+            <FormDesignSettingsFooter
+              v-if="editorStore.form.form_settings.design_settings"
+              :footer="editorStore.form.form_settings.design_settings.footer"
+            />
           </AccordionContent>
         </AccordionPanel>
       </Accordion>
@@ -86,6 +81,9 @@ onMounted(() => {
       header: {
         show: true, // Default header visibility
         align: "left", // Default header alignment
+      },
+      footer: {
+        show_progress_bar: true, // Default footer visibility
       },
     };
   }

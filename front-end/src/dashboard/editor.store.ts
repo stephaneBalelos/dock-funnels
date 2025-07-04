@@ -38,6 +38,9 @@ export const useEditorStore = createGlobalState(() => {
                 header: {
                     show: true,
                     align: 'center'
+                },
+                footer: {
+                    show_progress_bar: true
                 }
             },
             smtp_settings: {

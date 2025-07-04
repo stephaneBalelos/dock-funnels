@@ -235,6 +235,9 @@ export const FormTestData: FormState = {
         show: true, // Whether to show the header
         align: "left", // Alignment of the header
       },
+      footer: {
+        show_progress_bar: true, // Whether to show the progress bar in the footer
+      },
     },
     notifications_settings: {
       emails: "",

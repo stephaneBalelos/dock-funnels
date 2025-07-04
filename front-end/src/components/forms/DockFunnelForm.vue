@@ -67,14 +67,18 @@
       </button>
     </div>
     <div class="dockfunnelform-footer border-t border-gray-200 p-4">
-      <div class="flex justify-between">
+      <div class="flex justify-between items-center">
         <Button
+        severity="secondary"
           @click="submissionStateStore.previousStep"
           :disabled="submissionStateStore.currentStepIndex.value === 0"
           v-if="submissionStateStore.currentStepIndex.value > 0"
         >
           Zurück
         </Button>
+        <div class="flex-1 px-8" v-if="footerSettings.show_progress_bar">
+          <ProgressBar :value="submissionStateStore.progressPercentage.value" style="height: 6px" :show-value="false"></ProgressBar>
+        </div>
         <Button
           class="ml-auto"
           @click="submissionStateStore.nextStep"
@@ -144,6 +148,12 @@ const headerSettings = computed(() => {
   return submissionStateStore.form.value?.form_settings.design_settings.header || {
     show: true,
     align: "left",
+  };
+});
+
+const footerSettings = computed(() => {
+  return submissionStateStore.form.value?.form_settings.design_settings.footer || {
+    show_progress_bar: true,
   };
 });
 
