@@ -16,40 +16,36 @@
     <p v-if="field.description" class="text-sm text-gray-500">
       {{ field.description }}
     </p>
-    <div class="flex flex-col py-2 gap-1">
-      <span class="text-xs text-gray-400"
-        >Feldname: {{ field.field_name }}</span
-      >
-      <span class="text-xs text-gray-400"
-        >Type: {{ field.type }}
+    <div class="flex flex-col py-2 gap-4">
+      <span class="text-xs text-surface-700 font-semibold">
+        Feldtyp: {{ field.type }}
         <span v-if="field.type === 'text'">[{{ field.input_type }}]</span></span
       >
       <span v-if="field.default_value" class="text-xs text-gray-400">
         Standardwert: {{ field.default_value }}
       </span>
-      <div v-if="field.depends_on" class="flex flex-col py-2">
-        <p class="text-xs text-gray-400">Abhängigkeit(en):</p>
+      <div class="flex flex-col items-start p-2 border border-gray-200 rounded">
         <div
-          v-for="(dep, i) in field.depends_on"
-          class="flex items-center gap-2"
+          v-if="field.depends_on && field.depends_on.length > 0"
+          class="flex flex-col"
         >
-          <Badge>{{ dep.field_name }}</Badge>
-          <Button
-            class="text-xs"
-            @click.stop="editorStore.removeFieldDependency(field.field_name, i)"
-            severity="danger"
-            size="small"
-            aria-label="Abhängigkeit entfernen"
-          >
-            <Icon icon="heroicons:trash" />
-          </Button>
+          <p class="text-xs text-surface-700 font-semibold">Wird angezeigt wenn:</p>
+          <DependencyBadge
+            v-for="(dep, dep_idx) in field.depends_on"
+            :key="dep_idx"
+            :field_name="dep.field_name"
+            :field_value="dep.value"
+            @onRemoveDependency="
+              editorStore.removeFieldDependency(field.field_name, dep_idx)
+            "
+          />
         </div>
+        <Button
+          label="Bedingung Hinzufügen"
+          @click="openAddDepModal"
+          size="small"
+        />
       </div>
-      <Button
-        label="Bedingung Hinzufügen"
-        @click="openAddDepModal"
-        size="small"
-      />
     </div>
     <Dialog
       v-model:visible="showEditDependencyDialog"
@@ -81,7 +77,7 @@
 import { useEditorStore } from "@/dashboard/editor.store";
 import type { FormFieldDependsOn } from "@/types";
 import { computed, ref } from "vue";
-import { Icon } from "@iconify/vue";
+import DependencyBadge from "../sidebar-right/FieldEditor/DependencyBadge.vue";
 
 type Props = {
   fieldName: string;

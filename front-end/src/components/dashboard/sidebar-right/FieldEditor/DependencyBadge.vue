@@ -9,7 +9,7 @@
       Diese Abhängigkeit ist ungültig weil dieses Feld nicht existiert oder der Wert nicht gesetzt ist.
     </div>
 
-    <Button severity="danger" size="small" @click="$emit('onRemoveDependency', dep_idx)">
+    <Button severity="danger" size="small" @click="$emit('onRemoveDependency')">
       <Icon icon="heroicons:trash-16-solid" />
     </Button>
   </div>
@@ -21,10 +21,8 @@ import { Icon } from "@iconify/vue";
 import { computed } from "vue";
 
 type Props = {
-  dep_idx: number;
   field_name: string;
   field_value?: string;
-  option_value: string;
 };
 
 const props = defineProps<Props>();
