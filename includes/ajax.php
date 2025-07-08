@@ -221,10 +221,16 @@ class DockFunnels_Ajax
             wp_send_json_error(['message' => 'Cannot update a published form. Please create a new version instead.']);
         }
 
-        // TODO: Validate form data
-
         // Format the data
         $form_state = json_decode($data['form_state'], true); // see @/types.index.ts for Form type
+        $validator = new DockFunnels_FormStateValidator($form_state);
+        $validation_result = $validator->validate();
+        if (!$validation_result['valid']) {
+            wp_send_json_error(['message' => 'Form validation failed.', 'errors' => $validation_result['errors']]);
+        }
+
+        wp_send_json_success(['message' => 'Form validation successful.', 'data' => $validation_result['data']]);
+
         $form_data = ['form_steps' => $form_state['form_steps'], 'form_fields' => $form_state['form_fields']];
         $form_settings = $form_state['form_settings'];
         $updated = DockFunnels_DB::update_form($form_id, $form_state['title'], $form_state['description'], $form_data, $form_settings);
@@ -266,103 +272,616 @@ class DockFunnels_Ajax
         }
         wp_send_json_success(['message' => 'Form deleted successfully.']);
     }
+}
 
-    /**
-     * Validate and sanitize form data
-     *
-     * @param array $data
-     * @return array|false
-     */
 
-    private static function validate_form_data($data)
+class DockFunnels_FormStateValidator
+{
+    private $form_title = '';
+    private $form_description = '';
+    private $form_steps = [];
+    private $form_fields = [];
+    private $form_settings = [];
+
+    private $sanitized_form_state = [];
+    private $errors = [];
+
+
+
+    public function __construct($form_state)
     {
-        $f_data = [];
-        // Check Title
-        if (empty($data['title']) || !is_string($data['title'])) {
-            return false;
-        }
-        $f_data['title'] = sanitize_text_field($data['title']);
-
-        // Check Description
-        if (!isset($data['description']) || !is_string($data['description'])) {
-            return false;
-        }
-        $f_data['description'] = isset($data['description']) ? sanitize_textarea_field($data['description']) : '';
-
-        // Check Steps
-        if (!isset($data['form_steps']) || !is_array($data['form_steps']) || empty($data['form_steps'])) {
-            return false;
-        }
-        $steps_data = self::validate_steps_data($data['form_steps']);
-        if (!$steps_data) {
-            return false;
-        }
-        $f_data['form_steps'] = $steps_data;
-
-        // Check Fields
-        if (!isset($data['form_fields']) || !is_array($data['form_fields']) || empty($data['form_fields'])) {
-            return false;
-        }
-
-        return $f_data;
+        $this->form_title = $form_state['title'] ?? '';
+        $this->form_description = $form_state['description'] ?? '';
+        $this->form_steps = $form_state['form_steps'] ?? [];
+        $this->form_fields = $form_state['form_fields'] ?? [];
+        $this->form_settings = $form_state['form_settings'] ?? [];
     }
 
-    private static function validate_steps_data($steps)
+    public function validate()
     {
-        $f_steps = [];
+        // Check if title is set and is a string
+        if (!isset($this->form_title) || !is_string($this->form_title) || empty($this->form_title)) {
+            $this->errors['title'] = 'Title is required and must be a string.';
+        } else {
+            $this->sanitized_form_state['title'] = sanitize_text_field($this->form_title);
+        }
 
-        foreach ($steps as $step) {
-            $title = self::validate_and_sanitize($step['title']);
-            if (!$title) {
-                return false;
+        // Check if description is set. If not, set it to an empty string
+        if (!isset($this->form_description) || !is_string($this->form_description)) {
+            $this->sanitized_form_state['description'] = '';
+        } else {
+            $this->sanitized_form_state['description'] = sanitize_textarea_field($this->form_description);
+        }
+
+        // Validate form steps
+        if (!isset($this->form_steps) || !is_array($this->form_steps) || empty($this->form_steps)) {
+            $this->errors['form_steps'] = 'Form steps are required and must be a non-empty array.';
+        } else {
+            $this->sanitized_form_state['form_steps'] = [];
+            foreach ($this->form_steps as $idx => $step) {
+                $fields_for_step = array_filter($this->form_fields, function ($field) use ($idx) {
+                    return isset($field['step_index']) && $field['step_index'] === $idx;
+                });
+                $validation_result = self::validate_form_step($idx, $step, $fields_for_step);
+                if ($validation_result['valid']) {
+                    $this->sanitized_form_state['form_steps'][] = [
+                        'title' => $validation_result['data']['title'],
+                        'description' => $validation_result['data']['description']
+                    ];
+                } else {
+                    $this->errors['form_steps'][$idx] = $validation_result['errors'];
+                }
             }
-            $description = isset($step['description']) ? self::validate_and_sanitize($step['description']) : '';
-            $f_step = [
-                'title' => sanitize_text_field($step['title']),
-                'description' => $description,
-            ];
-            // Add $f_step to $f_steps
-            $f_steps[] = $f_step;
         }
-        if (empty($f_steps)) {
-            return false;
+
+        // Validate form fields
+        if (!isset($this->form_fields) || !is_array($this->form_fields) || empty($this->form_fields)) {
+            $this->errors['form_fields'] = 'Form fields are required and must be a non-empty array.';
+        } else {
+            $this->sanitized_form_state['form_fields'] = [];
+            foreach ($this->form_fields as $field) {
+                // Check if Step Index is set and is an integer
+                if (!isset($field['step_index']) || !is_int($field['step_index']) || $field['step_index'] < 0) {
+                    $this->errors['form_fields'][] = 'Field step index is required and must be a non-negative integer.';
+                } else {
+                    $step = $this->form_steps[$field['step_index']] ?? null;
+                    if (!$step) {
+                        // If the step does not exist, ignore the field
+                        continue;
+                    } else {
+                        $validation_result = self::validate_form_field($field);
+                        if ($validation_result['valid']) {
+                            $sanitized_field = $validation_result['data'];
+                            $sanitized_field['step_index'] = $field['step_index']; // Add step index to the sanitized field
+                            $this->sanitized_form_state['form_fields'][] = $sanitized_field;
+                        } else {
+                            $this->errors['form_fields'][$field['field_name']] = $validation_result['errors'];
+                        }
+                    }
+                }
+            }
         }
-        return $f_steps;
+
+        // Validate field dependencies
+        $fields = $this->sanitized_form_state['form_fields'] ?? [];
+        $validate_fields_dependencies_result = self::validate_fields_dependencies($fields);
+        if (!$validate_fields_dependencies_result['valid']) {
+            $this->errors['form_fields_dependencies'] = $validate_fields_dependencies_result['errors'];
+        }
+
+        return empty($this->errors) ?
+            ['valid' => true, 'data' => $this->sanitized_form_state] :
+            ['valid' => false, 'errors' => $this->errors];
     }
 
-    public static function validate_fields_data($fields)
+    private static function validate_form_step($idx, $step, $fields)
     {
-        $f_fields = [];
+        $errors = [];
+        $sanitized_step = [];
+        $sanitized_step['fields'] = [];
+
+        // check if $fields is empty
+        if (empty($fields)) {
+            $errors['fields'] = 'Step must have at least one field.';
+        }
+
+        // Check if title is set and is a string
+        if (!isset($step['title']) || !is_string($step['title']) || empty($step['title'])) {
+            $errors['title'] = 'Step title is required and must be a string.';
+        } else {
+            $sanitized_step['title'] = sanitize_text_field($step['title']);
+        }
+
+        // Check if description is set. If not, set it to an empty string
+        if (!isset($step['description']) || !is_string($step['description'])) {
+            $sanitized_step['description'] = '';
+        } else {
+            $sanitized_step['description'] = sanitize_textarea_field($step['description']);
+        }
+
+        return empty($errors) ? ['valid' => true, 'data' => $sanitized_step] : ['valid' => false, 'errors' => $errors];
+    }
+
+    private static function validate_form_field($field)
+    {
+        $errors = [];
+        $sanitized_field = [];
+
+        // Check if "field_name" is set and is a string
+        if (!isset($field['field_name']) || !is_string($field['field_name']) || empty($field['field_name'])) {
+            $errors['field_name'] = 'Field name is required and must be a string.';
+        } else {
+            $sanitized_field['field_name'] = sanitize_text_field($field['field_name']);
+        }
+
+        // Validate field type
+        if (!isset($field['type']) || !is_string($field['type']) || empty($field['type'])) {
+            $errors['type'] = 'Field type is required and must be a string.';
+        } else {
+            $sanitized_field['type'] = sanitize_text_field($field['type']);
+        }
+
+        // Check if "label" is set and is a string
+        if (!isset($field['label']) || !is_string($field['label']) || empty($field['label'])) {
+            $errors['label'] = 'Field label is required and must be a string.';
+        } else {
+            $sanitized_field['label'] = sanitize_text_field($field['label']);
+        }
+
+        // Check if "description" is set and is a string. If not, set it to an empty string
+        if (isset($field['description']) && !is_string($field['description'])) {
+            $errors['description'] = 'Field description must be a string.';
+        } else {
+            $sanitized_field['description'] = isset($field['description']) ? sanitize_textarea_field($field['description']) : '';
+        }
+
+        // Check if "required" is set and is a boolean
+        if (isset($field['required']) && !is_bool($field['required'])) {
+            $errors['required'] = 'Field required status must be a boolean.';
+        } else {
+            $sanitized_field['required'] = isset($field['required']) ? (bool)$field['required'] : false;
+        }
+
+        // Validate field by type
+        $validation_result = self::validate_field_by_type($field);
+        if (!$validation_result['valid']) {
+            $errors = array_merge($errors, $validation_result['errors']);
+        } else {
+            $sanitized_field = array_merge($sanitized_field, $validation_result['data']);
+        }
+
+        return empty($errors) ? ['valid' => true, 'data' => $sanitized_field] : ['valid' => false, 'errors' => $errors];
+    }
+
+    public static function validate_field_by_type($field)
+    {
+        $field_types = ['text', 'select', 'checkboxList', 'textarea', 'submissionSummary'];
+        $errors = [];
+        $sanitized_field = [
+            'field_name' => $field['field_name'],
+            'type' => $field['type'],
+            'label' => $field['label'],
+            'description' => isset($field['description']) ? sanitize_textarea_field($field['description']) : '',
+            'required' => isset($field['required']) ? (bool)$field['required'] : false,
+        ];
+
+        // Check if "type" is set and is a string
+        if (!in_array($field['type'], $field_types, true)) {
+            $errors['type'] = 'Field type is required and must be one of: ' . implode(', ', $field_types) . '.';
+        }
+        switch ($field['type']) {
+            case 'text':
+                // Validate text field
+                $text_validation_result = self::validate_text_field($field);
+                if (!$text_validation_result['valid']) {
+                    $errors = array_merge($errors, $text_validation_result['errors']);
+                } else {
+                    $sanitized_field = array_merge($sanitized_field, $text_validation_result['data']);
+                }
+                break;
+            case 'select':
+                // Additional validation for select fields can be added here
+                $select_validation_result = self::validate_select_field($field);
+                if (!$select_validation_result['valid']) {
+                    $errors = array_merge($errors, $select_validation_result['errors']);
+                } else {
+                    $sanitized_field = array_merge($sanitized_field, $select_validation_result['data']);
+                }
+                break;
+            case 'checkboxList':
+                // Additional validation for checkbox list fields can be added here
+                $checkboxList_validation_result = self::validate_checkboxList_field($field);
+                if (!$checkboxList_validation_result['valid']) {
+                    $errors = array_merge($errors, $checkboxList_validation_result['errors']);
+                } else {
+                    $sanitized_field = array_merge($sanitized_field, $checkboxList_validation_result['data']);
+                }
+                break;
+            case 'textarea':
+                // Additional validation for textarea fields can be added here
+                $textarea_validation_result = self::validate_textarea_field($field);
+                if (!$textarea_validation_result['valid']) {
+                    $errors = array_merge($errors, $textarea_validation_result['errors']);
+                } else {
+                    $sanitized_field = array_merge($sanitized_field, $textarea_validation_result['data']);
+                }
+                break;
+            case 'submissionSummary':
+                // Additional validation for submission summary fields can be added here
+                $submission_summary_validation_result = self::validate_submission_summary_field($field);
+                if (!$submission_summary_validation_result['valid']) {
+                    $errors = array_merge($errors, $submission_summary_validation_result['errors']);
+                } else {
+                    $sanitized_field = array_merge($sanitized_field, $submission_summary_validation_result['data']);
+                }
+                break;
+            default:
+                $errors['type'] = 'Invalid field type.';
+        }
+
+        return empty($errors) ?
+            ['valid' => true, 'data' => $sanitized_field] :
+            ['valid' => false, 'errors' => $errors];
+    }
+
+    private static function validate_text_field($field)
+    {
+        $errors = [];
+        $sanitized_field = [
+            'field_name' => $field['field_name'],
+            'type' => $field['type'],
+            'label' => $field['label'],
+            'description' => isset($field['description']) ? sanitize_textarea_field($field['description']) : '',
+            'required' => isset($field['required']) ? (bool)$field['required'] : false,
+        ];
+
+        $alllowed_input_types = ['text', 'email', 'number', 'tel', 'url', 'date'];
+        // Check if "input_type" is set and is a string
+        if (!isset($field['input_type']) || !is_string($field['input_type']) || empty($field['input_type'])) {
+            $errors['input_type'] = 'Input type is required and must be a string.';
+        } elseif (!in_array($field['input_type'], $alllowed_input_types, true)) {
+            $errors['input_type'] = 'Input type is not valid. Allowed types are: ' . implode(', ', $alllowed_input_types) . '.';
+        } else {
+            $sanitized_field['input_type'] = sanitize_text_field($field['input_type']);
+        }
+        // Validate placeholder
+        if (isset($field['placeholder']) && !is_string($field['placeholder'])) {
+            $errors['placeholder'] = 'Placeholder must be a string.';
+        } else {
+            $sanitized_field['placeholder'] = isset($field['placeholder']) ? sanitize_text_field($field['placeholder']) : '';
+        }
+        // Validate default value
+        if (isset($field['default_value']) && !is_string($field['default_value'])) {
+            $errors['default_value'] = 'Default value must be a string.';
+        } else {
+            $sanitized_field['default_value'] = isset($field['default_value']) ? sanitize_text_field($field['default_value']) : '';
+        }
+
+        // Check if "depends_on" is set and is an array
+        if (isset($field['depends_on']) && is_array($field['depends_on'])) {
+            $sanitized_field['depends_on'] = self::sanitize_dependencies($field['depends_on']);
+        } else {
+            $field['depends_on'] = [];
+        }
+
+        return empty($errors) ? ['valid' => true, 'data' => $sanitized_field] : ['valid' => false, 'errors' => $errors];
+    }
+
+    private static function validate_select_field($field)
+    {
+        $errors = [];
+        $sanitized_field = [
+            'field_name' => $field['field_name'],
+            'type' => $field['type'],
+            'label' => $field['label'],
+            'description' => isset($field['description']) ? sanitize_textarea_field($field['description']) : '',
+            'required' => isset($field['required']) ? (bool)$field['required'] : false,
+            'options' => [],
+        ];
+
+        // Validate options
+        if (!isset($field['options']) || !is_array($field['options']) || empty($field['options'])) {
+            $errors['options'] = 'Options are required and must be a non-empty array.';
+        } else {
+            foreach ($field['options'] as $option) {
+                // Chech for Option Label
+                if (!isset($option['label']) || !is_string($option['label']) || empty($option['label'])) {
+                    $errors['options'][] = 'Option label is required and must be a string.';
+                } else {
+                    $option['label'] = sanitize_text_field($option['label']);
+                }
+                // Check for Option Value
+                if (!isset($option['value']) || !is_string($option['value']) || empty($option['value'])) {
+                    $errors['options'][] = 'Option value is required and must be a string.';
+                } else {
+                    $option['value'] = sanitize_text_field($option['value']);
+                }
+                // Check if the description is set and is a string
+                if (isset($option['description']) && !is_string($option['description'])) {
+                    $errors['options'][] = 'Option description must be a string.';
+                } else {
+                    $option['description'] = isset($option['description']) ? sanitize_textarea_field($option['description']) : '';
+                }
+                // Add the sanitized option to the field options
+                $sanitized_field['options'][] = [
+                    'label' => $option['label'],
+                    'value' => $option['value'],
+                    'description' => $option['description'],
+                    'depends_on' => isset($option['depends_on']) ? $option['depends_on'] : []
+                ];
+            }
+        }
+        // Check if "depends_on" is set and is an array
+        if (isset($field['depends_on']) && is_array($field['depends_on'])) {
+            $sanitized_field['depends_on'] = self::sanitize_dependencies($field['depends_on']);
+        } else {
+            $field['depends_on'] = [];
+        }
+
+        return empty($errors) ? ['valid' => true, 'data' => $sanitized_field] : ['valid' => false, 'errors' => $errors];
+    }
+
+    private static function validate_checkboxList_field($field)
+    {
+        $errors = [];
+        $sanitized_field = [
+            'field_name' => $field['field_name'],
+            'type' => $field['type'],
+            'label' => $field['label'],
+            'description' => isset($field['description']) ? sanitize_textarea_field($field['description']) : '',
+            'required' => isset($field['required']) ? (bool)$field['required'] : false,
+            'options' => [],
+        ];
+
+        // Validate options
+        if (!isset($field['options']) || !is_array($field['options']) || empty($field['options'])) {
+            $errors['options'] = 'Options are required and must be a non-empty array.';
+        } else {
+            foreach ($field['options'] as $option) {
+                // Check for Option Label
+                if (!isset($option['label']) || !is_string($option['label']) || empty($option['label'])) {
+                    $errors['options'][] = 'Option label is required and must be a string.';
+                } else {
+                    $option['label'] = sanitize_text_field($option['label']);
+                }
+                // Check for Option Value
+                if (!isset($option['value']) || !is_string($option['value']) || empty($option['value'])) {
+                    $errors['options'][] = 'Option value is required and must be a string.';
+                } else {
+                    $option['value'] = sanitize_text_field($option['value']);
+                }
+                // Check if the description is set and is a string
+                if (isset($option['description']) && !is_string($option['description'])) {
+                    $errors['options'][] = 'Option description must be a string.';
+                } else {
+                    $option['description'] = isset($option['description']) ? sanitize_textarea_field($option['description']) : '';
+                }
+                // Check if "min" is set and is an integer
+                if (isset($option['min']) && !is_int($option['min'])) {
+                    $errors['options'][] = 'Option min value must be an integer.';
+                } else {
+                    $option['min'] = isset($option['min']) ? intval($option['min']) : null;
+                }
+
+                // Check if "max" is set and is an integer
+                if (isset($option['max']) && !is_int($option['max'])) {
+                    $errors['options'][] = 'Option max value must be an integer.';
+                } else {
+                    $option['max'] = isset($option['max']) ? intval($option['max']) : null;
+                }
+
+                // Add the sanitized option to the field options
+                $sanitized_field['options'][] = [
+                    'label' => $option['label'],
+                    'value' => $option['value'],
+                    'description' => $option['description'],
+                    'depends_on' => isset($option['depends_on']) ? $option['depends_on'] : []
+                ];
+            }
+        }
+
+        // Check if "depends_on" is set and is an array
+        if (isset($field['depends_on']) && is_array($field['depends_on'])) {
+            $sanitized_field['depends_on'] = self::sanitize_dependencies($field['depends_on']);
+        } else {
+            $field['depends_on'] = [];
+        }
+
+        return empty($errors) ? ['valid' => true, 'data' => $sanitized_field] : ['valid' => false, 'errors' => $errors];
+    }
+
+    public static function validate_textarea_field($field)
+    {
+        $errors = [];
+        $sanitized_field = [
+            'field_name' => $field['field_name'],
+            'type' => $field['type'],
+            'label' => $field['label'],
+            'description' => isset($field['description']) ? sanitize_textarea_field($field['description']) : '',
+            'required' => isset($field['required']) ? (bool)$field['required'] : false,
+        ];
+
+        // Validate placeholder
+        if (isset($field['placeholder']) && !is_string($field['placeholder'])) {
+            $errors['placeholder'] = 'Placeholder must be a string.';
+        } else {
+            $sanitized_field['placeholder'] = isset($field['placeholder']) ? sanitize_text_field($field['placeholder']) : '';
+        }
+        // Validate default value
+        if (isset($field['default_value']) && !is_string($field['default_value'])) {
+            $errors['default_value'] = 'Default value must be a string.';
+        } else {
+            $sanitized_field['default_value'] = isset($field['default_value']) ? sanitize_textarea_field($field['default_value']) : '';
+        }
+
+        // Validate rows
+        if (isset($field['rows']) && !is_int($field['rows']) && $field['rows'] <= 0) {
+            $errors['rows'] = 'Rows must be an integer.';
+        } else {
+            $sanitized_field['rows'] = isset($field['rows']) ? intval($field['rows']) : 3; // Default to 3 rows if not set
+        }
+        // Validate cols
+        if (isset($field['cols']) && !is_int($field['cols']) && $field['cols'] <= 0) {
+            $errors['cols'] = 'Cols must be an integer.';
+        } else {
+            $sanitized_field['cols'] = isset($field['cols']) ? intval($field['cols']) : 20; // Default to 20 cols if not set
+        }
+
+        // Check if "depends_on" is set and is an array
+        if (isset($field['depends_on']) && is_array($field['depends_on'])) {
+            $sanitized_field['depends_on'] = self::sanitize_dependencies($field['depends_on']);
+        } else {
+            $field['depends_on'] = [];
+        }
+
+        return empty($errors) ? ['valid' => true, 'data' => $sanitized_field] : ['valid' => false, 'errors' => $errors];
+    }
+
+    public static function validate_submission_summary_field($field)
+    {
+        $errors = [];
+        $sanitized_field = [
+            'field_name' => $field['field_name'],
+            'type' => $field['type'],
+            'label' => $field['label'],
+            'description' => isset($field['description']) ? sanitize_textarea_field($field['description']) : '',
+            'required' => false, // Submission summary fields are not required
+        ];
+
+        // Check if "show_full_summary" is set and is a boolean
+        if (isset($field['show_full_summary']) && !is_bool($field['show_full_summary'])) {
+            $errors['show_full_summary'] = 'Show full summary must be a boolean.';
+        } else {
+            $sanitized_field['show_full_summary'] = isset($field['show_full_summary']) ? (bool)$field['show_full_summary'] : false;
+        }
+
+        // Check if "depends_on" is set and is an array
+        if (isset($field['depends_on']) && is_array($field['depends_on'])) {
+            $sanitized_field['depends_on'] = self::sanitize_dependencies($field['depends_on']);
+        } else {
+            $field['depends_on'] = [];
+        }
+
+        return empty($errors) ? ['valid' => true, 'data' => $sanitized_field] : ['valid' => false, 'errors' => $errors];
+    }
+
+
+    public static function sanitize_dependencies($dependencies)
+    {
+        $sanitized_dependencies = [];
+        foreach ($dependencies as $dependency) {
+            // Check if "field_name" is set and is a string
+            if (!isset($dependency['field_name']) || !is_string($dependency['field_name']) || empty($dependency['field_name'])) {
+                continue; // Skip invalid dependencies
+            }
+            // Check if "value" is set and is a string
+            if (isset($dependency['value']) && !is_string($dependency['value'])) {
+                continue; // Skip invalid dependencies
+            }
+            $sanitized_dependencies[] = [
+                'field_name' => sanitize_text_field($dependency['field_name']),
+                'value' => sanitize_text_field($dependency['value'])
+            ];
+        }
+        return $sanitized_dependencies;
+    }
+
+    public static function validate_fields_dependencies($fields)
+    {
+        $fields = is_array($fields) ? $fields : [];
+        $errors = [];
+
         foreach ($fields as $field) {
-            if (!isset($field['name']) || !is_string($field['name']) || empty($field['name'])) {
-                return false;
+            $dependencies = $field['depends_on'] ?? [];
+            if (is_array($dependencies) && !empty($dependencies)) {
+                foreach ($dependencies as $dependency) {
+                    // Validate each dependency
+                    $validation_result = self::validate_dependency($dependency, $fields, $field['step_index']);
+                    if (!$validation_result['valid']) {
+                        $errors['form_fields'][$field['field_name']]['depends_on'][] = $validation_result['errors'];
+                    } else {
+                        // If valid, add the dependency to the field
+                        $field['depends_on'][] = $validation_result['data'];
+                    }
+                }
             }
-            $name = sanitize_text_field($field['name']);
-
-            if (!isset($field['type']) || !is_string($field['type']) || empty($field['type'])) {
-                return false;
+            // If field is of type 'select' or 'checkboxList', validate the options dependencies
+            if (in_array($field['type'], ['select', 'checkboxList'], true))
+            {
+                foreach ($field['options'] as $option) {
+                    $option_dependencies = $option['depends_on'] ?? [];
+                    if (is_array($option_dependencies) && !empty($option_dependencies)) {
+                        foreach ($option_dependencies as $dependency) {
+                            // Validate each option dependency
+                            $validation_result = self::validate_dependency($dependency, $fields, $field['step_index']);
+                            if (!$validation_result['valid']) {
+                                $errors['form_fields'][$field['field_name']]['options'][$option['value']]['depends_on'][] = $validation_result['errors'];
+                            } else {
+                                // If valid, add the dependency to the option
+                                $option['depends_on'][] = $validation_result['data'];
+                            }
+                        }
+                    }
+                }
             }
-            $type = sanitize_text_field($field['type']);
-
-            if (!isset($field['required']) || !is_bool($field['required'])) {
-                return false;
-            }
-            $required = (bool)$field['required'];
-
-            $f_fields[] = [
-                'name' => $name,
-                'type' => $type,
-                'required' => $required,
-            ];
         }
-        return $f_fields;
+        return empty($errors) ? ['valid' => true] : ['valid' => false, 'errors' => $errors];
     }
 
-    private static function validate_and_sanitize($string_data)
+    private static function validate_dependency($dependency, $fields, $field_step_index)
     {
-        if (!is_string($string_data) || empty($string_data)) {
-            return false;
+        $fields = is_array($fields) ? $fields : [];
+        $dependent_field = array_filter($fields, function ($field) use ($dependency) {
+            return isset($field['field_name']) && $field['field_name'] === $dependency['field_name'];
+        });
+        $dependent_field = reset($dependent_field); // Get the first matching field
+        $dependent_value = $dependency['value'] ?? null;
+        $errors = [];
+
+        // Check if the dependent field exists
+        if (!$dependent_field) {
+            $errors[] = 'Dependent field "' . $dependency['field_name'] . '" does not exist.';
+        } else {
+            // Check if the dependent field step_index is lower than the current field step index
+            if ($dependent_field['step_index'] >= $field_step_index) {
+                $errors[] = 'Dependency should be on a field with a lower step index than the current field.';
+            }
+            // Check if the dependent value is valid for the field type
+            if (!isset($dependent_value)) {
+                $errors[] = 'Dependent value is required for field "' . $dependency['field_name'] . '".';
+            }
+            if (!is_string($dependent_value)) {
+                $errors[] = 'Dependent value must be a string for field "' . $dependency['field_name'] . '".';
+            }
+            switch ($dependent_field['type']) {
+                case 'text':
+                    // No specific validation for text fields
+                    break;
+                case 'select':
+                    $option_values = array_column($dependent_field['options'], 'value');
+                    if (!in_array($dependent_value, $option_values, true)) {
+                        $errors[] = 'Dependent value "' . $dependent_value . '" does not exist in the options for field "' . $dependency['field_name'] . '".';
+                    }
+                    break;
+                case 'checkboxList':
+                    $option_values = array_column($dependent_field['options'], 'value');
+                    if (!in_array($dependent_value, $option_values, true)) {
+                        $errors[] = 'Dependent value "' . $dependent_value . '" does not exist in the options for field "' . $dependency['field_name'] . '".';
+                    }
+                    break;
+                case 'textarea':
+                    // No specific validation for textarea fields
+                    break;
+                case 'submissionSummary':
+                    // No specific validation for submission summary fields
+                    break;
+                default:
+                    $errors[] = 'Invalid field type for dependency: ' . $dependent_field['type'];
+            }
         }
-        return sanitize_text_field($string_data);
+
+        return empty($errors) ?
+            ['valid' => true, 'data' => $dependency] :
+            ['valid' => false, 'errors' => $errors];
     }
 }

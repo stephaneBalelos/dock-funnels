@@ -475,6 +475,7 @@ export const useEditorStore = createGlobalState(() => {
                     console.error('Error updating form:', response.data);
                     throw new Error(`Error updating form: ${response.data}`);
                 }
+                console.log('Form updated successfully:', response.data);
                 toast.add({
                     severity: 'success',
                     summary: 'Formular gespeichert',
