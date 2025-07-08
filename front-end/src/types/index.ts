@@ -18,7 +18,6 @@ export type FormSettings = {
     notifications_settings: FormNotificationSettings
     onSubmitAction: FormOnSubmitAction[]; // Actions to perform when the form is submitted
     design_settings: FormDesignSettings; // Design settings for the form
-    email_settings: FormEmailSettings; // Settings to notify users via email when a form is submitted
     smtp_settings: FormSmtpSettings; // SMTP settings for sending emails
 }
 
@@ -74,16 +73,6 @@ export type FormSmtpSettings = {
 // Settings to notify Form Admins via email when a form is submitted
 export type FormNotificationSettings = {
     emails: string; // Email addresses to notify, comma-separated
-    subject: string; // Subject of the notification email
-    body: string; // Message body of the notification email
-}
-
-// Settings to notify users via email when a form is submitted
-export type FormEmailSettings = {
-    enabled: boolean; // Whether email notifications are enabled
-    send_to_admin: boolean; // Whether to send notifications to the admin
-    send_to_user: boolean; // Whether to send notifications to the user
-    user_email_field: string; // Name of the field that contains the user's email address
     subject: string; // Subject of the notification email
     body: string; // Message body of the notification email
 }

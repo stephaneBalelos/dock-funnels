@@ -70,14 +70,6 @@ export const useEditorStore = createGlobalState(() => {
                 body: 'Hallo Admin, \n\nEs wurde ein neues Formular übermittelt. Hier sind die Details:\n\n{submission_details}\n\nVielen Dank!'
             },
             onSubmitAction: [],
-            email_settings: {
-                enabled: false,
-                send_to_admin: false,
-                send_to_user: false,
-                user_email_field: '',
-                subject: '',
-                body: ''
-            }
         }
     })
 

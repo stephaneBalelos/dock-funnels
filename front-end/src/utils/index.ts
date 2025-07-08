@@ -274,14 +274,6 @@ export const FormTestData: FormState = {
       enabled: false,
       reply_to: "",
     },
-    email_settings: {
-      enabled: true,
-      send_to_admin: true,
-      send_to_user: true,
-      user_email_field: "email",
-      subject: "Ihre Terminvereinbarung",
-      body: "Vielen Dank für Ihre Terminvereinbarung. Wir werden uns in Kürze bei Ihnen melden.",
-    }
   }
 }
 
