@@ -369,6 +369,34 @@ class DockFunnels_FormStateValidator
             $this->errors['form_fields_dependencies'] = $validate_fields_dependencies_result['errors'];
         }
 
+        // Validate form settings
+        // Validate Notifications Settings
+        $notifications_settings_validation_result = self::validate_notifications_settings($this->form_settings['notifications_settings'] ?? []);
+        if (!$notifications_settings_validation_result['valid']) {
+            $this->errors['notifications_settings'] = $notifications_settings_validation_result['errors'];
+        } else {
+            $this->sanitized_form_state['form_settings']['notifications_settings'] = $notifications_settings_validation_result['data'];
+        }
+
+        // Validate onSubmit Actions
+        foreach ($this->form_settings['onSubmitAction'] ?? [] as $action) {
+            $action_validation_result = self::validate_onSubmitAction_settings($action, $this->sanitized_form_state['form_fields']);
+            if (!$action_validation_result['valid']) {
+                $this->errors['onSubmitAction'][] = $action_validation_result['errors'];
+            } else {
+                $this->sanitized_form_state['form_settings']['onSubmitAction'][] = $action_validation_result['data'];
+            }
+        }
+
+        // Validate Design Settings
+        $design_settings_validation_result = self::validate_design_settings($this->form_settings['design_settings'] ?? []);
+        if (!$design_settings_validation_result['valid']) {
+            $this->errors['design_settings'] = $design_settings_validation_result['errors'];
+        } else {
+            $this->sanitized_form_state['form_settings']['design_settings'] = $design_settings_validation_result['data'];
+        }
+
+
         return empty($this->errors) ?
             ['valid' => true, 'data' => $this->sanitized_form_state] :
             ['valid' => false, 'errors' => $this->errors];
@@ -884,4 +912,194 @@ class DockFunnels_FormStateValidator
             ['valid' => true, 'data' => $dependency] :
             ['valid' => false, 'errors' => $errors];
     }
+
+    private static function validate_notifications_settings($notifications_settings)
+    {
+        $errors = [];
+        $sanitized_settings = [];
+
+        // Verify the "emails" contains comma separated email addresses
+        if (!isset($notifications_settings['emails']) || !is_string($notifications_settings['emails']) || empty($notifications_settings['emails'])) {
+            $errors['emails'] = 'Emails are required and must be a comma-separated string.';
+        } else {
+            $emails = explode(',', $notifications_settings['emails']);
+            $emails = array_map('trim', $emails); // Trim whitespace from each email
+            $emails = array_filter($emails, function ($email) {
+                return filter_var($email, FILTER_VALIDATE_EMAIL);
+            }); // Filter out invalid emails
+            if (empty($emails)) {
+                $errors['emails'] = 'At least one valid email address is required.';
+            } else {
+                $sanitized_settings['emails'] = implode(',', $emails); // Join valid emails back
+            }
+        }
+
+        // Verify the subject is set and is a string
+        if (!isset($notifications_settings['subject']) || !is_string($notifications_settings['subject']) || empty($notifications_settings['subject'])) {
+            $errors['subject'] = 'Subject is required and must be a string.';
+        } else {
+            $sanitized_settings['subject'] = sanitize_text_field($notifications_settings['subject']);
+        }
+
+        // Verify the body is set and is a string
+        if (!isset($notifications_settings['body']) || !is_string($notifications_settings['body']) || empty($notifications_settings['body'])) {
+            $errors['body'] = 'body is required and must be a string.';
+        } else {
+            $sanitized_settings['body'] = $notifications_settings['body']; // HTML content can be left as is, but you might want to sanitize it further if needed
+        }
+
+        return empty($errors) ? ['valid' => true, 'data' => $sanitized_settings] : ['valid' => false, 'errors' => $errors];
+    }
+
+    private static function validate_onSubmitAction_settings($action, $fields)
+    {
+        $errors = [];
+        $sanitized_action = [];
+        $allowed_actions = ['redirect', 'mail'];
+        $action_type = isset($action['type']) ? $action['type'] : null;
+        if (in_array($action_type, $allowed_actions, true)) {
+            $sanitized_action['type'] = $action_type; // Sanitize action type
+            if ($action_type === 'redirect') {
+                // Validate redirect URL
+                if (!isset($action['url']) || !is_string($action['url']) || empty($action['url'])) {
+                    $errors[] = 'Redirect URL is required and must be a string.';
+                } else {
+                    $sanitized_action['url'] = esc_url_raw($action['url']);
+                }
+                // Validate bool open_in_new_tab
+                if (isset($action['open_in_new_tab']) && !is_bool($action['open_in_new_tab'])) {
+                    $errors[] = 'Open in new tab must be a boolean.';
+                } else {
+                    $sanitized_action['open_in_new_tab'] = isset($action['open_in_new_tab']) ? (bool)$action['open_in_new_tab'] : false; // Default to false
+                }
+            } elseif ($action_type === 'mail') {
+                // Validate email_field
+                // Check if email_field is set in the form fields and has no dependencies
+                $email_field = array_filter($fields, function ($field) use ($action) {
+                    return isset($field['field_name']) && $field['field_name'] === $action['email_field'];
+                });
+                $email_field = reset($email_field); // Get the first matching field
+                if (!$email_field || $email_field['type'] !== 'text' || $email_field['input_type'] !== 'email' || !empty($email_field['depends_on'])) {
+                    $errors[] = 'Email field is required and must be an email text field with no dependencies.';
+                } else {
+                    $sanitized_action['email_field'] = sanitize_text_field($action['email_field']);
+                }
+
+                // Validate subject
+                if (!isset($action['subject']) || !is_string($action['subject']) || empty($action['subject'])) {
+                    $errors[] = 'Subject is required and must be a string.';
+                } else {
+                    $sanitized_action['subject'] = sanitize_text_field($action['subject']);
+                }
+
+                // Validate body
+                if (!isset($action['body']) || !is_string($action['body']) || empty($action['body'])) {
+                    $errors[] = 'Body is required and must be a string.';
+                } else {
+                    $sanitized_action['body'] = $action['body']; // HTML content can be left as is, but you might want to sanitize it further if needed
+                }
+            }
+        } else {
+            $errors[] = 'Invalid onSubmit action. Allowed actions are: ' . implode(', ', $allowed_actions) . '.';
+        }
+        return empty($errors) ? ['valid' => true, 'data' => $sanitized_action] : ['valid' => false, 'errors' => $errors];
+    }
+
+    private static function validate_design_settings($design_settings)
+    {
+        $errors = [];
+        $sanitized_settings = [];
+
+        // Validate Colors
+        $colors = $design_settings['colors'] ?? [];
+        if (!is_array($colors) || empty($colors)) {
+            $errors['colors'] = 'Colors must be a non-empty array.';
+        } else {
+            foreach ($colors as $color_name => $color_value) {
+                if (!is_string($color_name) || empty($color_name)) {
+                    $errors['colors'][$color_name] = 'Color name must be a non-empty string.';
+                } elseif (!is_string($color_value) || !self::validate_color_value_hex($color_value)) {
+                    $errors['colors'][$color_name] = 'Color value must be a valid hex color code.';
+                } else {
+                    $sanitized_settings['colors'][$color_name] = self::validate_color_value_hex($color_value);
+                }
+            }
+        }
+
+        // Validate Header
+        $header = $design_settings['header'] ?? [];
+        if (isset($header['show']) && !is_bool($header['show'])) {
+            $errors['header']['show'] = 'Header show must be a boolean.';
+        } else {
+            $sanitized_settings['header']['show'] = isset($header['show']) ? (bool)$header['show'] : true; // Default to true
+        }
+        $allowed_header_alignments = ['left', 'center', 'right'];
+        if (isset($header['align']) && !is_string($header['align'])) {
+            $errors['header']['align'] = 'Header alignment must be a string.';
+        } elseif (isset($header['align']) && !self::validate_enum_value($header['align'], $allowed_header_alignments)) {
+            $errors['header']['align'] = 'Header alignment must be one of: ' . implode(', ', $allowed_header_alignments) . '.';
+        } else {
+            $sanitized_settings['header']['align'] = isset($header['align']) ? sanitize_text_field($header['align']) : 'left'; // Default to left
+        }
+
+        // Validate Steps
+        $steps = $design_settings['steps'] ?? [];
+        if (!isset($steps['hide_step_header']) || !is_bool($steps['hide_step_header'])) {
+            $errors['steps']['hide_step_header'] = 'Steps hide step header must be a boolean.';
+        } else {
+            $sanitized_settings['steps']['hide_step_header'] = (bool)$steps['hide_step_header']; // Default to false
+        }
+        if (!isset($steps['text_align']) || !is_string($steps['text_align'])) {
+            $errors['steps']['text_align'] = 'Steps text alignment must be a string.';
+        } elseif (!self::validate_enum_value($steps['text_align'], ['text-left', 'text-center', 'text-right'])) {
+            $errors['steps']['text_align'] = 'Steps text alignment must be one of: text-left, text-center, text-right.';
+        } else {
+            $sanitized_settings['steps']['text_align'] = sanitize_text_field($steps['text_align']);
+        }
+        if (!isset($steps['items_align']) || !is_string($steps['items_align'])) {
+            $errors['steps']['items_align'] = 'Steps items alignment must be a string.';
+        } elseif (!self::validate_enum_value($steps['items_align'], ['items-start', 'items-center', 'items-end'])) {
+            $errors['steps']['items_align'] = 'Steps items alignment must be one of: items-start, items-center, items-end.';
+        } else {
+            $sanitized_settings['steps']['items_align'] = sanitize_text_field($steps['items_align']);
+        }
+        if (!isset($steps['step_transition']) || !is_string($steps['step_transition'])) {
+            $errors['steps']['step_transition'] = 'Steps step transition must be a string.';
+        } elseif (!self::validate_enum_value($steps['step_transition'], ['default', 'slide'])) {
+            $errors['steps']['step_transition'] = 'Steps step transition must be one of: fade, slide.';
+        } else {
+            $sanitized_settings['steps']['step_transition'] = sanitize_text_field($steps['step_transition']);
+        }
+
+        // Validate Footer
+        $footer = $design_settings['footer'] ?? [];
+        if (isset($footer['show_progress_bar']) && !is_bool($footer['show_progress_bar'])) {
+            $errors['footer']['show_progress_bar'] = 'Footer show progress bar must be a boolean.';
+        } else {
+            $sanitized_settings['footer']['show_progress_bar'] = isset($footer['show_progress_bar']) ? (bool)$footer['show_progress_bar'] : true; // Default to true
+        }
+
+        return empty($errors) ? ['valid' => true, 'data' => $sanitized_settings] : ['valid' => false, 'errors' => $errors];
+    }
+
+    public static function validate_color_value_hex($color) {
+        // Check if the color is a valid hex color code
+        if (preg_match('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $color)) {
+            return $color; // Valid hex color code
+        } else {
+            return false; // Invalid hex color code
+        }
+    }
+
+    public static function validate_enum_value($value, $allowed_values)
+    {
+        // Check if the value is in the allowed values array
+        if (in_array($value, $allowed_values, true)) {
+            return $value; // Valid enum value
+        } else {
+            return false; // Invalid enum value
+        }
+    }
+
+
 }

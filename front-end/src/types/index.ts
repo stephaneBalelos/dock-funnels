@@ -15,11 +15,11 @@ export type Form = Omit<FormState, 'form_settings'> & {
 
 // Form Settings Types, these are the settings for the form
 export type FormSettings = {
-    smtp_settings: FormSmtpSettings; // SMTP settings for sending emails
     notifications_settings: FormNotificationSettings
-    email_settings: FormEmailSettings; // Settings to notify users via email when a form is submitted
     onSubmitAction: FormOnSubmitAction[]; // Actions to perform when the form is submitted
     design_settings: FormDesignSettings; // Design settings for the form
+    email_settings: FormEmailSettings; // Settings to notify users via email when a form is submitted
+    smtp_settings: FormSmtpSettings; // SMTP settings for sending emails
 }
 
 export type FormDesignSettings = {
