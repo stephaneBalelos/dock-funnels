@@ -1066,7 +1066,7 @@ class DockFunnels_FormStateValidator
         if (!isset($steps['step_transition']) || !is_string($steps['step_transition'])) {
             $errors['steps']['step_transition'] = 'Steps step transition must be a string.';
         } elseif (!self::validate_enum_value($steps['step_transition'], ['default', 'slide'])) {
-            $errors['steps']['step_transition'] = 'Steps step transition must be one of: fade, slide.';
+            $errors['steps']['step_transition'] = 'Steps step transition must be one of: default, slide.';
         } else {
             $sanitized_settings['steps']['step_transition'] = sanitize_text_field($steps['step_transition']);
         }
