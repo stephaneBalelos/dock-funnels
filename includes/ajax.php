@@ -229,11 +229,11 @@ class DockFunnels_Ajax
             wp_send_json_error(['message' => 'Form validation failed.', 'errors' => $validation_result['errors']]);
         }
 
-        wp_send_json_success(['message' => 'Form validation successful.', 'data' => $validation_result['data']]);
+        $results = $validation_result['data'];
 
-        $form_data = ['form_steps' => $form_state['form_steps'], 'form_fields' => $form_state['form_fields']];
-        $form_settings = $form_state['form_settings'];
-        $updated = DockFunnels_DB::update_form($form_id, $form_state['title'], $form_state['description'], $form_data, $form_settings);
+        $form_data = ['form_steps' => $results['form_steps'], 'form_fields' => $results['form_fields']];
+        $form_settings = $results['form_settings'];
+        $updated = DockFunnels_DB::update_form($form_id, $results['title'], $results['description'], $form_data, $form_settings);
         if (!$updated) {
             wp_send_json_error(['message' => 'Failed to update form.']);
         }
