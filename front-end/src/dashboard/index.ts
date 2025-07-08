@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import './style.css'
 import './index.css'
-import App from './App.vue'
+import Dashboard from './Dashboard.vue'
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
 import ToastService from 'primevue/toastservice';
@@ -18,7 +18,7 @@ declare global {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const app = createApp(App)
+    const app = createApp(Dashboard)
     app.use(PrimeVue, {
         theme: {
             preset: Aura,
@@ -31,5 +31,5 @@ document.addEventListener('DOMContentLoaded', () => {
     app.provide('ajaxUrl', window.DockFunnelsAdmin?.ajaxUrl);
     app.provide('nonce', window.DockFunnelsAdmin?.nonce);
     app.provide('editFormId', new URLSearchParams(window.location.search).get('form_id') || null);
-    app.mount('#app')
+    app.mount('#dock-funnels-dashboard');
 });

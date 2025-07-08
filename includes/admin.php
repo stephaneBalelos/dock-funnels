@@ -61,7 +61,7 @@ class DockFunnels_Admin
             $form_id = intval($_GET['form_id']);
             $form = DockFunnels_DB::get_form_by_id($form_id);
             if ($form) {
-                echo '<div id="app"></div></div>';
+                echo '<div id="dock-funnels-dashboard"></div></div>';
                 return;
             }
         } elseif (isset($_GET['form_id'])) {
@@ -116,6 +116,6 @@ class DockFunnels_Admin
         if (!current_user_can('manage_options')) {
             return;
         }
-        echo '<div id="app"></div>';
+        echo '<div id="dock-funnels-dashboard"></div>';
     }
 }
