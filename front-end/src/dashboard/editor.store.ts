@@ -265,6 +265,36 @@ export const useEditorStore = createGlobalState(() => {
         console.log(`Field ${field_name} deleted successfully`)
     }
 
+    const moveFieldToStep = (field_name: string, step_index: number) => {
+        const field = form.form_fields.find(f => f.field_name === field_name)
+        if (!field) {
+            console.warn('Field not found:', field_name)
+            return
+        }
+        // Check if the step index is valid
+        if (step_index < 0 || step_index >= form.form_steps.length) {
+            console.warn('Invalid step index:', step_index)
+            return
+        }
+        // Update the field's step index
+        field.step_index = step_index
+        // Ensure the field is moved to the correct step
+        const step = form.form_steps[step_index]
+        if (!step) {
+            console.warn('Step not found for index:', step_index)
+            return
+        }
+        // Remove the field from its current step if it exists
+        form.form_fields = form.form_fields.filter(f => f.field_name !== field_name || f.step_index !== step_index)
+        // Add the field to the new step
+        form.form_fields.push(field)
+        // Reset selected field name if it was the moved field
+        if (selectedFieldName.value === field_name) {
+            selectedFieldName.value = null
+        }
+        saveFormState()
+    }
+
     const addFieldDependency = (field_name: string, depends_on: FormFieldDependsOn) => {
         const field = form.form_fields.find(f => f.field_name === field_name)
         if (!field) {
@@ -331,6 +361,10 @@ export const useEditorStore = createGlobalState(() => {
         if (!referencedField) {
             throw new Error(`Referenced field ${depends_on.field_name} not found`)
         }
+        // Ensure the referenced field step_index is lower than the current field's step_index
+        if (referencedField.step_index >= field.step_index) {
+            throw new Error(`Referenced field ${depends_on.field_name} must be in a previous step than field ${field_name}`)
+        }
         // Ensure the referenced field is of type select or checkboxList
         if (referencedField.type !== 'select' && referencedField.type !== 'checkboxList') {
             throw new Error(`Field ${depends_on.field_name} must be of type select or checkboxList`)
@@ -351,6 +385,7 @@ export const useEditorStore = createGlobalState(() => {
         if (existingDep) {
             throw new Error(`Dependency for option ${option_value} in field ${field_name} with value ${depends_on.value} already exists`)
         }
+
         // Add the dependency to the option
         option.depends_on.push(depends_on)
         // Update the field with the new options
@@ -536,6 +571,7 @@ export const useEditorStore = createGlobalState(() => {
         addField,
         updateField,
         removeField,
+        moveFieldToStep,
         addFieldDependency,
         removeFieldDependency,
         addOptionDependency,

@@ -29,7 +29,9 @@
           v-if="field.depends_on && field.depends_on.length > 0"
           class="flex flex-col"
         >
-          <p class="text-xs text-surface-700 font-semibold">Wird angezeigt wenn:</p>
+          <p class="text-xs text-surface-700 font-semibold">
+            Wird angezeigt wenn:
+          </p>
           <DependencyBadge
             v-for="(dep, dep_idx) in field.depends_on"
             :key="dep_idx"
@@ -70,6 +72,30 @@
         ></Button>
       </div>
     </Dialog>
+    <div class="flex justify-between">
+      <Button
+        v-if="field.step_index > 0"
+        v-tooltip="{
+          value: 'In den vorherige Step verschieben',
+        }"
+        label="move to previous step"
+        @click="editorStore.moveFieldToStep(field.field_name, field.step_index - 1)"
+      >
+        <Icon icon="heroicons:chevron-double-left-16-solid" />
+      </Button>
+      <Button
+        v-if="field.step_index < editorStore.form.form_steps.length - 1"
+        v-tooltip="{
+          value: 'In den nächsten Step verschieben',
+        }"
+        label="move to next step"
+        class="ml-auto"
+        @click="editorStore.moveFieldToStep(field.field_name, field.step_index + 1)"
+      >
+        <Icon icon="heroicons:chevron-double-right-16-solid" />
+      </Button>
+    </div>
+
   </div>
 </template>
 
@@ -78,6 +104,7 @@ import { useEditorStore } from "@/dashboard/editor.store";
 import type { FormFieldDependsOn } from "@/types";
 import { computed, ref } from "vue";
 import DependencyBadge from "../sidebar-right/FieldEditor/DependencyBadge.vue";
+import { Icon } from "@iconify/vue";
 
 type Props = {
   fieldName: string;
