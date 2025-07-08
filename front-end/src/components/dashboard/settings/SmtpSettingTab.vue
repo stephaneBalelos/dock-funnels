@@ -1,6 +1,7 @@
 <template>
   <div>
-    Email Einstellungen
+    [Noch nicht implementiert]
+    SMTP Einstellungen für den E-Mail Versand.
   </div>
 </template>
 
