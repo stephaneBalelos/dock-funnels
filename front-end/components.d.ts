@@ -66,6 +66,7 @@ declare module 'vue' {
     SmtpSettingTab: typeof import('./src/components/dashboard/settings/SmtpSettingTab.vue')['default']
     SpeedDial: typeof import('primevue/speeddial')['default']
     StepItem: typeof import('./src/components/dashboard/sidebar-left/StepItem.vue')['default']
+    StepList: typeof import('./src/components/dashboard/sidebar-left/StepList.vue')['default']
     SubmissionActionEditor: typeof import('./src/components/dashboard/submissions-actions/SubmissionActionEditor.vue')['default']
     SubmissionActionEditorMail: typeof import('./src/components/dashboard/submissions-actions/SubmissionActionEditorMail.vue')['default']
     SubmissionActionEditorRedirect: typeof import('./src/components/dashboard/submissions-actions/SubmissionActionEditorRedirect.vue')['default']

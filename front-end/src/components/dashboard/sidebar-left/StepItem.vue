@@ -1,6 +1,20 @@
 <template>
   <Card @click="editorStore.setSelectedStepIndex(props.stepIndex)" 
-  :class="`mb-4 cursor-pointer ${isActiveStep ? 'border-blue-300 border-2' : 'border-transparent'}`">
+  :class="`mb-4 cursor-pointer ${isActiveStep ? 'bg-primary-50 border-primary-300 border-2' : 'border-transparent'}`"
+  style="--p-card-body-padding: .75rem;">
+  <template #header>
+    <div v-if="!isEditing && isActiveStep" class="flex items-center justify-center pt-2">
+      <Button
+        v-if="!isEditing && stepIndex > 0"
+        size="small"
+        severity="secondary"
+        variant="text"
+        @click.stop="editorStore.moveStep(stepIndex, stepIndex - 1)"
+      >
+        <Icon icon="heroicons:chevron-up" />
+      </Button>
+    </div>
+  </template>
     <template #content>
       <div v-if="isEditing">
         <Form
@@ -75,11 +89,24 @@
         </div>
       </div>
     </template>
+      <template #footer>
+    <div v-if="!isEditing && isActiveStep" class="flex items-center justify-center pt-2">
+      <Button
+        v-if="!isEditing && stepIndex < editorStore.form.form_steps.length - 1"
+        size="small"
+        severity="secondary"
+        variant="text"
+        @click.stop="editorStore.moveStep(stepIndex, stepIndex + 1)"
+      >
+        <Icon icon="heroicons:chevron-down" />
+      </Button>
+    </div>
+  </template>
   </Card>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import type { FormStep } from "@/types";
 import { useEditorStore } from "@/dashboard/editor.store";
 import { Icon } from "@iconify/vue";
@@ -93,7 +120,6 @@ import { z } from "zod";
 
 type Props = {
   stepIndex: number;
-  step: FormStep;
 };
 const props = defineProps<Props>();
 const isEditing = ref(false);
@@ -114,13 +140,17 @@ const toggleEdit = () => {
   }
 };
 
+const step = computed(() => {
+  return editorStore.form.form_steps[props.stepIndex];
+});
+
 const isActiveStep = computed(() => {
   return editorStore.selectedStepIndex.value === props.stepIndex;
 });
 
 const state = ref({
-  title: props.step.title,
-  description: props.step.description,
+  title: step.value.title,
+  description: step.value.description,
 });
 
 const updateStep = () => {
@@ -132,8 +162,8 @@ const updateStep = () => {
   editorStore.saveFormState();
 };
 const cancelEdit = () => {
-  state.value.title = props.step.title;
-  state.value.description = props.step.description;
+  state.value.title = step.value.title;
+  state.value.description = step.value.description;
   toggleEdit();
 };
 
@@ -145,6 +175,11 @@ const onFormSubmit = (form: FormSubmitEvent<FormStep>) => {
   // Update the step with the new values
   updateStep();
 };
+
+watch(step, (newStep) => {
+  state.value.title = newStep.title;
+  state.value.description = newStep.description;
+}, { immediate: true });
 </script>
 
 <style scoped></style>

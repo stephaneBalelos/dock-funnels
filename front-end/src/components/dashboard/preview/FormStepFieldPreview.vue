@@ -2,9 +2,9 @@
   <div
     v-if="field"
     :class="
-      'p-2 border rounded bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors duration-200 ' +
+      'p-2 border rounded cursor-pointer hover:bg-primary-50 transition-colors duration-200 ' +
       (editorStore.selectedFieldName.value === field.field_name
-        ? 'border-blue-500 bg-blue-50'
+        ? 'border-primary-300 bg-transparent'
         : 'border-gray-200')
     "
     @click="editorStore.setSelectedFieldName(field.field_name)"

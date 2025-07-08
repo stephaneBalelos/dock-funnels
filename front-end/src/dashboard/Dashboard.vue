@@ -2,7 +2,6 @@
 import { inject, onMounted } from "vue";
 import { useEditorStore } from "./editor.store";
 import FormTitle from "@/components/dashboard/header/FormTitle.vue";
-import StepItem from "@/components/dashboard/sidebar-left/StepItem.vue";
 import { Icon } from "@iconify/vue";
 import FormFlowPreview from "@/components/dashboard/preview/FormFlowPreview.vue";
 import FieldEditor from "@/components/dashboard/sidebar-right/FieldEditor.vue";
@@ -131,15 +130,7 @@ onMounted(() => {
           </Button>
         </div>
         <div class="relative flex-1 overflow-y-auto">
-          <div class="absolute inset-0 overflow-y-auto px-4">
-            <StepItem
-              v-for="(step, index) in editorStore.form.form_steps"
-              :key="'step-' + index"
-              :step-index="index"
-              :step="step"
-            >
-            </StepItem>
-          </div>
+          <StepList />
         </div>
       </div>
       <div class="main relative">

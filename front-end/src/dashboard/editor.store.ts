@@ -165,9 +165,25 @@ export const useEditorStore = createGlobalState(() => {
         if (fromIndex < 0 || fromIndex >= form.form_steps.length || toIndex < 0 || toIndex >= form.form_steps.length) {
             return
         }
+        editorState.value.isLoading = true // Set loading state
         const step = form.form_steps[fromIndex]
         form.form_steps.splice(fromIndex, 1)
         form.form_steps.splice(toIndex, 0, step)
+        // Swap the step indices of all fields in the moved step
+        form.form_fields.forEach(field => {
+            if (field.step_index === fromIndex) {
+                field.step_index = toIndex
+            } else if (field.step_index > fromIndex && field.step_index <= toIndex) {
+                field.step_index -= 1 // Adjust step index for fields that were after the moved step
+            } else if (field.step_index < fromIndex && field.step_index >= toIndex) {
+                field.step_index += 1 // Adjust step index for fields that were before the moved step
+            }
+        })
+        // Reset selected step index if it was the moved step
+        if (selectedStepIndex.value === fromIndex) {
+            setSelectedStepIndex(toIndex)
+        }
+        editorState.value.isLoading = false // Reset loading state
     }
 
     const addField = (stepIndex: number, type: string) => {
