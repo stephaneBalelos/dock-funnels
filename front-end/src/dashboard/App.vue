@@ -86,7 +86,7 @@ onMounted(() => {
       </div>
     </div>
     <div class="toolbar">
-      <Toolbar>
+      <Toolbar style="border-radius: 0; border: none; box-shadow: none;">
         <template #start>
           <Button class="mr-2" size="small" :severity="editorStore.editorState.value.editorMode === 'edit' ? 'primary' : 'secondary'" @click="editorStore.editorState.value.editorMode = 'edit'">
             Aufbau
