@@ -12,10 +12,12 @@
     <template #content>
       <div v-if="fields.length > 0" class="grid grid-cols-1 gap-4 mb-4">
         <FormStepFieldPreview
-          v-for="(field) in fields"
+          v-for="(field, idx) in fields"
           :key="field.field_name"
           :field-name="field.field_name"
           :step_index="props.step_index"
+          :isFirstInStep="idx === 0"
+          :isLastInStep="idx === fields.length - 1"
         />
       </div>
       <div

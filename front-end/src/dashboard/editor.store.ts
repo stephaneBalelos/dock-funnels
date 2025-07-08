@@ -311,6 +311,61 @@ export const useEditorStore = createGlobalState(() => {
         saveFormState()
     }
 
+    const moveFieldUpRelativeToStep = (field_name: string, step_index: number) => {
+        // Get Sorted form_fields by step_index
+        const fieldsInStep = form.form_fields.sort((a, b) => a.step_index - b.step_index)
+        console.log('Fields in step:', fieldsInStep)
+        const fieldIndex = fieldsInStep.findIndex(f => f.field_name === field_name && f.step_index === step_index)
+        if (fieldIndex === -1) {
+            console.warn('Field not found in step:', field_name, step_index)
+            return
+        }
+        if (fieldIndex === 0) {
+            console.warn('Field is already at the top of the step:', field_name)
+            return
+        }
+        // Get the previous field in the same step
+        const previousFieldIndex = fieldsInStep[fieldIndex - 1]
+        if (previousFieldIndex && previousFieldIndex.step_index === step_index) {
+            // Swap the fields
+            const temp = fieldsInStep[fieldIndex]
+            fieldsInStep[fieldIndex] = previousFieldIndex
+            fieldsInStep[fieldIndex - 1] = temp
+            // Update the form_fields with the new order
+            form.form_fields = fieldsInStep
+            console.log(`Moved field ${field_name} up in step ${step_index}`)
+        } else {
+            console.warn('Previous field not found in the same step:', field_name)
+        }
+    }
+    const moveFieldDownRelativeToStep = (field_name: string, step_index: number) => {
+        // Get Sorted form_fields by step_index
+        const fieldsInStep = form.form_fields.sort((a, b) => a.step_index - b.step_index)
+        console.log('Fields in step:', fieldsInStep)
+        const fieldIndex = fieldsInStep.findIndex(f => f.field_name === field_name && f.step_index === step_index)
+        if (fieldIndex === -1) {
+            console.warn('Field not found in step:', field_name, step_index)
+            return
+        }
+        if (fieldIndex >= fieldsInStep.length - 1) {
+            console.warn('Field is already at the top of the step:', field_name)
+            return
+        }
+        // Get the next field in the same step
+        const nextFieldIndex = fieldsInStep[fieldIndex + 1]
+        if (nextFieldIndex && nextFieldIndex.step_index === step_index) {
+            // Swap the fields
+            const temp = fieldsInStep[fieldIndex]
+            fieldsInStep[fieldIndex] = nextFieldIndex
+            fieldsInStep[fieldIndex + 1] = temp
+            // Update the form_fields with the new order
+            form.form_fields = fieldsInStep
+            console.log(`Moved field ${field_name} down in step ${step_index}`)
+        } else {
+            console.warn('Next field not found in the same step:', field_name)
+        }
+    }
+
     const addFieldDependency = (field_name: string, depends_on: FormFieldDependsOn) => {
         const field = form.form_fields.find(f => f.field_name === field_name)
         if (!field) {
@@ -588,6 +643,8 @@ export const useEditorStore = createGlobalState(() => {
         updateField,
         removeField,
         moveFieldToStep,
+        moveFieldUpRelativeToStep,
+        moveFieldDownRelativeToStep,
         addFieldDependency,
         removeFieldDependency,
         addOptionDependency,
