@@ -25,7 +25,7 @@ class DockFunnels_Shortcode
 
         ob_start();
 ?>
-    <div id="dock-funnels-form"></div>
+    <div id="dock-funnels-form" class="dock-funnels-root"></div>
 <?php
         return ob_get_clean();
     }

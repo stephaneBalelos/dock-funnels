@@ -25,7 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
         theme: {
             preset: Aura,
             options: {
-                darkModeSelector: '', // Selector for dark mode, leave empty to disable
+                
+                darkModeSelector: false, // Selector for dark mode, leave empty to disable
             }
         }
     })

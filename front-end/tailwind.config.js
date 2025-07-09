@@ -4,9 +4,8 @@ import PrimeUI from 'tailwindcss-primeui';
 export default {
   content: [
     "./src/**/*.{vue,js,ts,jsx,tsx}",
-    "./index.html",
-    "./form.html",
   ],
+  important: '.dock-funnels-root',
   theme: {
     extend: {},
   },
