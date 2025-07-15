@@ -108,14 +108,12 @@ export const useFormSubmissionStateStore = createGlobalState(
                         fieldSchema = z.string().min(1, `${field.label} ist erforderlich`)
                         break
                     case 'select':
-                        console.log('select field', field)
                         const selectValues = field.options ? field.options.map(option => option.value) : []
                         const values: z.EnumLike = Object.fromEntries(selectValues.map(value => [value, value]))
                         fieldSchema = z.nativeEnum(values, { message: `${field.label} ist erforderlich` })
                         break
                     case 'checkboxList':
                         const checkboxValues = field.options.filter(shoulShowChechboxListOption).map(option => option.value)
-                        console.log('checkboxList field', field, checkboxValues)
                         fieldSchema = z.array(z.enum([checkboxValues[0], ...checkboxValues]))
                         if (checkboxValues.length === 1 && field.min === 1) {
                             fieldSchema = fieldSchema.nonempty(`${field.label} muss ausgewählt werden`)
@@ -192,28 +190,8 @@ export const useFormSubmissionStateStore = createGlobalState(
             if (!option.depends_on) {
                 return true;
             }
-            // Check dependencies
-            const dependencies: boolean[] = option.depends_on.map((dep) => {
-                const field_name = dep.field_name;
-                const dependsOnField =
-                    formSubmissionFields.value.get(field_name);
-                if (!dependsOnField) {
-                    return false;
-                }
-                const dependsOnValue = dependsOnField.value;
-                if (Array.isArray(dependsOnValue)) {
-                    return dependsOnValue.includes(dep.value as string);
-                }
-                return dependsOnValue === dep.value;
-            });
-
-            return dependencies.every((dep) => dep);
-        }
-
-        // Filter select options based on their dependencies
-        function shoulShowSelectOption(option: FormFieldSelectOption): boolean {
-            if (!option.depends_on) {
-                return true;
+            if (option.depends_on.length === 0) {
+                return true; // No dependencies, always visible
             }
             // Check dependencies
             const dependencies: boolean[] = option.depends_on.map((dep) => {
@@ -230,7 +208,33 @@ export const useFormSubmissionStateStore = createGlobalState(
                 return dependsOnValue === dep.value;
             });
 
-            return dependencies.every((dep) => dep);
+            return dependencies.some((dep) => dep);
+        }
+
+        // Filter select options based on their dependencies
+        function shoulShowSelectOption(option: FormFieldSelectOption): boolean {
+            if (!option.depends_on) {
+                return true;
+            }
+            if (option.depends_on.length === 0) {
+                return true; // No dependencies, always visible
+            }
+            // Check dependencies
+            const dependencies: boolean[] = option.depends_on.map((dep) => {
+                const field_name = dep.field_name;
+                const dependsOnField =
+                    formSubmissionFields.value.get(field_name);
+                if (!dependsOnField) {
+                    return false;
+                }
+                const dependsOnValue = dependsOnField.value;
+                if (Array.isArray(dependsOnValue)) {
+                    return dependsOnValue.includes(dep.value as string);
+                }
+                return dependsOnValue === dep.value;
+            });
+
+            return dependencies.some((dep) => dep);
         }
 
         const progressPercentage = computed(() => {

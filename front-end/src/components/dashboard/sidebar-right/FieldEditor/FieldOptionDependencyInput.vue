@@ -1,57 +1,67 @@
 <template>
   <div>
     <slot :toggleDialog="toggleDialog" />
-      <Dialog
-        v-model:visible="visible"
-        modal
-        header="Options Abhängigkeit"
-        :style="{ width: '25rem' }"
-        class="dock-funnels-root"
+    <Dialog
+      v-model:visible="visible"
+      modal
+      header="Options Abhängigkeit"
+      :style="{ width: '25rem' }"
+      class="dock-funnels-root"
+    >
+      <div
+        v-if="
+          field && (field.type === 'select' || field.type === 'checkboxList')
+        "
+        class="flex flex-col"
       >
-        <div v-if="field && (field.type === 'select' || field.type === 'checkboxList')" class="flex flex-col">
-          <FormField name="field_name" class="flex flex-col gap-1">
-            <label class="text-sm font-semibold">
-              Welches Feld soll als Abhängigkeit dienen?
-            </label>
-            <Select
-              @change="onChangeDependencyField"
-              v-model="model.field_name"
-              :options="dependsOnFieldsOptions"
-              option-label="label"
-              option-value="value"
-              placeholder="Feld auswählen"
-              size="small"
-            />
-          </FormField>
-          <FormField
-            v-if="model?.field_name"
-            name="depends_on_value"
-            class="flex flex-col gap-1"
-          >
-            <label class="text-sm font-semibold">
-              Welcher Wert des Abhängigkeitsfeldes soll die Bedingung erfüllen?
-            </label>
-            <Select
-              @change="onChangeDependencyValue"
-              v-model="model.value"
-              :options="dependsOnValuesOptions"
-              placeholder="Option auswählen"
-              size="small"
-              option-label="label"
-              option-value="value"
-            />
-          </FormField>
-        </div>
-        <div class="flex justify-end gap-2">
-          <Button
-            type="button"
-            label="Cancel"
-            severity="secondary"
-            @click="visible = false"
-          ></Button>
-          <Button type="button" label="Hinzufügen" @click="addDependency" :disabled="!(model && !!model.field_name && !!model.value)"></Button>
-        </div>
-      </Dialog>
+        <FormField name="field_name" class="flex flex-col gap-1">
+          <label class="text-sm font-semibold">
+            Welches Feld soll als Abhängigkeit dienen?
+          </label>
+          <Select
+            @change="onChangeDependencyField"
+            v-model="model.field_name"
+            :options="dependsOnFieldsOptions"
+            option-label="label"
+            option-value="value"
+            placeholder="Feld auswählen"
+            size="small"
+          />
+        </FormField>
+        <FormField
+          v-if="model?.field_name"
+          name="depends_on_value"
+          class="flex flex-col gap-1"
+        >
+          <label class="text-sm font-semibold">
+            Welcher Wert des Abhängigkeitsfeldes soll die Bedingung erfüllen?
+          </label>
+          <Select
+            @change="onChangeDependencyValue"
+            v-model="model.value"
+            :options="dependsOnValuesOptions"
+            placeholder="Option auswählen"
+            size="small"
+            option-label="label"
+            option-value="value"
+          />
+        </FormField>
+      </div>
+      <div class="flex justify-end gap-2">
+        <Button
+          type="button"
+          label="Cancel"
+          severity="secondary"
+          @click="visible = false"
+        ></Button>
+        <Button
+          type="button"
+          label="Hinzufügen"
+          @click="addDependency"
+          :disabled="!(model && !!model.field_name && !!model.value)"
+        ></Button>
+      </div>
+    </Dialog>
   </div>
 </template>
 
@@ -79,9 +89,11 @@ const $emit = defineEmits(["dependencyAdded"]);
 const field = computed(() => {
   const field = editorStore.form.form_fields.find(
     (field) => field.field_name === props.field_name
-  )
-  if(field?.type !== "select" && field?.type !== "checkboxList") {
-    console.warn(`Field ${props.field_name} is not a select or checkboxList field.`);
+  );
+  if (field?.type !== "select" && field?.type !== "checkboxList") {
+    console.warn(
+      `Field ${props.field_name} is not a select or checkboxList field.`
+    );
     return null;
   }
   return field;
@@ -107,12 +119,7 @@ const dependsOnFieldsOptions = computed(() => {
       );
     })
     .filter((f) => f.type === "select" || f.type === "checkboxList")
-    .filter((f) => {
-      if (!option.value) return true;
-      return option.value.depends_on.every(
-        (d) => d.field_name !== f.field_name
-      );
-    }).map((f) => ({
+    .map((f) => ({
       label: f.label,
       value: f.field_name,
     }));
@@ -128,10 +135,15 @@ const dependsOnValuesOptions = computed(() => {
     return [];
   }
   return currentField.options
-    ? currentField.options.map((option) => ({
-        label: option.label,
-        value: option.value,
-      }))
+    ? currentField.options
+        .map((option) => ({
+          label: option.label,
+          value: option.value,
+        }))
+        .filter(({ value }) => {
+          const currentDeps = option.value?.depends_on || [];
+          return currentDeps.every((dep) => dep.value !== value); // Exclude the current value to avoid duplicates
+        }) // Exclude the current value to avoid duplicates
     : [];
 });
 
@@ -161,21 +173,29 @@ const addDependency = () => {
     console.warn("Field is not set");
     return;
   }
-  if (field.value && (field.value.type === "select" || field.value.type === "checkboxList")) {
-    editorStore.addOptionDependency(props.field_name, props.option_value, {
-      field_name: model.value.field_name,
-      value: model.value.value,
-    });
+  if (
+    field.value &&
+    (field.value.type === "select" || field.value.type === "checkboxList")
+  ) {
+    try {
+      editorStore.addOptionDependency(props.field_name, props.option_value, {
+        field_name: model.value.field_name,
+        value: model.value.value,
+      });
+      $emit("dependencyAdded", {
+        field_name: model.value.field_name,
+        value: model.value.value,
+      });
+      visible.value = false;
+      model.value = {
+        field_name: "",
+        value: "",
+      } as FormFieldDependsOn; // Reset the model after adding the dependency
+    } catch (error) {
+      console.error("Error adding field dependency:", error);
+      return;
+    }
   }
-  $emit("dependencyAdded", {
-    field_name: model.value.field_name,
-    value: model.value.value,
-  });
-  visible.value = false;
-  model.value = {
-    field_name: "",
-    value: "",
-  } as FormFieldDependsOn; // Reset the model after adding the dependency
 };
 </script>
 
