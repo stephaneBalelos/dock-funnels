@@ -69,7 +69,7 @@ const dependsOnFieldsOptions = computed(() => {
       if (!field.value) return false;
       return (
         f.field_name !== field.value.field_name &&
-        f.step_index <= field.value.step_index
+        f.step_index < field.value.step_index
       );
     })
     .filter((f) => f.type === "select" || f.type === "checkboxList")
