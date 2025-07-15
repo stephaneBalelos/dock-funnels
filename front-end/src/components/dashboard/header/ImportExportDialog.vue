@@ -9,6 +9,7 @@
       header="Formular Importieren/Exportieren"
       :style="{ width: '100%', maxWidth: '800px' }"
       :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+      class="dock-funnels-root"
     >
       <Tabs value="0">
         <TabList>

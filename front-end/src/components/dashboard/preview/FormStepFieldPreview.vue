@@ -81,6 +81,7 @@
         v-model:visible="showEditDependencyDialog"
         modal
         header="Abhängigkeit hinzufügen"
+        class="dock-funnels-root"
       >
         <FieldDependencyInput
           v-model="dependencyState"

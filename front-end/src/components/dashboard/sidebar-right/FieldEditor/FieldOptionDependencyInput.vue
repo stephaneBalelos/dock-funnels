@@ -6,6 +6,7 @@
         modal
         header="Options Abhängigkeit"
         :style="{ width: '25rem' }"
+        class="dock-funnels-root"
       >
         <div v-if="field && (field.type === 'select' || field.type === 'checkboxList')" class="flex flex-col">
           <FormField name="field_name" class="flex flex-col gap-1">
