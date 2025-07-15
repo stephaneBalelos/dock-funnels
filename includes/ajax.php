@@ -659,6 +659,8 @@ class DockFunnels_FormStateValidator
             'description' => isset($field['description']) ? sanitize_textarea_field($field['description']) : '',
             'required' => isset($field['required']) ? (bool)$field['required'] : false,
             'options' => [],
+            'min' => isset($field['min']) ? intval($field['min']) : 0, // Default to 0 if not set
+            'max' => isset($field['max']) ? intval($field['max']) : 0, // Default to 0 if not set
         ];
 
         // Validate options
@@ -684,19 +686,6 @@ class DockFunnels_FormStateValidator
                 } else {
                     $option['description'] = isset($option['description']) ? sanitize_textarea_field($option['description']) : '';
                 }
-                // Check if "min" is set and is an integer
-                if (isset($option['min']) && !is_int($option['min'])) {
-                    $errors['options'][] = 'Option min value must be an integer.';
-                } else {
-                    $option['min'] = isset($option['min']) ? intval($option['min']) : null;
-                }
-
-                // Check if "max" is set and is an integer
-                if (isset($option['max']) && !is_int($option['max'])) {
-                    $errors['options'][] = 'Option max value must be an integer.';
-                } else {
-                    $option['max'] = isset($option['max']) ? intval($option['max']) : null;
-                }
 
                 // Add the sanitized option to the field options
                 $sanitized_field['options'][] = [
@@ -708,6 +697,17 @@ class DockFunnels_FormStateValidator
             }
         }
 
+        // Validate min and max values, defaulting to 1 and option length if not set
+        if (isset($field['min']) && (!is_int($field['min']) || $field['min'] < 0)) {
+            $errors['min'] = 'Min must be a non-negative integer.';
+        } else {
+            $sanitized_field['min'] = isset($field['min']) ? intval($field['min']) : 1; // Default to 1 if not set
+        } 
+        if (isset($field['max']) && (!is_int($field['max']) || $field['max'] < 0)) {
+            $errors['max'] = 'Max must be a non-negative integer.';
+        } else {
+            $sanitized_field['max'] = isset($field['max']) ? intval($field['max']) : count($sanitized_field['options']); // Default to options length if not set
+        }
         // Check if "depends_on" is set and is an array
         if (isset($field['depends_on']) && is_array($field['depends_on'])) {
             $sanitized_field['depends_on'] = self::sanitize_dependencies($field['depends_on']);
@@ -834,8 +834,7 @@ class DockFunnels_FormStateValidator
                 }
             }
             // If field is of type 'select' or 'checkboxList', validate the options dependencies
-            if (in_array($field['type'], ['select', 'checkboxList'], true))
-            {
+            if (in_array($field['type'], ['select', 'checkboxList'], true)) {
                 foreach ($field['options'] as $option) {
                     $option_dependencies = $option['depends_on'] ?? [];
                     if (is_array($option_dependencies) && !empty($option_dependencies)) {
@@ -1082,7 +1081,8 @@ class DockFunnels_FormStateValidator
         return empty($errors) ? ['valid' => true, 'data' => $sanitized_settings] : ['valid' => false, 'errors' => $errors];
     }
 
-    public static function validate_color_value_hex($color) {
+    public static function validate_color_value_hex($color)
+    {
         // Check if the color is a valid hex color code
         if (preg_match('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $color)) {
             return $color; // Valid hex color code
@@ -1100,6 +1100,4 @@ class DockFunnels_FormStateValidator
             return false; // Invalid enum value
         }
     }
-
-
 }

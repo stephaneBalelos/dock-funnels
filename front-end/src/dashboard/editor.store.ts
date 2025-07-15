@@ -589,7 +589,6 @@ export const useEditorStore = createGlobalState(() => {
                 life: 5000
             });
             console.error('Error saving form state:', error);
-            throw error;
         } finally {
             editorState.value.isSaving = false; // Reset saving state
         }
