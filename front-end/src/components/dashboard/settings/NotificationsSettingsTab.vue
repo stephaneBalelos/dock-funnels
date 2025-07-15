@@ -33,6 +33,10 @@
     </div>
     <div class="flex flex-col gap-1">
       <label for="form-subject" class="font-semibold">E-Mail Betreff</label>
+      <p class="text-sm text-gray-600 mb-2">
+        Der Betreff der E-Mail, die an den Absender gesendet wird. Sie können
+        Platzhalter wie {form_name} verwenden, um den Formularnamen einzufügen.
+      </p>
       <InputText
         id="form-subject"
         name="subject"
@@ -50,7 +54,7 @@
     <div class="flex flex-col gap-1">
       <label for="form-body" class="font-semibold">E-Mail Inhalt</label>
       <p class="text-sm text-gray-600 mb-2">
-        Sie können Platzhalter wie {summary} verwenden, um die Formulardaten einzufügen.
+        Sie können Platzhalter wie {submission_data} verwenden, um die Formulardaten einzufügen.
       </p>
       <Editor name="body" editorStyle="height: 320px" />
       <Message

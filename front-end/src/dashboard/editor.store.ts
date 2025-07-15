@@ -66,8 +66,8 @@ export const useEditorStore = createGlobalState(() => {
             },
             notifications_settings: {
                 emails: '',
-                subject: 'Neue Formularübermittlung',
-                body: 'Hallo Admin, \n\nEs wurde ein neues Formular übermittelt. Hier sind die Details:\n\n{submission_details}\n\nVielen Dank!'
+                subject: 'Neue Formularübermittlung - {form_name}',
+                body: 'Hallo Admin, \n\nEs wurde ein neues Formular übermittelt. Hier sind die Details:\n\n{submission_data}\n\nVielen Dank!'
             },
             onSubmitAction: [],
         }

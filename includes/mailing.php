@@ -35,7 +35,12 @@ class DockFunnels_Mailing {
         $body = isset($form_notification_settings['body']) ? $form_notification_settings['body'] : 'Sie haben eine neue Formularübermittlung erhalten.';
         $to = get_option('admin_email');
         if (!empty($emails)) {
-            $to = array_map('trim', explode(',', $emails));
+            // Split emails by comma and trim whitespace and join with admin email
+            $emails_array = array_map('trim', explode(',', $emails));
+            $emails_array = array_filter($emails_array); // Remove empty values
+            if (!empty($emails_array)) {
+                $to = array_merge([$to], $emails_array); // Merge admin email with other emails
+            }
         }
 
         // Look for placeholders in the subject and body
