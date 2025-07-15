@@ -111,6 +111,9 @@ const addAction = (actionType: FormOnSubmitAction['type']) => {
     } else {
         return;
     }
+    if (!editStore.form.form_settings.onSubmitAction) {
+        editStore.form.form_settings.onSubmitAction = [];
+    }
     editStore.form.form_settings.onSubmitAction.push(newAction);
 };
 
