@@ -192,7 +192,7 @@ export const useEditorStore = createGlobalState(() => {
             console.warn('Step not found for index:', stepIndex)
             return null
         }
-        const newFieldId = form.form_fields.length + 1
+        const newFieldId = `${stepIndex}_` +  (form.form_fields.length + 1)
 
         switch (type) {
             case 'text':
