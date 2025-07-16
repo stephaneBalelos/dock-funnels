@@ -40,12 +40,10 @@
           <h3 class="text-surface-600 text-lg font-semibold">
             Dieser Schritt können Sie überspringen.
           </h3>
-          <button
+          <DockButton
             class="mt-4"
             @click="submissionStateStore.nextStep"
-            label="Weiter"
-            :severity="'primary'"
-          />
+          >Weiter</DockButton>
         </div>
       </div>
     </Transition>
@@ -56,6 +54,7 @@
 import { useFormSubmissionStateStore } from "@/forms/stores/submission.store";
 import { computed, ref, watch } from "vue";
 import FormFieldsRoot from "./FormFieldsRoot.vue";
+import DockButton from "./UI/DockButton.vue";
 
 const submissionStateStore = useFormSubmissionStateStore();
 const currentStep = computed(() => {

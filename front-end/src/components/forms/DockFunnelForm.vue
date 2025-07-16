@@ -25,30 +25,28 @@
         Ihre Daten wurden erfolgreich gespeichert. Wir werden uns in Kürze bei
         Ihnen melden.
       </p>
-      <button
+      <DockButton
         class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-blue-500 text-white hover:bg-blue-600 focus:shadow-[0_0_0_2px] focus:shadow-blue-700 outline-none"
         @click="() => refreshPage()"
       >
         Schließen
-      </button>
+      </DockButton>
     </div>
     <div class="dockfunnelform-footer border-t border-surface-100 p-4">
       <div
         v-if="!submissionStateStore.isFormSubmitted.value"
         class="flex justify-between items-center"
       >
-        <button
-          severity="secondary"
+        <DockButton
           @click="submissionStateStore.previousStep"
           :disabled="submissionStateStore.currentStepIndex.value === 0"
-          v-if="submissionStateStore.currentStepIndex.value > 0"
         >
           Zurück
-        </button>
+        </DockButton>
         <div class="flex-1 px-8" v-if="footerSettings.show_progress_bar">
           <DockProgressBar :progress="submissionStateStore.progressPercentage.value" />
         </div>
-        <button
+        <DockButton
           class="ml-auto"
           @click="submissionStateStore.nextStep"
           v-if="
@@ -57,8 +55,8 @@
           "
         >
           Weiter
-        </button>
-        <button
+        </DockButton>
+        <DockButton
           @click="() => submitForm()"
           v-if="
             submissionStateStore.currentStepIndex.value ===
@@ -67,7 +65,7 @@
           :disabled="isSubmitting"
         >
           Abschließen
-        </button>
+        </DockButton>
       </div>
     </div>
   </div>
@@ -79,6 +77,7 @@ import type { Form } from "../../types/index.ts";
 import { computed, ref } from "vue";
 import DockFunnelFormContent from "./DockFunnelFormContent.vue";
 import DockProgressBar from "./UI/DockProgressBar.vue";
+import DockButton from "./UI/DockButton.vue";
 
 type Props = {
   form: Form;
