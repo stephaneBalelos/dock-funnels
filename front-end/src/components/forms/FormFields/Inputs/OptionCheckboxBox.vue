@@ -57,10 +57,10 @@ const handleToggle = () => {
 </script>
 
 <style scoped>
-.option-box {
+.dock-funnels-root .option-box {
   @apply relative flex flex-col items-start gap-1 cursor-pointer p-4 rounded border-2 transition-colors duration-200 ease-in-out hover:border-primary-300 border-surface-50 border-2;
 }
-.option-box-active {
+.dock-funnels-root .option-box-active {
   @apply bg-primary-50 border-primary-300 border-2 shadow-lg;
 }
 </style>
