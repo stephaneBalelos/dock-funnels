@@ -37,22 +37,20 @@
         v-if="!submissionStateStore.isFormSubmitted.value"
         class="flex justify-between items-center"
       >
-        <Button
+        <button
           severity="secondary"
           @click="submissionStateStore.previousStep"
           :disabled="submissionStateStore.currentStepIndex.value === 0"
           v-if="submissionStateStore.currentStepIndex.value > 0"
         >
           Zurück
-        </Button>
+        </button>
         <div class="flex-1 px-8" v-if="footerSettings.show_progress_bar">
-          <ProgressBar
-            :value="submissionStateStore.progressPercentage.value"
-            style="height: 6px"
-            :show-value="false"
-          ></ProgressBar>
+          <div>
+            {{ submissionStateStore.progressPercentage.value }}%
+          </div>
         </div>
-        <Button
+        <button
           class="ml-auto"
           @click="submissionStateStore.nextStep"
           v-if="
@@ -61,8 +59,8 @@
           "
         >
           Weiter
-        </Button>
-        <Button
+        </button>
+        <button
           @click="() => submitForm()"
           v-if="
             submissionStateStore.currentStepIndex.value ===
@@ -71,7 +69,7 @@
           :disabled="isSubmitting"
         >
           Abschließen
-        </Button>
+        </button>
       </div>
     </div>
   </div>

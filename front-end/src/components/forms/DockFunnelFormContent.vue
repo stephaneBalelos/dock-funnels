@@ -40,7 +40,7 @@
           <h3 class="text-surface-600 text-lg font-semibold">
             Dieser Schritt können Sie überspringen.
           </h3>
-          <Button
+          <button
             class="mt-4"
             @click="submissionStateStore.nextStep"
             label="Weiter"
@@ -55,6 +55,7 @@
 <script setup lang="ts">
 import { useFormSubmissionStateStore } from "@/forms/stores/submission.store";
 import { computed, ref, watch } from "vue";
+import FormFieldsRoot from "./FormFieldsRoot.vue";
 
 const submissionStateStore = useFormSubmissionStateStore();
 const currentStep = computed(() => {

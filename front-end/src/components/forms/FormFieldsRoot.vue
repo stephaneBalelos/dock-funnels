@@ -1,24 +1,33 @@
 <template>
-<div class="flex flex-col">
+  <div class="flex flex-col">
     <div v-if="props.field.type === 'text'" class="form-field-text">
-        <FormFieldText :field="props.field" />
+      <FormFieldText :field="props.field" />
     </div>
-    <div v-else-if="props.field.type === 'textarea'" class="form-field-textarea">
-        Not Implemented
+    <div
+      v-else-if="props.field.type === 'textarea'"
+      class="form-field-textarea"
+    >
+      Not Implemented
     </div>
     <div v-else-if="props.field.type === 'select'" class="form-field-select">
-        <FormFieldSelect :field="props.field" />
+      <FormFieldSelect :field="props.field" />
     </div>
-    <div v-else-if="props.field.type === 'checkboxList'" class="form-field-checkbox">
-        <FormFieldCheckboxList :field="props.field" />
+    <div
+      v-else-if="props.field.type === 'checkboxList'"
+      class="form-field-checkbox"
+    >
+      <FormFieldCheckboxList :field="props.field" />
     </div>
-    <div v-else-if="props.field.type === 'submissionSummary'" class="form-field-submission-summary">
-        <FormFieldSubmissionSummary :field="props.field" />
+    <div
+      v-else-if="props.field.type === 'submissionSummary'"
+      class="form-field-submission-summary"
+    >
+      <FormFieldSubmissionSummary :field="props.field" />
     </div>
     <div v-else>
-        <p class="text-red-500">Field type is not implemented.</p>
+      <p class="text-red-500">Field type is not implemented.</p>
     </div>
-</div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -29,13 +38,10 @@ import FormFieldCheckboxList from "./FormFields/FormFieldCheckboxList.vue";
 import FormFieldSubmissionSummary from "./FormFields/FormFieldSubmissionSummary.vue";
 
 type Props = {
-    field: Form["form_fields"][number];
-}
+  field: Form["form_fields"][number];
+};
 
 const props = defineProps<Props>();
-
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

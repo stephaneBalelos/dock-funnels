@@ -258,10 +258,10 @@ export const useFormSubmissionStateStore = createGlobalState(
                     }
                 })
 
-                if (newForm.form_settings.design_settings && newForm.form_settings.design_settings.colors) {
-                    const preset = getThemePreset(newForm.form_settings.design_settings.colors.primary, newForm.form_settings.design_settings.colors.surface)
-                    updatePreset(preset)
-                }
+                // if (newForm.form_settings.design_settings && newForm.form_settings.design_settings.colors) {
+                //     const preset = getThemePreset(newForm.form_settings.design_settings.colors.primary, newForm.form_settings.design_settings.colors.surface)
+                //     updatePreset(preset)
+                // }
             }
         })
 
