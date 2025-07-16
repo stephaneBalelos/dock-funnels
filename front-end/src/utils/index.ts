@@ -1,6 +1,5 @@
 import type { FormState } from "@/types";
-import { definePreset, palette } from "@primeuix/themes";
-import Aura from '@primeuix/themes/aura';
+import { palette } from "@primeuix/themes";
 
 export const slugify = (text: string): string => {
   // Convert the input text to a slug format
