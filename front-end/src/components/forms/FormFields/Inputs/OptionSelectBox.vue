@@ -31,13 +31,23 @@ const model = defineModel<string | null>({
 
 const classes = computed(() => {
   const base =
-    "option-box relative flex flex-col items-start gap-1 cursor-pointer p-4 rounded border-2 transition-colors duration-200 ease-in-out hover:border-primary-300";
+    "option-box";
   const active =
     model.value === props.value
-      ? "bg-primary-50 border-primary-300 border-2 shadow-lg"
-      : "bg-surface-0 border-surface-50 border-2";
+      ? "option-box-active"
+      : "";
   return `${base} ${active}`;
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+
+.option-box {
+  @apply relative flex flex-col items-start gap-1 cursor-pointer p-4 rounded border-2 transition-colors duration-200 ease-in-out hover:border-primary-300 border-surface-50 border-2;
+}
+
+.option-box.option-box-active {
+  @apply bg-primary-50 border-primary-300 border-2 shadow-lg;
+}
+
+</style>

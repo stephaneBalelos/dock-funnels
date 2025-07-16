@@ -4,18 +4,19 @@
       <label class="text-primary-900 font-semibold cursor-pointer">{{
         props.label
       }}</label>
-      <Icon
+      <div
         v-if="model.includes(props.value)"
-        :width="20"
-        icon="heroicons:check-circle-solid"
-        class="text-primary-500"
-      />
-      <Icon
+        class="w-5 h-5 rounded border-2 border-primary-500 flex items-center justify-center"
+      >
+        <Icon
+          icon="heroicons:check-20-solid"
+          class="text-primary-500"
+        />
+      </div>
+      <div
         v-else
-        :width="20"
-        icon="heroicons:circle-solid"
-        class="text-surface-500"
-      />
+        class="w-5 h-5 rounded border-2 border-surface-200 flex items-center justify-center"
+      ></div>
     </div>
     <p v-if="props.description" class="text-sm text-primary-700">
       {{ props.description }}
@@ -41,11 +42,8 @@ const model = defineModel<string[]>({
 });
 
 const classes = computed(() => {
-  const base =
-    "option-box relative flex flex-col items-start gap-1 cursor-pointer p-4 rounded border-2 transition-colors duration-200 ease-in-out hover:border-primary-300";
-  const active = model.value.includes(props.value)
-    ? "bg-primary-50 border-primary-300 border-2 shadow-lg"
-    : "bg-surface-0 border-surface-50 border-2";
+  const base = "option-box";
+  const active = model.value.includes(props.value) ? "option-box-active" : "";
   return `${base} ${active}`;
 });
 
@@ -58,4 +56,11 @@ const handleToggle = () => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.option-box {
+  @apply relative flex flex-col items-start gap-1 cursor-pointer p-4 rounded border-2 transition-colors duration-200 ease-in-out hover:border-primary-300 border-surface-50 border-2;
+}
+.option-box-active {
+  @apply bg-primary-50 border-primary-300 border-2 shadow-lg;
+}
+</style>

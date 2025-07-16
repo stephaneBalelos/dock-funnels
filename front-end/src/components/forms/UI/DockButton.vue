@@ -17,18 +17,15 @@ const props = defineProps<Props>();
 
 const classes = computed(() => {
     const baseClasses = `dock-button dock-button-${props.color || 'primary'}`;
-    const roundedClasses = "rounded-md"
-    const paddingClasses = "px-4 py-2";
-    const textClasses = "text-sm font-medium";
     return {
-        button: `${baseClasses} ${roundedClasses} ${paddingClasses} ${textClasses}`
+        button: baseClasses
     };
 })
 </script>
 
 <style scoped>
     .dock-button {
-        @apply inline-flex items-center justify-center
+        @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium;
     }
 
     .dock-button.dock-button-primary {
