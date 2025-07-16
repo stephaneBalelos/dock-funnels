@@ -13,23 +13,20 @@
         {{ props.field.description }}
       </p>
     </label>
-    <Message
+    <div
       v-if="
         submissionStateStore.currentStepErrors.value.find(
           (e) => e.joined_path === props.field.field_name
         )
       "
-      severity="error"
-      variant="simple"
-      size="small"
-      class="mb-4"
+class="text-red-500 text-sm mt-2"
     >
       {{
         submissionStateStore.currentStepErrors.value.find(
           (e) => e.joined_path === props.field.field_name
         )?.message
       }}
-    </Message>
+    </div>
     <div :class="classSettings.optionsContainer">
       <OptionBox
         v-for="option in props.field.options.filter(

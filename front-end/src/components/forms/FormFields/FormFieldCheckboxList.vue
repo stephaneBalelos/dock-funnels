@@ -11,23 +11,20 @@
           {{ props.field.description }}
         </p>
       </label>
-      <Message
+      <div
         v-if="
           submissionStateStore.currentStepErrors.value.find(
             (e) => e.joined_path === props.field.field_name
           )
         "
-        severity="error"
-        variant="simple"
-        size="small"
-        class="mb-4"
+        class="text-red-500 text-sm mt-2"
       >
         {{
           submissionStateStore.currentStepErrors.value.find(
             (e) => e.joined_path === props.field.field_name
           )?.message
         }}
-      </Message>
+      </div>
       <div :class="classSettings.optionsContainer">
         <OptionCheckboxBox
           v-for="option in props.field.options.filter(
@@ -60,7 +57,6 @@ const props = defineProps<Props>();
 
 const selectedValues = ref([] as string[]);
 const settings = props.field.field_settings || {};
-
 
 const submissionStateStore = useFormSubmissionStateStore();
 
@@ -98,7 +94,7 @@ const classSettings = computed(() => {
   let base = `flex flex-col py-4`;
   let label = `text-surface-900 text-lg font-semibold leading-none mb-3`;
   let optionsContainer = `w-full grid grid-cols-1 md:grid-cols-2 gap-4`;
-  if(settings.align) {
+  if (settings.align) {
     base += ` text-${settings.align}`;
     base += ` items-${settings.align}`;
     optionsContainer += ` items-${settings.align}`;
@@ -110,9 +106,9 @@ const classSettings = computed(() => {
   return {
     base,
     label,
-    optionsContainer
-  }
-})
+    optionsContainer,
+  };
+});
 </script>
 
 <style scoped></style>
