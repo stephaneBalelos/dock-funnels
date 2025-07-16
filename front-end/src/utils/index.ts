@@ -51,6 +51,17 @@ export const FormTestData: FormState = {
   form_fields: [
     {
       step_index: 0,
+      label: "Vorname",
+      description: "Bitte geben Sie Ihren Vornamen ein.",
+      field_name: "vorname",
+      type: "text",
+      input_type: "text",
+      placeholder: "Max",
+      required: true,
+      default_value: "",
+    },
+    {
+      step_index: 0,
       label: "Fahrichtung",
       description: "Fahrrichtung auswählen",
       field_name: "fachrichtung",
@@ -240,7 +251,7 @@ export const FormTestData: FormState = {
   form_settings: {
     design_settings: {
       colors: {
-        primary: "#0073aa", // Primary color for the form
+        primary: "#98473E", // Primary color for the form
         surface: "#64748b", // Secondary color for the form
       },
       header: {
@@ -277,59 +288,32 @@ export const FormTestData: FormState = {
   }
 }
 
-export const getThemePreset = (primaryColor: string, surfaceColor: string) => {
+export const configureTheme = (primaryColor: string, surfaceColor: string) => {
   const customPrimary = palette(primaryColor)
   const customSurface = palette(surfaceColor)
 
-  const preset = definePreset(Aura, {
-    semantic: {
-      primary: {
-        50: customPrimary[50],
-        100: customPrimary[100],
-        200: customPrimary[200],
-        300: customPrimary[300],
-        400: customPrimary[400],
-        500: customPrimary[500],
-        600: customPrimary[600],
-        700: customPrimary[700],
-        800: customPrimary[800],
-        900: customPrimary[900],
-        950: customPrimary[950],
-      },
-      colorScheme: {
-        light: {
-          surface: {
-            50: customSurface[50],
-            100: customSurface[100],
-            200: customSurface[200],
-            300: customSurface[300],
-            400: customSurface[400],
-            500: customSurface[500],
-            600: customSurface[600],
-            700: customSurface[700],
-            800: customSurface[800],
-            900: customSurface[900],
-            950: customSurface[950],
-          }
-        },
-        dark: {
-          surface: {
-            50: customSurface[50],
-            100: customSurface[100],
-            200: customSurface[200],
-            300: customSurface[300],
-            400: customSurface[400],
-            500: customSurface[500],
-            600: customSurface[600],
-            700: customSurface[700],
-            800: customSurface[800],
-            900: customSurface[900],
-            950: customSurface[950],
-          }
-        }
-      }
-    },
-  })
+  // Set css variables for the theme
+  document.documentElement.style.setProperty('--dock-funnels-color-primary-50', customPrimary['50'])
+  document.documentElement.style.setProperty('--dock-funnels-color-primary-100', customPrimary['100'])
+  document.documentElement.style.setProperty('--dock-funnels-color-primary-200', customPrimary['200'])
+  document.documentElement.style.setProperty('--dock-funnels-color-primary-300', customPrimary['300'])
+  document.documentElement.style.setProperty('--dock-funnels-color-primary-400', customPrimary['400'])
+  document.documentElement.style.setProperty('--dock-funnels-color-primary-500', customPrimary['500'])
+  document.documentElement.style.setProperty('--dock-funnels-color-primary-600', customPrimary['600'])
+  document.documentElement.style.setProperty('--dock-funnels-color-primary-700', customPrimary['700'])
+  document.documentElement.style.setProperty('--dock-funnels-color-primary-800', customPrimary['800'])
+  document.documentElement.style.setProperty('--dock-funnels-color-primary-900', customPrimary['900'])
+  document.documentElement.style.setProperty('--dock-funnels-color-primary-950', customPrimary['950'])
 
-  return preset
+  document.documentElement.style.setProperty('--dock-funnels-color-surface-50', customSurface['50'])
+  document.documentElement.style.setProperty('--dock-funnels-color-surface-100', customSurface['100'])
+  document.documentElement.style.setProperty('--dock-funnels-color-surface-200', customSurface['200'])
+  document.documentElement.style.setProperty('--dock-funnels-color-surface-300', customSurface['300'])
+  document.documentElement.style.setProperty('--dock-funnels-color-surface-400', customSurface['400'])
+  document.documentElement.style.setProperty('--dock-funnels-color-surface-500', customSurface['500'])
+  document.documentElement.style.setProperty('--dock-funnels-color-surface-600', customSurface['600'])
+  document.documentElement.style.setProperty('--dock-funnels-color-surface-700', customSurface['700'])
+  document.documentElement.style.setProperty('--dock-funnels-color-surface-800', customSurface['800'])
+  document.documentElement.style.setProperty('--dock-funnels-color-surface-900', customSurface['900'])
+  document.documentElement.style.setProperty('--dock-funnels-color-surface-950', customSurface['950'])
 }

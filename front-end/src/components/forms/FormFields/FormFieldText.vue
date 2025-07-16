@@ -1,8 +1,6 @@
 <template>
   <div class="flex flex-col flex-wrap py-4">
-    <label
-      class="text-surface-700 text-lg leading-none mb-3"
-    >
+    <label class="text-surface-700 text-lg leading-none mb-3">
       {{ props.field.label }}
       <span v-if="props.field.required" class="text-red-500">*</span>
       <p
@@ -12,40 +10,26 @@
         {{ props.field.description }}
       </p>
     </label>
-    <InputGroup>
-      <InputGroupAddon v-if="props.field.input_type === 'email'">
-        <Icon icon="heroicons:envelope" />
-      </InputGroupAddon>
-      <InputGroupAddon v-if="props.field.input_type === 'tel'">
-        <Icon icon="heroicons:phone" />
-      </InputGroupAddon>
-      <InputGroupAddon v-if="props.field.input_type === 'number'">
-        <Icon icon="heroicons:hashtag" />
-      </InputGroupAddon>
-      <InputText
-        :id="props.field.field_name"
-        v-model="textValue"
-        @change="onChange"
-        :type="props.field.input_type || 'text'"
-        :placeholder="props.field.placeholder "
-      />
-    </InputGroup>
-    <Message
+    <DockFunnelTextInput
+      v-model="textValue"
+      @update:model-value="onChange"
+      :placeholder="props.field.placeholder"
+      :type="props.field.input_type ?? 'text'"
+    />
+    <div
       v-if="
         submissionStateStore.currentStepErrors.value.find(
           (e) => e.joined_path === props.field.field_name
         )
       "
-      severity="error"
-      variant="simple"
-      size="small"
+      class="text-red-500 text-sm mt-2"
     >
       {{
         submissionStateStore.currentStepErrors.value.find(
           (e) => e.joined_path === props.field.field_name
         )?.message
       }}
-    </Message>
+    </div>
   </div>
 </template>
 
@@ -53,7 +37,7 @@
 import { useFormSubmissionStateStore } from "@/forms/stores/submission.store";
 import type { FormFieldText } from "@/types";
 import { onMounted, ref } from "vue";
-import { Icon } from "@iconify/vue";
+import DockFunnelTextInput from "./Inputs/DockFunnelTextInput.vue";
 
 type Props = {
   field: FormFieldText;
@@ -65,7 +49,9 @@ const props = defineProps<Props>();
 const submissionStateStore = useFormSubmissionStateStore();
 
 onMounted(() => {
-  const initialValue = submissionStateStore.formSubmissionFields.value.get(props.field.field_name)?.value;
+  const initialValue = submissionStateStore.formSubmissionFields.value.get(
+    props.field.field_name
+  )?.value;
   if (initialValue) {
     textValue.value = initialValue as string | null;
   } else {
