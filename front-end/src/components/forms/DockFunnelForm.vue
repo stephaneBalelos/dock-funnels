@@ -46,9 +46,7 @@
           Zurück
         </button>
         <div class="flex-1 px-8" v-if="footerSettings.show_progress_bar">
-          <div>
-            {{ submissionStateStore.progressPercentage.value }}%
-          </div>
+          <DockProgressBar :progress="submissionStateStore.progressPercentage.value" />
         </div>
         <button
           class="ml-auto"
@@ -80,6 +78,7 @@ import { useFormSubmissionStateStore } from "@/forms/stores/submission.store.ts"
 import type { Form } from "../../types/index.ts";
 import { computed, ref } from "vue";
 import DockFunnelFormContent from "./DockFunnelFormContent.vue";
+import DockProgressBar from "./UI/DockProgressBar.vue";
 
 type Props = {
   form: Form;
