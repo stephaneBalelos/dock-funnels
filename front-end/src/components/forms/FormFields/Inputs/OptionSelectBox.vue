@@ -5,6 +5,7 @@
         props.label
       }}</label>
       <Icon :width="20" icon="heroicons:check-circle-solid" v-if="model === props.value" class="text-primary-500" />
+      <div v-else class="w-5 h-5"></div>
     </div>
     <p v-if="props.description" class="text-sm text-primary-700">
       {{ props.description }}
