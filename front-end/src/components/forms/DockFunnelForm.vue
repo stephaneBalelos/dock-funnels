@@ -38,6 +38,7 @@
         class="flex justify-between items-center"
       >
         <DockButton
+        color="surface"
           @click="submissionStateStore.previousStep"
           :disabled="submissionStateStore.currentStepIndex.value === 0"
         >
