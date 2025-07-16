@@ -1,5 +1,6 @@
 import type { FormState } from "@/types";
-import { palette } from "@primeuix/themes";
+import { definePreset, palette, updatePreset } from "@primeuix/themes";
+import Aura from '@primeuix/themes/aura';
 
 export const slugify = (text: string): string => {
   // Convert the input text to a slug format
@@ -315,4 +316,60 @@ export const configureTheme = (primaryColor: string, surfaceColor: string) => {
   document.documentElement.style.setProperty('--dock-funnels-color-surface-800', customSurface['800'])
   document.documentElement.style.setProperty('--dock-funnels-color-surface-900', customSurface['900'])
   document.documentElement.style.setProperty('--dock-funnels-color-surface-950', customSurface['950'])
+}
+
+export const updateThemePreset = (primaryColor: string, surfaceColor: string) => {
+    const customPrimary = palette(primaryColor)
+  const customSurface = palette(surfaceColor)
+  const preset = definePreset(Aura, {
+    semantic: {
+      primary: {
+        50: customPrimary[50],
+        100: customPrimary[100],
+        200: customPrimary[200],
+        300: customPrimary[300],
+        400: customPrimary[400],
+        500: customPrimary[500],
+        600: customPrimary[600],
+        700: customPrimary[700],
+        800: customPrimary[800],
+        900: customPrimary[900],
+        950: customPrimary[950],
+      },
+      colorScheme: {
+        light: {
+          surface: {
+            50: customSurface[50],
+            100: customSurface[100],
+            200: customSurface[200],
+            300: customSurface[300],
+            400: customSurface[400],
+            500: customSurface[500],
+            600: customSurface[600],
+            700: customSurface[700],
+            800: customSurface[800],
+            900: customSurface[900],
+            950: customSurface[950],
+          }
+        },
+        dark: {
+          surface: {
+            50: customSurface[50],
+            100: customSurface[100],
+            200: customSurface[200],
+            300: customSurface[300],
+            400: customSurface[400],
+            500: customSurface[500],
+            600: customSurface[600],
+            700: customSurface[700],
+            800: customSurface[800],
+            900: customSurface[900],
+            950: customSurface[950],
+          }
+        }
+      }
+    },
+  })
+
+  updatePreset(preset);
 }

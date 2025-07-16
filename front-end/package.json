@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:dashboard": "vite --config vite.dashboard.config.ts",
     "build:forms": "vue-tsc -b && vite build",
     "build:dashboard": "vue-tsc -b && vite build --config vite.dashboard.config.ts",
     "build": "pnpm build:forms && pnpm build:dashboard",

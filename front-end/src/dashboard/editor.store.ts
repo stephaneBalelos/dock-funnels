@@ -1,7 +1,6 @@
 import { createForm, deleteForm, updateForm } from "@/api/wpAjaxApi"
 import type { FormFieldCheckboxList, FormFieldDependsOn, FormFieldSelect, FormFieldSubmissionSummary, FormFieldText, FormOnSubmitAction, FormState } from "@/types"
-import { getThemePreset } from "@/utils"
-import { updatePreset } from "@primeuix/themes"
+import { configureTheme, updateThemePreset } from "@/utils"
 import { createGlobalState } from "@vueuse/core"
 import { useToast } from "primevue"
 import { computed, nextTick, reactive, ref } from "vue"
@@ -618,8 +617,9 @@ export const useEditorStore = createGlobalState(() => {
             return
         }
         // Ensure colors are defined
-        const preset = getThemePreset(designSettings.colors.primary, designSettings.colors.surface)
-        updatePreset(preset)
+        configureTheme(designSettings.colors.primary, designSettings.colors.surface)
+        // Update the theme preset with the new colors
+        updateThemePreset(designSettings.colors.primary, designSettings.colors.surface)
     }
 
 
