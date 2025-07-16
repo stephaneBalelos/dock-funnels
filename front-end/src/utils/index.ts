@@ -250,7 +250,7 @@ export const FormTestData: FormState = {
       steps: {
         hide_step_header: false, // Whether to show the steps header
         text_align: "text-left", // Text alignment for steps
-        items_align: "items-end", // Alignment of step items
+        items_align: "items-start", // Alignment of step items
         step_transition: "slide", // Transition effect for steps
       },
       footer: {

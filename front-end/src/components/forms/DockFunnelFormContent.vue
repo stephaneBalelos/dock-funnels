@@ -13,10 +13,10 @@
         :key="`step-${submissionStateStore.currentStepIndex.value}`"
       >
         <div v-if="!settings.hide_step_header" :class="`flex flex-col mb-8 ${settings.text_align} ${settings.items_align}`">
-          <span class="text-sm text-surface-700 font-semibold mb-2">
+          <span class="text-sm text-surface-500 font-semibold mb-2">
             Schritt {{ submissionStateStore.currentStepIndex.value + 1 }}
           </span>
-          <h3 class="text-lg text-surface-800 font-semibold">
+          <h3 class="text-xl text-surface-800 font-semibold">
             {{ currentStep.title }}
           </h3>
           <p class="text-surface-600 mt-1 mb-4">
