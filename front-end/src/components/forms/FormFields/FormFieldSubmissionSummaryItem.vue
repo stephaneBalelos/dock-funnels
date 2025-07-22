@@ -21,7 +21,7 @@
       class="text-primary-700 list-disc"
     >
       <li
-        v-for="(val, index) in field.options
+        v-for="(val, _index) in field.options
           .filter((o) => (value ? value : []).includes(o.value))
           .map((o) => o.label)"
           class="ml-4"
