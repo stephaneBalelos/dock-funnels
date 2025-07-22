@@ -47,7 +47,7 @@ class DockFunnels_Admin
             'Create Form',
             'Create Form',
             'manage_options',
-            'dock-funnels-create-form',
+            'dock-funnels-editor',
             [__CLASS__, 'render_create_form_page']
         );
     }
@@ -61,7 +61,7 @@ class DockFunnels_Admin
             $form_id = intval($_GET['form_id']);
             $form = DockFunnels_DB::get_form_by_id($form_id);
             if ($form) {
-                echo '<div id="dock-funnels-dashboard" class="dock-funnels-root"></div></div>';
+                echo '<div id="dock-funnels-editor" class="dock-funnels-root"></div></div>';
                 return;
             }
         } elseif (isset($_GET['form_id'])) {
@@ -86,7 +86,7 @@ class DockFunnels_Admin
                 <td>{$form['name']}</td>
                 <td><code>[dock_funnel id='{$form['id']}']</code></td>
                 <td>
-                    <a href='" . admin_url("admin.php?page=dock-funnels&form_id={$form['id']}") . "' class='button'>Edit</a>
+                    <a href='" . admin_url("admin.php?page=dock-funnels-editor&form_id={$form['id']}") . "' class='button'>Edit</a>
                     <a href='" . admin_url("admin.php?page=dock-funnels-responses&form_id={$form['id']}") . "' class='button'>Responses</a>
                 </tr>";
             }
@@ -96,19 +96,44 @@ class DockFunnels_Admin
 
     public static function render_responses_page()
     {
-        if (!current_user_can('manage_options') || !isset($_GET['form_id'])) {
-            echo '<div class="wrap"><h1>Responses</h1><p>No form selected.</p></div>';
+        if (!current_user_can('manage_options')) {
+            echo '<div class="wrap"><h1>Access Denied</h1><p>You do not have permission to view this page.</p></div>';
             return;
         }
-
-        $form_id = intval($_GET['form_id']);
-        $responses = DockFunnels_DB::get_form_responses($form_id);
-
-        echo '<div class="wrap"><h1>Form Responses</h1><table class="widefat"><thead><tr><th>ID</th><th>Submitted At</th><th>Response</th></tr></thead><tbody>';
-        foreach ($responses as $r) {
-            echo "<tr><td>{$r['id']}</td><td>{$r['submitted_at']}</td><td><pre>" . esc_html($r['response']) . "</pre></td></tr>";
+        if (!isset($_GET['form_id']) || !is_numeric($_GET['form_id'])) {
+            $forms = DockFunnels_DB::get_forms();
+            echo '<div class="wrap"><h1>Formular Einreichungen</h1>
+                <table class="widefat">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                <tbody>';
+            foreach ($forms as $form) {
+                echo "<tr>
+                <td>{$form['id']}</td>
+                <td>{$form['name']}</td>
+                <td>
+                    <a href='" . admin_url("admin.php?page=dock-funnels-responses&form_id={$form['id']}") . "' class='button'>
+                    Antworten anzeigen</a>
+                </td>
+                </tr>";
+            }
+            echo '</tbody></table></div>';
+            return;
+        } else {
+            $form_id = intval($_GET['form_id']);
+            $form = DockFunnels_DB::get_form_by_id($form_id);
+            if (!$form) {
+                echo '<div class="wrap"><h1>Form Not Found</h1><p>The requested form does not exist.</p></div>';
+                return;
+            } else {
+                echo '<div id="dock-funnels-responses" class="dock-funnels-root"></div>';
+            }
         }
-        echo '</tbody></table></div>';
     }
 
     public static function render_create_form_page()
@@ -116,6 +141,6 @@ class DockFunnels_Admin
         if (!current_user_can('manage_options')) {
             return;
         }
-        echo '<div id="dock-funnels-dashboard" class="dock-funnels-root"></div>';
+        echo '<div id="dock-funnels-editor" class="dock-funnels-root"></div>';
     }
 }
