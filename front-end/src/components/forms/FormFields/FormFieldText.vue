@@ -1,11 +1,11 @@
 <template>
   <div class="flex flex-col flex-wrap py-4">
-    <label class="text-surface-900 text-lg font-semibold leading-none mb-3">
+    <label class="text-primary-900 text-lg font-semibold leading-none mb-3">
       {{ props.field.label }}
       <span v-if="props.field.required" class="text-red-500">*</span>
       <p
         v-if="props.field.description"
-        class="text-surface-500 text-sm font-normal leading-none mt-1"
+        class="text-primary-700 text-sm font-normal leading-none mt-1"
       >
         {{ props.field.description }}
       </p>

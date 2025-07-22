@@ -119,10 +119,11 @@ export const useFormSubmissionStateStore = createGlobalState(
                         } else {
                             if (field.min && field.min > 0) {
                                 const min = Math.min(field.min, checkboxValues.length)
-                                fieldSchema = fieldSchema.min(min, `${field.label}: Sie müssen mindestens ${field.min} auswählen`)
+                                fieldSchema = fieldSchema.min(min, `${field.label}: Sie müssen mindestens ${min} auswählen`)
 
                                 if (field.max && field.max >= min) {
-                                    fieldSchema = fieldSchema.max(field.max, `${field.label}: Sie können maximal ${field.max} auswählen`)
+                                    const max = Math.min(field.max, checkboxValues.length)
+                                    fieldSchema = fieldSchema.max(max, `${field.label}: Sie können maximal ${max} auswählen`)
                                 }
                             }
                         }

@@ -18,10 +18,10 @@
       v-if="submissionStateStore.isFormSubmitted.value"
       class="outro absolute inset-0 p-4 min-h-96 flex flex-col items-center justify-center bg-white"
     >
-      <h3 class="text-3xl font-semibold text-surface-800 mb-4 text-center">
+      <h3 class="text-3xl font-semibold text-primary-800 mb-4 text-center">
         Danke für Ihre Einreichung!
       </h3>
-      <p class="text-surface-600 mb-6 text-center">
+      <p class="text-primary-700 mb-6 text-center">
         Ihre Daten wurden erfolgreich gespeichert. Wir werden uns in Kürze bei
         Ihnen melden.
       </p>

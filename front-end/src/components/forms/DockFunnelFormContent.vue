@@ -16,10 +16,10 @@
           <span class="text-sm text-surface-500 font-semibold mb-2">
             Schritt {{ submissionStateStore.currentStepIndex.value + 1 }}
           </span>
-          <h3 class="text-xl text-surface-800 font-semibold">
+          <h3 class="text-xl text-primary-800 font-semibold">
             {{ currentStep.title }}
           </h3>
-          <p class="text-surface-600 mt-1 mb-4">
+          <p class="text-primary-700 mt-1 mb-4">
             {{ currentStep.description }}
           </p>
         </div>

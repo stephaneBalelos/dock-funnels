@@ -6,7 +6,7 @@
         <span v-if="props.field.required" class="text-red-500">*</span>
         <p
           v-if="props.field.description"
-          class="text-surface-500 text-sm leading-none mt-1"
+          class="text-primary-700 text-sm font-normal leading-none mt-1"
         >
           {{ props.field.description }}
         </p>
@@ -92,7 +92,7 @@ watch(
 
 const classSettings = computed(() => {
   let base = `flex flex-col py-4`;
-  let label = `text-surface-900 text-lg font-semibold leading-none mb-3`;
+  let label = `text-primary-900 text-lg font-semibold leading-none mb-3`;
   let optionsContainer = `w-full grid grid-cols-1 md:grid-cols-2 gap-4`;
   if (settings.align) {
     base += ` text-${settings.align}`;
