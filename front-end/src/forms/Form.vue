@@ -29,6 +29,7 @@ onMounted(async () => {
       form_steps: FormTestData.form_steps,
       form_fields: FormTestData.form_fields,
       form_settings: FormTestData.form_settings,
+      outro_settings: FormTestData.outro_settings,
     }
     return;
   }

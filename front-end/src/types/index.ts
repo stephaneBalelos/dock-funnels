@@ -6,6 +6,13 @@ export type FormState = {
     form_steps: FormStep[]; // Array of steps in the form
     form_fields: (FormFieldSelect | FormFieldText | FormFieldTextarea | FormFieldCheckboxList | FormFieldSubmissionSummary)[]; // Array of fields in this step
     form_settings: FormSettings; // Settings for the form
+    outro_settings: {
+        show: boolean; // Whether to show the outro
+        title: string; // Title of the outro
+        description: string; // Description of the outro
+        button_text: string; // Text for the button in the outro
+        button_url?: string; // URL for the button in the outro, optional
+    }
 }
 
 // Form is form data that is used to submit the form

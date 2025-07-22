@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="submissionStateStore.form.value"
-    class="dockfunnelform-container relative w-full mx-auto flex flex-col relative border border-surface-100 rounded-lg shadow-lg bg-white"
+    class="dockfunnelform-container relative w-full mx-auto flex flex-col relative border border-surface-100 rounded-lg shadow-lg bg-white min-h-[400px]"
   >
     <div
       v-if="headerSettings.show"
@@ -13,23 +13,22 @@
         {{ props.form.title }}
       </h3>
     </div>
-    <DockFunnelFormContent />
+    <DockFunnelFormContent v-if="!submissionStateStore.isFormSubmitted.value" />
     <div
       v-if="submissionStateStore.isFormSubmitted.value"
       class="outro absolute inset-0 p-4 min-h-96 flex flex-col items-center justify-center bg-white"
     >
       <h3 class="text-3xl font-semibold text-primary-800 mb-4 text-center">
-        Danke für Ihre Einreichung!
+        {{ submissionStateStore.form.value?.outro_settings?.title || "Vielen Dank!" }}
       </h3>
       <p class="text-primary-700 mb-6 text-center">
-        Ihre Daten wurden erfolgreich gespeichert. Wir werden uns in Kürze bei
-        Ihnen melden.
+        {{ submissionStateStore.form.value?.outro_settings?.description || "Ihre Daten wurden erfolgreich gespeichert. Wir werden uns in Kürze bei Ihnen melden." }}
       </p>
       <DockButton
         class="inline-flex items-center justify-center rounded-md px-[15px] text-sm leading-none font-medium h-[35px] bg-blue-500 text-white hover:bg-blue-600 focus:shadow-[0_0_0_2px] focus:shadow-blue-700 outline-none"
-        @click="() => refreshPage()"
+        @click="() => refreshPage(submissionStateStore.form.value?.outro_settings?.button_url)"
       >
-        Schließen
+        {{ submissionStateStore.form.value?.outro_settings?.button_text || "Zurück zur Startseite" }}
       </DockButton>
     </div>
     <div class="dockfunnelform-footer border-t border-surface-100 p-4">
@@ -127,9 +126,14 @@ const footerSettings = computed(() => {
   );
 });
 
-const refreshPage = () => {
+const refreshPage = (url?: string) => {
   // Refresh the page to reset the form state
-  window.location.reload();
+  if (url) {
+    console.error("Redirecting to:", url);
+    window.location.href = url;
+  } else {
+    window.location.reload();
+  }
 };
 </script>
 

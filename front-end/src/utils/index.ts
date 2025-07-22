@@ -27,6 +27,14 @@ export const FormTestData: FormState = {
   title: "Online Terminvereinbarung [Test]",
   description:
     "Bitte füllen Sie das Formular aus, um einen Termin zu vereinbaren.",
+  outro_settings: {
+    show: true,
+    title: "Vielen Dank für Ihre Terminvereinbarung!",
+    description:
+      "Wir haben Ihre Anfrage erhalten und werden uns in Kürze mit Ihnen in Verbindung setzen.",
+    button_text: "Zurück zur Startseite",
+    button_url: "https://dock26.de", // Optional URL for the button in the outro
+  },
   form_steps: [
     {
       title: "Wählen Sie Ihre Fachrichtung",
