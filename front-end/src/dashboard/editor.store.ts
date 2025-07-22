@@ -119,12 +119,19 @@ export const useEditorStore = createGlobalState(() => {
     }
 
     const initEditor = (initialForm?: FormState) => {
+        console.log('Initializing editor with form:', initialForm)
         Object.assign(form, initialForm || {
             id: 0,
             title: 'Mein Dock Funnel Formular',
             description: '',
             form_steps: [],
-            fields: []
+            fields: [],
+            outro_settings: {
+                title: 'Vielen Dank für Ihre Teilnahme!',
+                description: 'Wir haben Ihre Informationen erhalten und werden uns in Kürze bei Ihnen melden.',
+                button_text: 'Zurück zur Startseite',
+                button_url: '/'
+            }
         })
         if (form.form_steps.length === 0) {
             addStep() // Ensure at least one step exists
@@ -580,6 +587,7 @@ export const useEditorStore = createGlobalState(() => {
                 // Redirect to the edit page with the new form ID
                 window.location.href = `/wp-admin/admin.php?page=dock-funnels&form_id=${response.data.form_id}`;
             } else {
+                console.log(formState)
                 const response = await updateForm(endpoint, nonce, editFormId, JSON.stringify(formState));
                 if (!response.success) {
                     console.error('Error updating form:', response.data);

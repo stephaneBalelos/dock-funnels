@@ -144,6 +144,7 @@ class DockFunnels_Ajax
             'form_steps' => $form_data['form_steps'],
             'form_fields' => $form_data['form_fields'],
             'form_settings' => $form_settings,
+            'outro_settings' => $form_data['outro_settings'],
             'status' => $form->status,
         ];
         wp_send_json_success($form_state);
@@ -231,7 +232,7 @@ class DockFunnels_Ajax
 
         $results = $validation_result['data'];
 
-        $form_data = ['form_steps' => $results['form_steps'], 'form_fields' => $results['form_fields']];
+        $form_data = ['form_steps' => $results['form_steps'], 'form_fields' => $results['form_fields'], 'outro_settings' => $results['outro_settings']];
         $form_settings = $results['form_settings'];
         $updated = DockFunnels_DB::update_form($form_id, $results['title'], $results['description'], $form_data, $form_settings);
         if (!$updated) {
@@ -282,6 +283,7 @@ class DockFunnels_FormStateValidator
     private $form_steps = [];
     private $form_fields = [];
     private $form_settings = [];
+    private $outro_settings = [];
 
     private $sanitized_form_state = [];
     private $errors = [];
@@ -295,6 +297,7 @@ class DockFunnels_FormStateValidator
         $this->form_steps = $form_state['form_steps'] ?? [];
         $this->form_fields = $form_state['form_fields'] ?? [];
         $this->form_settings = $form_state['form_settings'] ?? [];
+        $this->outro_settings = $form_state['outro_settings'] ?? [];
     }
 
     public function validate()
@@ -311,6 +314,36 @@ class DockFunnels_FormStateValidator
             $this->sanitized_form_state['description'] = '';
         } else {
             $this->sanitized_form_state['description'] = sanitize_textarea_field($this->form_description);
+        }
+
+        // Validate outro settings
+        if (!isset($this->outro_settings) || !is_array($this->outro_settings)) {
+            $this->errors['outro_settings'] = 'Outro settings are required and must be an array.';
+        } else {
+            // Validate Outro Title
+            if (!isset($this->outro_settings['title']) || !is_string($this->outro_settings['title']) || empty($this->outro_settings['title'])) {
+                $this->errors['outro_settings']['title'] = 'Outro title is required and must be a string.';
+            } else {
+                $this->sanitized_form_state['outro_settings']['title'] = sanitize_text_field($this->outro_settings['title']);
+            }
+            // Validate Outro Description
+            if (isset($this->outro_settings['description']) && !is_string($this->outro_settings['description'])) {
+                $this->errors['outro_settings']['description'] = 'Outro description must be a string.';
+            } else {
+                $this->sanitized_form_state['outro_settings']['description'] = isset($this->outro_settings['description']) ? sanitize_textarea_field($this->outro_settings['description']) : '';
+            }
+            // Validate Outro Button Text
+            if (isset($this->outro_settings['button_text']) && !is_string($this->outro_settings['button_text'])) {
+                $this->errors['outro_settings']['button_text'] = 'Outro button text must be a string.';
+            } else {
+                $this->sanitized_form_state['outro_settings']['button_text'] = isset($this->outro_settings['button_text']) ? sanitize_text_field($this->outro_settings['button_text']) : '';
+            }
+            // Validate Outro Button URL
+            if (isset($this->outro_settings['button_url']) && !is_string($this->outro_settings['button_url'])) {
+                $this->errors['outro_settings']['button_url'] = 'Outro button URL must be a string.';
+            } else {
+                $this->sanitized_form_state['outro_settings']['button_url'] = isset($this->outro_settings['button_url']) ? sanitize_text_field($this->outro_settings['button_url']) : '';
+            }
         }
 
         // Validate form steps

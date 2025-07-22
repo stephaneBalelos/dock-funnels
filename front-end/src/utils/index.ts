@@ -28,7 +28,6 @@ export const FormTestData: FormState = {
   description:
     "Bitte füllen Sie das Formular aus, um einen Termin zu vereinbaren.",
   outro_settings: {
-    show: true,
     title: "Vielen Dank für Ihre Terminvereinbarung!",
     description:
       "Wir haben Ihre Anfrage erhalten und werden uns in Kürze mit Ihnen in Verbindung setzen.",

@@ -94,7 +94,7 @@ onMounted(() => {
             Vorschau
           </Button>
           <Button class="mr-2" size="small" :severity="editorStore.editorState.value.editorMode === 'submission-actions' ? 'primary' : 'secondary'" @click="editorStore.editorState.value.editorMode = 'submission-actions'">
-            Flows
+            Abschluss
           </Button>
         </template>
 
