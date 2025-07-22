@@ -134,7 +134,6 @@ onMounted(() => {
         </div>
       </div>
       <div class="main relative">
-        <div class="toolbar absolute">{{ editorStore.selectedStepIndex }}</div>
         <div class="absolute inset-0 overflow-auto">
           <FormFlowPreview />
         </div>
