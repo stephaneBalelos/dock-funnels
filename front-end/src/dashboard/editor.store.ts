@@ -83,6 +83,19 @@ export const useEditorStore = createGlobalState(() => {
     const selectedStepIndex = ref<number | null>(null)
     const setSelectedStepIndex = (index: number | null) => {
         selectedStepIndex.value = index
+        // Set the first field of the selected step as the active field
+       nextTick(() => {
+            if (index !== null && form.form_fields.length > 0) {
+                const fields = getFieldsByStepIndex(index)
+                if (fields.length > 0) {
+                    setSelectedFieldName(fields[0].field_name)
+                } else {
+                    selectedFieldName.value = null // Reset if no fields in step
+                }
+            } else {
+                selectedFieldName.value = null // Reset if no step selected
+            }
+        })  
     }
     const getFieldsByStepIndex = (stepIndex: number) => {
         if (stepIndex < 0 || stepIndex >= form.form_steps.length) {

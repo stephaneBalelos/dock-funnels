@@ -138,11 +138,7 @@
             }}</Message
           >
         </FormField>
-
       </div>
-      <Fieldset legend="Form " class="h-80 overflow-auto">
-        <pre class="whitespace-pre-wrap">{{ state }}</pre>
-      </Fieldset>
     </Form>
   </div>
 </template>
