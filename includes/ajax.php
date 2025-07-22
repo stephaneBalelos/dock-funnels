@@ -151,6 +151,31 @@ class DockFunnels_Ajax
     }
 
     /**
+     * Get form responses by ID
+     */
+    public static function get_form_responses_by_id()
+    {
+        $body = file_get_contents('php://input');
+        if (empty($body)) {
+            wp_send_json_error(['message' => 'No data received.']);
+        }
+        $data = json_decode($body, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            wp_send_json_error(['message' => 'Invalid JSON data.']);
+        }
+        wp_verify_nonce($data['nonce'], 'dock_funnel_form_nonce');
+        $form_id = isset($data['form_id']) ? intval($data['form_id']) : 0;
+        if (!$form_id) {
+            wp_send_json_error(['message' => 'Invalid form ID.']);
+        }
+        $responses = DockFunnels_DB::get_form_responses($form_id);
+        if (!$responses) {
+            return wp_send_json_error(['message' => 'No responses found.']);
+        }
+        wp_send_json_success($responses);
+    }
+
+    /**
      * Get form data by ID
      */
     public static function get_form_data_by_id()

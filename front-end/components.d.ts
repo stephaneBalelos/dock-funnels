@@ -59,6 +59,8 @@ declare module 'vue' {
     NotificationsSettingsTab: typeof import('./src/components/dashboard/settings/NotificationsSettingsTab.vue')['default']
     OptionCheckboxBox: typeof import('./src/components/forms/FormFields/Inputs/OptionCheckboxBox.vue')['default']
     OptionSelectBox: typeof import('./src/components/forms/FormFields/Inputs/OptionSelectBox.vue')['default']
+    ResponseContent: typeof import('./src/components/dashboard/responses/ResponseContent.vue')['default']
+    ResponsesContainer: typeof import('./src/components/dashboard/responses/ResponsesContainer.vue')['default']
     Select: typeof import('primevue/select')['default']
     SelectButton: typeof import('primevue/selectbutton')['default']
     SettingsDialog: typeof import('./src/components/dashboard/settings/SettingsDialog.vue')['default']
