@@ -55,6 +55,7 @@ class DockFunnels_Admin
     public static function render_forms_page()
     {
         if (!current_user_can('manage_options')) {
+            echo '<div class="wrap"><h1>Access Denied</h1><p>You do not have permission to view this page.</p></div>';
             return;
         }
         if (isset($_GET['form_id']) && is_numeric($_GET['form_id'])) {
@@ -64,33 +65,18 @@ class DockFunnels_Admin
                 echo '<div id="dock-funnels-editor" class="dock-funnels-root"></div></div>';
                 return;
             }
-        } elseif (isset($_GET['form_id'])) {
-            echo '<div class="wrap"><h1>Form Not Found</h1><p>The requested form does not exist.</p></div>';
-            return;
         } else {
             $forms = DockFunnels_DB::get_forms();
-            echo '<div class="wrap"><h1>Dock Funnels</h1>
-                <table class="widefat">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Shortcode</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                <tbody>';
-            foreach ($forms as $form) {
-                echo "<tr>
-                <td>{$form['id']}</td>
-                <td>{$form['name']}</td>
-                <td><code>[dock_funnel id='{$form['id']}']</code></td>
-                <td>
-                    <a href='" . admin_url("admin.php?page=dock-funnels-editor&form_id={$form['id']}") . "' class='button'>Edit</a>
-                    <a href='" . admin_url("admin.php?page=dock-funnels-responses&form_id={$form['id']}") . "' class='button'>Responses</a>
-                </tr>";
+            echo '<div class="wrap"><h1>Dock Funnels</h1>';
+            echo '<p>Verwalten Sie Ihre Formulare und deren Antworten.</p>';
+            if (empty($forms)) {
+                echo '<br><br><h2>Keine Formulare gefunden</h2><p>Bitte erstellen Sie ein neues Formular.</p>';
+                echo '<a href="' . admin_url('admin.php?page=dock-funnels-editor') . '" class="button button-primary">Neues Formular erstellen</a>';
+                return;
             }
-            echo '</tbody></table></div>';
+            self::render_forms_table($forms);
+            echo '</div>'; // Close the wrap div
+            return;
         }
     }
 
@@ -142,5 +128,30 @@ class DockFunnels_Admin
             return;
         }
         echo '<div id="dock-funnels-editor" class="dock-funnels-root"></div>';
+    }
+
+    public static function render_forms_table($forms)
+    {
+        echo '<table class="widefat">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Shortcode</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+            <tbody>';
+        foreach ($forms as $form) {
+            echo "<tr>
+            <td>{$form['id']}</td>
+            <td>{$form['name']}</td>
+            <td><code>[dock_funnel id='{$form['id']}']</code></td>
+            <td>
+                <a href='" . admin_url("admin.php?page=dock-funnels-editor&form_id={$form['id']}") . "' class='button'>Edit</a>
+                <a href='" . admin_url("admin.php?page=dock-funnels-responses&form_id={$form['id']}") . "' class='button'>Responses</a>
+            </tr>";
+        }
+        echo '</tbody></table>';
     }
 }
