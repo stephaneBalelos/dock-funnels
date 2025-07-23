@@ -6,11 +6,14 @@
                     <h2 class="text-lg font-semibold p-2">Form Responses</h2>
                 </div>
                 <div class="relative responses-list-content flex-1 overflow-y-auto">
-                    <ul class="absolute inset-0 list-none p-0 m-0">
+                    <ul v-if="responses.length > 0" class="absolute inset-0 list-none p-0 m-0">
                         <li v-for="res, index in responses" :key="index" :class="'p-2 py-4 m-0 border-t hover:bg-primary-100 cursor-pointer' + (selectedResponseId === res.id ? ' bg-primary-100' : '')" @click="selectedResponseId = res.id">
                             Anfrage ID: {{ res.id }} <br> Eingereicht am: {{ res.submittedAt.toLocaleDateString("de") }}
                         </li>
                     </ul>
+                    <div v-else class="text-primary-500 p-4">
+                        Bisher keine Antworten vorhanden.
+                    </div>
                 </div>
             </div>
         </div>

@@ -38,18 +38,37 @@ class DockFunnels_Ajax
             wp_send_json_error(['message' => 'Form not found.']);
         }
 
-        $fields = isset($submission['fields']) ? $submission['fields'] : [];
-        if (empty($fields)) {
+        // Check if Form status
+        // if ($form->status !== 'published') {
+        //     wp_send_json_error(['message' => 'Form is not published.']);
+        // }
+
+        $submitted_fields = isset($submission['fields']) ? $submission['fields'] : [];
+        if (empty($submitted_fields)) {
             wp_send_json_error(['message' => 'No fields data provided.']);
         }
 
-        $submission_id = DockFunnels_DB::save_form_response($form_id, $fields);
+        $form_data = json_decode($form->form_data, true);
+        if (!$form_data) {
+            wp_send_json_error(['message' => 'Form data is invalid.']);
+        }
+
+        // Validate Submission
+        $validator = new DockFunnels_SubmissionValidator($form_data['form_fields'], $submitted_fields);
+
+        $validation_result = $validator->validate_submission_fields();
+
+        if (!$validation_result['valid']) {
+            wp_send_json_error(['message' => 'Invalid form submission.', 'errors' => $validation_result['errors']]);
+        }
+
+        $submission_id = DockFunnels_DB::save_form_response($form_id, $validation_result['data']);
         if (!$submission_id) {
             wp_send_json_error(['message' => 'Failed to save form response.']);
         }
 
         // Send Response Per Mail
-        DockFunnels_Mailing::send_notifications_emails($form, $fields);
+        DockFunnels_Mailing::send_notifications_emails($form, $validation_result['data']);
 
         // Run Form On Submit Actions
         $form_settings = json_decode($form->form_settings, true);
@@ -62,7 +81,7 @@ class DockFunnels_Ajax
                     $redirect_url = isset($action['url']) ? esc_url_raw($action['url']) : '';
                 } elseif ($action['type'] === 'mail') {
                     // Send email notification
-                    DockFunnels_Mailing::handleOnSubmitActionMail($form, $fields, $action);
+                    DockFunnels_Mailing::handleOnSubmitActionMail($form, $validation_result['data'], $action);
                 } else {
                     continue; // Skip unsupported action types
                 }
@@ -72,6 +91,7 @@ class DockFunnels_Ajax
         $response = [
             'message' => 'success',
             'submission_id' => $submission_id,
+            'data' => $validation_result['data'],
         ];
 
         if (!empty($redirect_url)) {
@@ -346,7 +366,7 @@ class DockFunnels_FormStateValidator
             $this->errors['outro_settings'] = 'Outro settings are required and must be an array.';
         } else {
             // Validate Outro Title
-            if (!isset($this->outro_settings['title']) || !is_string($this->outro_settings['title']) || empty($this->outro_settings['title'])) {
+            if (isset($this->outro_settings['title']) && !is_string($this->outro_settings['title'])) {
                 $this->errors['outro_settings']['title'] = 'Outro title is required and must be a string.';
             } else {
                 $this->sanitized_form_state['outro_settings']['title'] = sanitize_text_field($this->outro_settings['title']);
@@ -851,7 +871,6 @@ class DockFunnels_FormStateValidator
         return empty($errors) ? ['valid' => true, 'data' => $sanitized_field] : ['valid' => false, 'errors' => $errors];
     }
 
-
     public static function sanitize_dependencies($dependencies)
     {
         $sanitized_dependencies = [];
@@ -976,19 +995,15 @@ class DockFunnels_FormStateValidator
         $sanitized_settings = [];
 
         // Verify the "emails" contains comma separated email addresses
-        if (!isset($notifications_settings['emails']) || !is_string($notifications_settings['emails']) || empty($notifications_settings['emails'])) {
-            $errors['emails'] = 'Emails are required and must be a comma-separated string.';
+        if (isset($notifications_settings['emails']) && !is_string($notifications_settings['emails'])) {
+            $errors['emails'] = 'Emails must be a comma-separated string.';
         } else {
             $emails = explode(',', $notifications_settings['emails']);
             $emails = array_map('trim', $emails); // Trim whitespace from each email
             $emails = array_filter($emails, function ($email) {
                 return filter_var($email, FILTER_VALIDATE_EMAIL);
             }); // Filter out invalid emails
-            if (empty($emails)) {
-                $errors['emails'] = 'At least one valid email address is required.';
-            } else {
-                $sanitized_settings['emails'] = implode(',', $emails); // Join valid emails back
-            }
+            $sanitized_settings['emails'] = implode(',', $emails); // Join valid emails back
         }
 
         // Verify the subject is set and is a string
@@ -1158,4 +1173,141 @@ class DockFunnels_FormStateValidator
             return false; // Invalid enum value
         }
     }
+}
+
+class DockFunnels_SubmissionValidator {
+    private $sanitized_submission = [];
+    private $errors = [];
+    //
+    // Fields submitted by the user
+    // 'field_name' => [
+    //     'value' => (string or string[]), // The value submitted by the user
+    //     'field_name' => 'field_name', // The name of the field
+    //     'step_index' => number, // The step index of the field
+    // ]
+    private $submission_fields = [];
+    private $form_fields = [];
+
+    public function __construct($form_fields, $submission_fields) {
+        $this->form_fields = $form_fields;
+        $this->submission_fields = $submission_fields;
+    }
+
+
+
+    public function validate_submission_fields()
+    {
+        // Validate each submitted field
+        foreach ($this->submission_fields as $field) {
+            // Get field by field_name
+            $form_field = array_filter($this->form_fields, function ($f) use ($field) {
+                return isset($f['field_name']) && $f['field_name'] === $field['field_name'];
+            });
+            $form_field = reset($form_field); // Get the first matching field
+            if (!$form_field) {
+                $this->errors['form_fields'][$field['field_name']] = 'Field does not exist in the form.';
+                continue;
+            }
+            // Validate the field based on its type
+            $validation_result = $this->validate_field($form_field, $field['value']);
+            if (!$validation_result['valid']) {
+                $this->errors['form_fields'][$field['field_name']] = $validation_result['errors'];
+            } else {
+                // If valid, add the sanitized field to the submission
+                $this->sanitized_submission[$field['field_name']] = $validation_result['data'];
+            }
+        }
+        // Check if there are any errors
+        if (!empty($this->errors)) {
+            return ['valid' => false, 'errors' => $this->errors];
+        }
+
+        return ['valid' => true, 'data' => $this->sanitized_submission];
+    }
+
+
+    private function validate_field($field, $submitted_value) {
+        switch ($field['type']) {
+            case 'text':
+                // Validate text field
+                if ($field['required'] && (empty($submitted_value) || !is_string($submitted_value))) {
+                    return ['valid' => false, 'errors' => ['value' => 'Value is required and must be a string.']];
+                }
+                $sanitized_value = sanitize_text_field($submitted_value);
+                return ['valid' => true, 'data' => [
+                    'value' => $sanitized_value,
+                    'input_type' => $field['input_type'] ?? 'text', // Default to 'text' if not set
+                    'field_name' => $field['field_name'],
+                    'step_index' => $field['step_index'],
+                    'label' => $field['label'],
+                    'type' => $field['type'],
+                ]];
+            case 'select':
+                // Validate select field
+                if ($field['required'] && (empty($submitted_value) || !is_string($submitted_value))) {
+                    return ['valid' => false, 'errors' => ['value' => 'Value is required and must be a string.']];
+                }
+                // Get the selected option
+                $selected_option = array_filter($field['options'], function ($option) use ($submitted_value) {
+                    return $option['value'] === $submitted_value;
+                });
+                $selected_option = reset($selected_option); // Get the first matching option
+                if (!$selected_option) {
+                    return ['valid' => false, 'errors' => ['value' => 'Selected value does not exist in the options.']];
+                }
+                $sanitized_value = sanitize_text_field($submitted_value);
+                return ['valid' => true, 'data' => [
+                    'value' => $sanitized_value,
+                    'value_label' => $selected_option['label'], // Include the label of the selected option
+                    'field_name' => $field['field_name'],
+                    'step_index' => $field['step_index'],
+                    'label' => $field['label'],
+                    'type' => $field['type'],
+                ]];
+            case 'checkboxList':
+                // Validate checkboxList field
+                if ($field['required'] && (empty($submitted_value) || !is_array($submitted_value))) {
+                    return ['valid' => false, 'errors' => ['value' => 'Value is required and must be an array.']];
+                }
+                $option_values = array_column($field['options'], 'value');
+                $invalid_values = array_diff($submitted_value, $option_values);
+                if (!empty($invalid_values)) {
+                    return ['valid' => false, 'errors' => ['value' => 'Selected values are not valid: ' . implode(', ', $invalid_values)]];
+                }
+                $sanitized_values = array_map('sanitize_text_field', $submitted_value);
+                return ['valid' => true, 'data' => [
+                    'value' => $sanitized_values,
+                    'value_labels' => array_column($field['options'], 'label', 'value'), // Include the labels of the selected options
+                    'field_name' => $field['field_name'],
+                    'step_index' => $field['step_index'],
+                    'label' => $field['label'],
+                    'type' => $field['type'],
+                ]];
+            case 'textarea':
+                // Validate textarea field
+                if ($field['required'] && (empty($submitted_value) || !is_string($submitted_value))) {
+                    return ['valid' => false, 'errors' => ['value' => 'Value is required and must be a string.']];
+                }
+                $sanitized_value = sanitize_textarea_field($submitted_value);
+                return ['valid' => true, 'data' => [
+                    'value' => $sanitized_value,
+                    'field_name' => $field['field_name'],
+                    'step_index' => $field['step_index'],
+                    'label' => $field['label'],
+                    'type' => $field['type'],
+                ]];
+            case 'submissionSummary':
+                // Submission summary fields do not require validation as they are not user input fields
+                return ['valid' => true, 'data' => [
+                    'value' => '', // No value to sanitize for submission summary fields
+                    'field_name' => $field['field_name'],
+                    'step_index' => $field['step_index'],
+                    'label' => $field['label'],
+                    'type' => $field['type'],
+                ]];
+            default:
+                return ['valid' => false, 'errors' => ['type' => 'Invalid field type: ' . $field['type']]];
+        }
+    }
+
 }

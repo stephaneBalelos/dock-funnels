@@ -585,7 +585,7 @@ export const useEditorStore = createGlobalState(() => {
                 });
                 await nextTick(); // Ensure the DOM updates before redirecting
                 // Redirect to the edit page with the new form ID
-                window.location.href = `/wp-admin/admin.php?page=dock-funnels&form_id=${response.data.form_id}`;
+                window.location.href = `/wp-admin/admin.php?page=dock-funnels-editor&form_id=${response.data.form_id}`;
             } else {
                 console.log(formState)
                 const response = await updateForm(endpoint, nonce, editFormId, JSON.stringify(formState));
