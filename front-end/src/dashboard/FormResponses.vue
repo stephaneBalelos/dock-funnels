@@ -30,9 +30,9 @@ onMounted(async () => {
     }
     // Fetch form responses using the provided formId
     try {
-        const form = await getFormById(endpoint, nonce, formId) as FormState;
-        formState.value = form;
-        editorStore.initEditor(form);
+        const form = await getFormById(endpoint, nonce, formId);
+        formState.value = form.data as FormState;
+        editorStore.initEditor(formState.value);
     } catch (error) {
         console.error("Error fetching form data:", error);
     }
