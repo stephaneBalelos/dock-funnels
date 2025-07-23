@@ -318,6 +318,39 @@ class DockFunnels_Ajax
         }
         wp_send_json_success(['message' => 'Form deleted successfully.']);
     }
+
+    /**
+     * Delete form response by ID
+     */
+    public static function delete_form_response()
+    {
+        $body = file_get_contents('php://input');
+        if (empty($body)) {
+            wp_send_json_error(['message' => 'No data received.']);
+        }
+        $data = json_decode($body, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            wp_send_json_error(['message' => 'Invalid JSON data.']);
+        }
+        wp_verify_nonce($data['nonce'], 'dock_funnel_admin_nonce');
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'You do not have permission to delete form responses.']);
+        }
+        $response_id = isset($data['response_id']) ? intval($data['response_id']) : 0;
+        $form_id = isset($data['form_id']) ? intval($data['form_id']) : 0;
+        if (!$response_id) {
+            wp_send_json_error(['message' => 'Invalid response ID.']);
+        }
+        if (!$form_id) {
+            wp_send_json_error(['message' => 'Invalid form ID.']);
+        }
+
+        $deleted = DockFunnels_DB::delete_form_response($form_id, $response_id);
+        if (!$deleted) {
+            wp_send_json_error(['message' => 'Failed to delete response.']);
+        }
+        wp_send_json_success(['message' => 'Response deleted successfully.']);
+    }
 }
 
 

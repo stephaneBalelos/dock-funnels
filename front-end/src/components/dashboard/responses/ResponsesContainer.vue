@@ -21,11 +21,19 @@
         </div>
         <div class="col-span-4" v-if="selectedResponseId && selectedResponse">
             <div class="responses-details">
-                <div class="response-details-header p-2 border-b">
-                    <h3 class="text-lg font-semibold">
-                        Details zu Anfrage ID: {{ selectedResponseId }}
-                    </h3>
-                    <p class="text-sm text-surface-500">Hier sind die Details zu Ihrer Anfrage</p>
+                <div class="response-details-header p-2 border-b flex justify-between items-center">
+                    <div class="flex flex-col">
+                        <h3 class="text-lg font-semibold">
+                            Details zu Anfrage ID: {{ selectedResponseId }}
+                        </h3>
+                        <p class="text-sm text-surface-500">Hier sind die Details zu Ihrer Anfrage</p>
+                    </div>
+                    <Button
+                        severity="danger"
+                        @click="deleteResponse(selectedResponseId)"
+                    >
+                        Anfrage löschen
+                    </Button>
                 </div>
                 <div class="responses-details-content p-2">
                     <ResponseContent :form-steps="props.formState.form_steps" :response="selectedResponse.response" />
@@ -38,17 +46,18 @@
 <script setup lang="ts">
 import { type FormState } from '@/types';
 import { computed, defineProps, ref } from 'vue';
-import { getFormResponses } from '@/api/wpAjaxApi';
+import { deleteFormResponse, getFormResponses } from '@/api/wpAjaxApi';
 import { onMounted, inject } from 'vue';
 import ResponseContent from './ResponseContent.vue';
 import EmptyState from '../UI/Illustrations/EmptyState.vue';
+import { Button, useToast } from 'primevue';
 
 type Props = {
     formState: FormState;
 }
 
 type FormResponse = {
-    id: string;
+    id: number;
     response: Record<string, any>;
     submittedAt: Date
 }
@@ -61,7 +70,9 @@ const nonce = inject('nonce') as string | undefined;
 
 const responses = ref<FormResponse[]>([]);
 
-const selectedResponseId = ref<string | null>(null);
+const selectedResponseId = ref<number | null>(null);
+
+const toast = useToast();
 
 const selectedResponse = computed(() => {
     return responses.value.find(res => res.id === selectedResponseId.value) || null;
@@ -75,7 +86,7 @@ onMounted(async () => {
     // Fetch form responses using the provided formId
     try {
         const res = await getFormResponses(endpoint, nonce, formId);
-        responses.value = res.data.map(((r: { response: string; id: string, submitted_at: string }) => {
+        responses.value = res.data.map(((r: { response: string; id: number, submitted_at: string }) => {
             return {
                 id: r.id,
                 response: JSON.parse(r.response), // Assuming response is a JSON string
@@ -86,6 +97,30 @@ onMounted(async () => {
         console.error("Error fetching form responses:", error);
     }
 });
+
+
+async function deleteResponse(responseId: number) {
+    if (!endpoint || !nonce || !formId) {
+        console.error("API endpoint, nonce, or form ID not provided");
+        return;
+    }
+    if (!confirm("Sind Sie sicher, dass Sie diese Anfrage löschen möchten?")) {
+        return;
+    }
+    try {
+        const res = await deleteFormResponse(endpoint, nonce, formId, responseId);
+        if (res.success) {
+            responses.value = responses.value.filter(r => r.id !== responseId);
+            selectedResponseId.value = null;
+            toast.add({ severity: 'success', summary: 'Erfolg', detail: 'Antwort erfolgreich gelöscht.' });
+        } else {
+            throw new Error(res.data.message || "Failed to delete response");
+        }
+    } catch (error) {
+        console.error("Error deleting response:", error);
+        toast.add({ severity: 'error', summary: 'Fehler', detail: 'Antwort konnte nicht gelöscht werden.' });
+    }
+}
 
 </script>
 

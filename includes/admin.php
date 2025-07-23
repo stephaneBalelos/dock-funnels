@@ -118,7 +118,7 @@ class DockFunnels_Admin
                 <td>{$form['name']}</td>
                 <td>
                     <a href='" . admin_url("admin.php?page=dock-funnels-responses&form_id={$form['id']}") . "' class='button'>
-                    Antworten anzeigen</a>
+                    Antworten anzeigen ({$form['response_count']})</a>
                 </td>
                 </tr>";
             }

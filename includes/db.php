@@ -87,6 +87,30 @@ class DockFunnels_DB {
                 'response' => wp_json_encode($response),
             ]
         );
-        return $wpdb->insert_id;
+        // Chech if the insert was successful
+        if ($wpdb->insert_id) {
+            // Increment the response count for the form
+            $wpdb->query($wpdb->prepare(
+                "UPDATE {$wpdb->prefix}dock_funnels SET response_count = response_count + 1 WHERE id = %d",
+                $form_id
+            ));
+            return $wpdb->insert_id;
+        }
+        return false;
+    }
+
+    public static function delete_form_response($form_id, $response_id) {
+        global $wpdb;
+        $result = $wpdb->delete($wpdb->prefix . 'dock_funnel_responses', ['id' => $response_id]);
+
+        if ($result) {
+            // Decrement the response count for the associated form
+            $wpdb->query($wpdb->prepare(
+                "UPDATE {$wpdb->prefix}dock_funnels SET response_count = response_count - 1 WHERE id = %d",
+                $form_id
+            ));
+        }
+
+        return $result;
     }
 }

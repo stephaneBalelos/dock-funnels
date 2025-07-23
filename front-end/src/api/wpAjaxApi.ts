@@ -71,7 +71,6 @@ export const deleteForm = async (endpoint: string, nonce: string, formId: number
     }
 }
 
-
 export const getFormById = async (endpoint: string, nonce: string, formId: number) => {
     try {
         const response = await fetch(`${endpoint}?action=dock_funnel_ajax_get_form`, {
@@ -116,6 +115,32 @@ export const getFormResponses = async (endpoint: string, nonce: string, formId: 
         return await response.json();
     } catch (error) {
         console.error('Error fetching form responses:', error);
+        throw error;
+    }
+}
+
+export const deleteFormResponse = async (endpoint: string, nonce: string, form_id: number, responseId: number) => {
+    try {
+        const response = await fetch(`${endpoint}?action=dock_funnel_ajax_delete_form_response`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-WP-Nonce': nonce,
+            },
+            body: JSON.stringify({
+                form_id: form_id,
+                response_id: responseId,
+                nonce: nonce,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        console.log("Delete response response:", response);
+        return await response.json();
+    } catch (error) {
+        console.error('Error deleting form response:', error);
         throw error;
     }
 }
