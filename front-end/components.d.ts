@@ -91,7 +91,6 @@ declare module 'vue' {
     Toast: typeof import('primevue/toast')['default']
     ToggleSwitch: typeof import('primevue/toggleswitch')['default']
     Toolbar: typeof import('primevue/toolbar')['default']
-    Tree: typeof import('primevue/tree')['default']
   }
   export interface GlobalDirectives {
     Tooltip: typeof import('primevue/tooltip')['default']
