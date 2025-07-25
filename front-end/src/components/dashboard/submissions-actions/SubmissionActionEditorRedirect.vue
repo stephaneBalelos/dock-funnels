@@ -28,12 +28,21 @@
         >
       </div>
       <div class="flex items-center gap-2">
-        <ToggleSwitch 
+        <ToggleSwitch
           id="open_in_new_tab"
-          name="open_in_new_tab"></ToggleSwitch>
+          name="open_in_new_tab"
+        ></ToggleSwitch>
         <label for="open_in_new_tab">In neuem Tab öffnen</label>
       </div>
-      <Button type="submit" severity="secondary" label="Speichern" />
+      <div class="flex gap-4">
+        <Button type="submit" severity="secondary" label="Speichern" />
+        <Button
+          @click.prevent="editorStore.removeSubmissionAction(props.actionIndex)"
+          severity="danger"
+          variant="text"
+          label="Löschen"
+        />
+      </div>
     </Form>
     <Message v-else severity="info" size="small" variant="simple">
       Diese Aktion ist nicht für eine Weiterleitung konfiguriert.
@@ -58,14 +67,14 @@ const props = defineProps<Props>();
 
 const editorStore = useEditorStore();
 const initialValues = ref<FormOnSubmitActionRedirect>({
-    type: "redirect",
-    url: "",
-    open_in_new_tab: false,
+  type: "redirect",
+  url: "",
+  open_in_new_tab: false,
 });
 
 const schema = z.object({
   url: z.string().url({ message: "Geben Sie eine gültige URL ein." }),
-    open_in_new_tab: z.boolean().default(false),
+  open_in_new_tab: z.boolean().default(false),
 });
 
 type Schema = z.infer<typeof schema>;
@@ -88,7 +97,6 @@ onMounted(() => {
 
 const onFormSubmit = async (e: FormSubmitEvent<Schema>) => {
   const formData = e.values;
-
 
   if (!e.valid) {
     return;

@@ -76,7 +76,15 @@
         >{{ $form.body.error?.message }}</Message
       >
     </div>
-    <Button type="submit" severity="secondary" label="Speichern" />
+    <div class="flex gap-4">
+      <Button type="submit" severity="secondary" label="Speichern" />
+      <Button
+        @click.prevent="editorStore.removeSubmissionAction(props.actionIndex)"
+        severity="danger"
+        variant="text"
+        label="Löschen"
+      />
+    </div>
   </Form>
 </template>
 

@@ -37,10 +37,14 @@
           v-else
           class="mt-8 flex flex-col items-center py-8 bg-surface-50 rounded-lg"
         >
-          <h3 class="text-surface-600 text-lg font-semibold">
+          <h3 v-if="isFormDesignPreview" class="text-surface-600 text-lg font-semibold">
+            Dieser Schritt enthält keine Felder oder ist leer auf Grund des eingestellten Bedingungs.
+          </h3>
+          <h3 v-else class="text-surface-600 text-lg font-semibold">
             Dieser Schritt können Sie überspringen.
           </h3>
           <DockButton
+            v-if="!isFormDesignPreview && submissionStateStore.progressPercentage.value < 100"
             class="mt-4"
             @click="submissionStateStore.nextStep"
           >Weiter</DockButton>
@@ -52,9 +56,11 @@
 
 <script setup lang="ts">
 import { useFormSubmissionStateStore } from "@/forms/stores/submission.store";
-import { computed, ref, watch } from "vue";
+import { computed, inject, ref, watch } from "vue";
 import FormFieldsRoot from "./FormFieldsRoot.vue";
 import DockButton from "./UI/DockButton.vue";
+
+const isFormDesignPreview = inject("isFormDesignPreview", false);
 
 const submissionStateStore = useFormSubmissionStateStore();
 const currentStep = computed(() => {

@@ -8,6 +8,9 @@
       v-else-if="action.type === 'redirect'"
       :action-index="props.actionIndex"
     />
+    <div v-else class="text-gray-500 flex items-center justify-center h-full">
+      <p>Keine Aktion ausgewählt oder nicht implementiert.</p>
+    </div>
   </div>
   <div v-else class="text-gray-500 flex items-center justify-center h-full">
     <p>Keine Aktion ausgewählt oder nicht implementiert.</p>
@@ -21,14 +24,14 @@ import { useEditorStore } from "@/dashboard/editor.store";
 import { computed } from "vue";
 
 type Props = {
-    actionIndex: number;
+  actionIndex: number;
 };
 
 const props = defineProps<Props>();
 const editStore = useEditorStore();
 
 const action = computed(() => {
-    return editStore.form.form_settings.onSubmitAction[props.actionIndex];
+  return editStore.form.form_settings.onSubmitAction[props.actionIndex];
 });
 </script>
 

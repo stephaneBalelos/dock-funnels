@@ -14,7 +14,6 @@ import ImportExportDialog from "@/components/dashboard/header/ImportExportDialog
 import SubmissionsActions from "@/components/dashboard/submissions-actions/SubmissionsActions.vue";
 import FormDesignPreview from "@/components/dashboard/preview/FormDesignPreview.vue";
 import EditorLoader from "@/components/dashboard/UI/Loaders/EditorLoader.vue";
-import ErrorPanel from "@/components/dashboard/footer/ErrorPanel.vue";
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
 
