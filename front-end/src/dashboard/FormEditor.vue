@@ -74,7 +74,7 @@ onMounted(() => {
           <Badge severity="secondary"> Wird gespeichert </Badge>
         </div>
         <Button
-          v-if="editorStore.form"
+          v-if="editorStore.form && !editorStore.editorState.value.isSaving"
           @click="editorStore.saveFormState"
           size="small"
           severity="secondary"
@@ -82,7 +82,7 @@ onMounted(() => {
           :loading="editorStore.editorState.value.isSaving"
         >
           <Icon icon="heroicons:arrow-down-tray" class="mr-2" />
-          Speichern
+          {{ editFormId ? 'Speichern' : 'Erstellen' }}
         </Button>
       </div>
     </div>

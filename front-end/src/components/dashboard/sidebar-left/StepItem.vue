@@ -16,6 +16,8 @@
     </div>
   </template>
     <template #content>
+      <Badge v-if="editorStore.getFieldsByStepIndex(props.stepIndex).length === 0"
+        value="Diese Schritt hat keine Felder!" severity="warn" size="small" class="mb-2"></Badge>
       <div v-if="isEditing">
         <Form
           v-slot="$form"
