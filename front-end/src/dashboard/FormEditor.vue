@@ -151,7 +151,7 @@ onMounted(() => {
       <SubmissionsActions />
     </div>
     <div class="footer">
-      <!-- <ErrorPanel /> -->
+      <ErrorPanel />
     </div>
     <Toast position="top-center" />
     <EditorLoader />

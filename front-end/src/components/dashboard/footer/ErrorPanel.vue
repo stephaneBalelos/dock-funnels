@@ -26,8 +26,11 @@
         </div>
     </template>
     <div v-if="hasErrors">
-        {{ editorStore.editorState.value.errors || 'Keine spezifischen Fehler gefunden.' }}
-        <Tree :value="errors" class="w-full p-0"></Tree>
+      <div v-if="editorStore.editorState.value.errors">
+        <div v-if="editorStore.editorState.value.errors.form_fields">
+          <FormFieldsErrors :errors="editorStore.editorState.value.errors.form_fields" />
+        </div>
+      </div>
     </div>
   </Panel>
 </template>
@@ -36,7 +39,7 @@
 import { Icon } from '@iconify/vue';
 import { useEditorStore } from '@/dashboard/editor.store';
 import { computed } from 'vue';
-import type { TreeNode } from 'primevue/treenode';
+import FormFieldsErrors from './ErrorGroups/FormFieldsErrors.vue';
 
 
 const editorStore = useEditorStore();
@@ -45,21 +48,6 @@ const hasErrors = computed(() => {
   return editorStore.editorState.value.errors != null
 });
 
-const errors = computed<TreeNode[]>(() => {
-  const errorMap = editorStore.editorState.value.errors;
-  if (!errorMap) return [];
-
-  return Object.entries(errorMap).map(([key, value]) => ({
-    key,
-    label: key,
-    data: value,
-    children: Array.isArray(value) ? value.map((item, index) => ({
-      key: `${key}-${index}`,
-      label: Object.values(item).join(', '),
-      data: item
-    })) : []
-  }));
-});
 </script>
 
 <style scoped></style>
