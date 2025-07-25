@@ -48,7 +48,7 @@ class DockFunnels_Admin
             'Form Editor',
             'manage_options',
             'dock-funnels-editor',
-            [__CLASS__, 'render_create_form_page']
+            [__CLASS__, 'render_form_editor_page']
         );
     }
 
@@ -61,8 +61,12 @@ class DockFunnels_Admin
         if (isset($_GET['form_id']) && is_numeric($_GET['form_id'])) {
             $form_id = intval($_GET['form_id']);
             $form = DockFunnels_DB::get_form_by_id($form_id);
+            print_r($form);
             if ($form) {
                 echo '<div id="dock-funnels-editor" class="dock-funnels-root"></div></div>';
+                return;
+            } else {
+                echo '<div class="wrap"><h1>Form Not Found</h1><p>The requested form does not exist.</p></div>';
                 return;
             }
         } else {
@@ -122,10 +126,24 @@ class DockFunnels_Admin
         }
     }
 
-    public static function render_create_form_page()
+    public static function render_form_editor_page()
     {
         if (!current_user_can('manage_options')) {
             return;
+        }
+        if (isset($_GET['form_id']) && is_numeric($_GET['form_id'])) {
+            $form_id = intval($_GET['form_id']);
+            $form = DockFunnels_DB::get_form_by_id($form_id);
+            if (!$form) {
+                echo '<div class="wrap"><h1>Formular nicht gefunden</h1><p>
+                Das Formular mit der ID <b>"' . $form_id . '"</b> wurde nicht gefunden. Bitte erstellen Sie ein neues Formular.
+                <br><br>
+                <a href="' . admin_url('admin.php?page=dock-funnels-editor') . '" class="button">Neues Formular erstellen</a>
+                </p></div>';
+                return;
+            }
+        } else {
+            $form = null; // No form selected, create a new one
         }
         echo '<div id="dock-funnels-editor" class="dock-funnels-root"></div>';
     }

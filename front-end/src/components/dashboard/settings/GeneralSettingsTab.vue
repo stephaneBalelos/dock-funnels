@@ -132,7 +132,10 @@ const deleteForm = async () => {
   try {
     editorStore.editorState.value.isLoading = true; // Set loading state
     const res = await editorStore.formDelete();
-    console.log("Form deleted:", res);
+    // Redirect to the dashboard or handle the response as needed
+    if (res.success) {
+      window.location.href = `/wp-admin/admin.php?page=dock-funnels`;
+    }
   } catch (error) {
     console.error("Error deleting form:", error);
     toast.add({
