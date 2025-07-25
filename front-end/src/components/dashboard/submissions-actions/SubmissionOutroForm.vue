@@ -105,7 +105,7 @@ const schema = z.object({
   title: z.string().min(1, "Titel ist erforderlich"),
   description: z.string().optional(),
   button_text: z.string().optional(),
-  button_url: z.string().url("Ungültige URL").optional(),
+  button_url: z.string().optional(),
 });
 type Schema = z.infer<typeof schema>;
 
@@ -116,10 +116,11 @@ const editorStore = useEditorStore();
 onMounted(() => {
   if (!editorStore.form.outro_settings) {
     editorStore.form.outro_settings = {
-      title: "Dein Formular wurde erfolgreich gesendet!",
-      description: "Wir haben Ihre Informationen erhalten und werden uns in Kürze bei Ihnen melden.",
-      button_text: "Zurück zur Startseite",
-      button_url: "/",
+      title: "Vielen Dank für Ihre Teilnahme!",
+      description:
+        "Wir haben Ihre Informationen erhalten und werden uns in Kürze bei Ihnen melden.",
+      button_text: "Neu Laden",
+      button_url: "",
     };
   }
   initialValues.value = {
@@ -143,11 +144,6 @@ const onFormSubmit = async (event: FormSubmitEvent<Schema>) => {
   editorStore.form.outro_settings = formData;
   try {
     await editorStore.saveFormState();
-    toast.add({
-      severity: "success",
-      summary: "Erfolg",
-      detail: "Einstellungen gespeichert",
-    });
   } catch (error) {
     if (error instanceof z.ZodError) {
       error.errors.forEach((err) => {

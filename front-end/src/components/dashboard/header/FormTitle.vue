@@ -5,7 +5,7 @@
       {{ editorStore.form.title }}
     </p>
     <Badge v-if="editFormId" :value="`Formular ID: ${editFormId}`" size="small"></Badge>
-    <Badge v-else severity="secondary" size="small">Neues Formular</Badge>
+    <Badge v-else severity="success" size="small">Neues Formular</Badge>
   </div>
 </template>
 
