@@ -13,6 +13,7 @@ import SettingsDialog from "@/components/dashboard/settings/SettingsDialog.vue";
 import ImportExportDialog from "@/components/dashboard/header/ImportExportDialog.vue";
 import SubmissionsActions from "@/components/dashboard/submissions-actions/SubmissionsActions.vue";
 import FormDesignPreview from "@/components/dashboard/preview/FormDesignPreview.vue";
+import EditorLoader from "@/components/dashboard/UI/Loaders/EditorLoader.vue";
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
 
@@ -31,6 +32,7 @@ onMounted(() => {
   editorStore.apiSettings.value.endpoint = endpoint;
   editorStore.apiSettings.value.nonce = nonce;
   if (editFormId) {
+    editorStore.editorState.value.isLoading = true; // Set loading state
     editorStore.apiSettings.value.editFormId = editFormId;
     getFormById(endpoint, nonce, editFormId)
       .then(({ data }) => {
@@ -47,7 +49,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="h-lvh app-container pb-16">
+  <div class="h-lvh app-container pb-16 relative">
     <div class="header flex justify-between items-center p-4 shadow">
       <div class="flex items-center gap-4">
         <FormTitle v-if="editorStore.form.title" />
@@ -149,6 +151,7 @@ onMounted(() => {
       <SubmissionsActions />
     </div>
     <Toast position="top-center" />
+    <EditorLoader />
   </div>
 </template>
 

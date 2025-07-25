@@ -45,6 +45,8 @@ class DockFunnels_DB {
         global $wpdb;
         $table_name = $wpdb->prefix . 'dock_funnels';
 
+        $wpdb->hide_errors();
+
         $wpdb->update(
             $table_name,
             [
@@ -56,7 +58,16 @@ class DockFunnels_DB {
             ['id' => $id]
         );
 
-        return $wpdb->rows_affected > 0;
+        // Restore error display
+        $wpdb->show_errors();
+
+        return [
+            'success' => $wpdb->last_error ? false : true,
+            'data' => [
+                'rows_affected' => $wpdb->rows_affected,
+                'form_id' => $id,
+            ],
+        ];
     }
 
     public static function delete_form($id) {

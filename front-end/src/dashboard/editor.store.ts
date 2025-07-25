@@ -119,7 +119,7 @@ export const useEditorStore = createGlobalState(() => {
     }
 
     const initEditor = (initialForm?: FormState) => {
-        console.log('Initializing editor with form:', initialForm)
+        editorState.value.isLoading = true // Set loading state
         Object.assign(form, initialForm || {
             id: 0,
             title: 'Mein Dock Funnel Formular',
@@ -129,8 +129,8 @@ export const useEditorStore = createGlobalState(() => {
             outro_settings: {
                 title: 'Vielen Dank für Ihre Teilnahme!',
                 description: 'Wir haben Ihre Informationen erhalten und werden uns in Kürze bei Ihnen melden.',
-                button_text: 'Zurück zur Startseite',
-                button_url: '/'
+                button_text: 'Neu Laden',
+                button_url: ''
             }
         })
         if (form.form_steps.length === 0) {
@@ -140,6 +140,7 @@ export const useEditorStore = createGlobalState(() => {
             setSelectedStepIndex(0) // Select the first step by default
         }
         updateEditorThemePreset() // Initialize the theme preset based on the form settings
+        editorState.value.isLoading = false // Reset loading state
     }
 
     const addStep = () => {
@@ -572,6 +573,7 @@ export const useEditorStore = createGlobalState(() => {
                 throw new Error("Endpoint or nonce not provided");
             }
             if (!editFormId) {
+                editorState.value.isLoading = true; // Set loading state
                 const response = await createForm(endpoint, nonce, JSON.stringify(formState));
                 if (!response.success) {
                     console.error('Error creating form:', response.data);
@@ -587,11 +589,13 @@ export const useEditorStore = createGlobalState(() => {
                 // Redirect to the edit page with the new form ID
                 window.location.href = `/wp-admin/admin.php?page=dock-funnels-editor&form_id=${response.data.form_id}`;
             } else {
-                console.log(formState)
                 const response = await updateForm(endpoint, nonce, editFormId, JSON.stringify(formState));
                 if (!response.success) {
-                    console.error('Error updating form:', response.data);
-                    throw new Error(`Error updating form: ${response.data}`);
+                    if (response.data && response.data.errors) {
+                        // Validation Errors
+                        console.error('Validation errors:', response.data.errors);
+                    }
+                    throw new Error(`Error updating form: ${response.data.message || 'Unknown error'}`);
                 }
                 console.log('Form updated successfully:', response.data);
                 toast.add({

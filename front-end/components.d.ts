@@ -25,6 +25,7 @@ declare module 'vue' {
     DockFunnelTextInput: typeof import('./src/components/forms/FormFields/Inputs/DockFunnelTextInput.vue')['default']
     DockProgressBar: typeof import('./src/components/forms/UI/DockProgressBar.vue')['default']
     Editor: typeof import('primevue/editor')['default']
+    EditorLoader: typeof import('./src/components/dashboard/UI/Loaders/EditorLoader.vue')['default']
     EmptyState: typeof import('./src/components/dashboard/UI/Illustrations/EmptyState.vue')['default']
     FieldChecklistEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldChecklistEditor.vue')['default']
     FieldDependencyInput: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldDependencyInput.vue')['default']

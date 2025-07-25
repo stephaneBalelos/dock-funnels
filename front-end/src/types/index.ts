@@ -169,3 +169,9 @@ export type FormSubmissionField = {
     value: string | string[] | null; // Value(s) submitted for the field
     step_index: number
 }
+
+
+export type FormExportData = {
+    form_steps: FormState['form_steps']
+    form_fields: FormState['form_fields']
+};
