@@ -4,16 +4,20 @@
       <Icon icon="heroicons:document-text" class="inline mr-2" />
       {{ editorStore.form.title }}
     </p>
+    <Badge v-if="editFormId" :value="`Formular ID: ${editFormId}`" size="small"></Badge>
+    <Badge v-else severity="secondary" size="small">Neues Formular</Badge>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useEditorStore } from "@/dashboard/editor.store";
 import { Icon } from "@iconify/vue";
-import { onMounted, ref } from "vue";
+import { inject, onMounted, ref } from "vue";
 import z from "zod";
 
 const editorStore = useEditorStore();
+const editFormId = inject("editFormId") as number | undefined;
+
 
 const schema = z.object({
   title: z.string().min(1, "Titel ist erforderlich"),

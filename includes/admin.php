@@ -44,8 +44,8 @@ class DockFunnels_Admin
 
         add_submenu_page(
             'dock-funnels',
-            'Create Form',
-            'Create Form',
+            'Form Editor',
+            'Form Editor',
             'manage_options',
             'dock-funnels-editor',
             [__CLASS__, 'render_create_form_page']
