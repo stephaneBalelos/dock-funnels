@@ -27,6 +27,7 @@ declare module 'vue' {
     Editor: typeof import('primevue/editor')['default']
     EditorLoader: typeof import('./src/components/dashboard/UI/Loaders/EditorLoader.vue')['default']
     EmptyState: typeof import('./src/components/dashboard/UI/Illustrations/EmptyState.vue')['default']
+    ErrorPanel: typeof import('./src/components/dashboard/footer/ErrorPanel.vue')['default']
     FieldChecklistEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldChecklistEditor.vue')['default']
     FieldDependencyInput: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/FieldDependencyInput.vue')['default']
     FieldEditor: typeof import('./src/components/dashboard/sidebar-right/FieldEditor.vue')['default']
@@ -62,6 +63,7 @@ declare module 'vue' {
     NotificationsSettingsTab: typeof import('./src/components/dashboard/settings/NotificationsSettingsTab.vue')['default']
     OptionCheckboxBox: typeof import('./src/components/forms/FormFields/Inputs/OptionCheckboxBox.vue')['default']
     OptionSelectBox: typeof import('./src/components/forms/FormFields/Inputs/OptionSelectBox.vue')['default']
+    Panel: typeof import('primevue/panel')['default']
     ResponseContent: typeof import('./src/components/dashboard/responses/ResponseContent.vue')['default']
     ResponsesContainer: typeof import('./src/components/dashboard/responses/ResponsesContainer.vue')['default']
     Select: typeof import('primevue/select')['default']
@@ -86,6 +88,7 @@ declare module 'vue' {
     Toast: typeof import('primevue/toast')['default']
     ToggleSwitch: typeof import('primevue/toggleswitch')['default']
     Toolbar: typeof import('primevue/toolbar')['default']
+    Tree: typeof import('primevue/tree')['default']
   }
   export interface GlobalDirectives {
     Tooltip: typeof import('primevue/tooltip')['default']

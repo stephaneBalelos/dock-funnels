@@ -169,7 +169,6 @@ const cancelEdit = () => {
 
 const onFormSubmit = (form: FormSubmitEvent<FormStep>) => {
   // Handle form submission if needed
-  console.log("Form submitted:", form.values.title);
   state.value.title = form.values.title;
   state.value.description = form.values.description;
   // Update the step with the new values

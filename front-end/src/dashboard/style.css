@@ -39,6 +39,13 @@ body {
   background-color: #ffffff;
 }
 
+.app-container > .footer {
+  grid-column: 1 / -1;
+  padding: 0.5rem 1rem;
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+}
+
 .main-content {
   display: flex;
   flex-direction: row;
@@ -63,3 +70,5 @@ body {
   padding: 1rem;
   background-color: #ffffff;
 }
+
+

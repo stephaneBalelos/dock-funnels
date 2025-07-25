@@ -9,7 +9,7 @@ type EditorState = {
     editorMode: 'edit' | 'preview' | 'submission-actions', // 'edit',
     isLoading: boolean,
     isSaving: boolean,
-    error: string | null
+    errors: Record<string, any> | null
 }
 
 export const useEditorStore = createGlobalState(() => {
@@ -25,7 +25,7 @@ export const useEditorStore = createGlobalState(() => {
         editorMode: 'edit', // 'edit', 'preview', flow
         isLoading: false,
         isSaving: false,
-        error: null as string | null
+        errors: null as Record<string, any> | null
     })
     const form = reactive<FormState>({
         title: '',
@@ -594,10 +594,12 @@ export const useEditorStore = createGlobalState(() => {
                     if (response.data && response.data.errors) {
                         // Validation Errors
                         console.error('Validation errors:', response.data.errors);
+                        editorState.value.errors = response.data.errors as Record<string, any>;
                     }
                     throw new Error(`Error updating form: ${response.data.message || 'Unknown error'}`);
                 }
-                console.log('Form updated successfully:', response.data);
+                // Clear any previous errors
+                editorState.value.errors = null;
                 toast.add({
                     severity: 'success',
                     summary: 'Formular gespeichert',
