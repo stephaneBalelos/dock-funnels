@@ -12,6 +12,7 @@ class DockFunnels_Main
 
         add_action('init', ['DockFunnels_Main', 'register_shortcode']);
         add_action('admin_menu', ['DockFunnels_Admin', 'register_admin_menu']);
+        add_action('admin_init', ['DockFunnels_Admin', 'register_plugin_settings']);
 
         add_action('wp_ajax_dock_funnel_ajax_create_form', ['DockFunnels_Ajax', 'create_form']);
         add_action('wp_ajax_dock_funnel_ajax_get_form', ['DockFunnels_Ajax', 'get_form_by_id']);

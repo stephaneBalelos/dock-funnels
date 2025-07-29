@@ -10,8 +10,8 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
-class DockFunnels_Mailing {
-
+class DockFunnels_Mailing
+{
     /**
      * Sends an email to a specified recipient.
      *
@@ -21,12 +21,34 @@ class DockFunnels_Mailing {
      * @param array $headers Optional. Additional headers for the email.
      * @return bool True on success, false on failure.
      */
-    public static function send_email($to, $subject, $message, $headers = []) {
-        return wp_mail($to, $subject, $message, $headers);
+    public static function send_email($to, $subject, $message, $headers = [])
+    {
+        $result = false;
+        $options = get_option('dock_funnels_options');
+        if (!empty($options['smtp_host']) && !empty($options['smtp_username']) && !empty($options['smtp_password'])) {
+            // Backup current PHPMailer init
+            remove_action('phpmailer_init', 'wp_phpmailer_init'); // Prevent WordPress from overriding again
+
+            add_action('phpmailer_init', [__CLASS__, 'dock_funnels_configure_phpmailer']);
+
+            $result = wp_mail($to, $subject, $message, $headers);
+
+            // Remove your hook to prevent affecting other plugins
+            remove_action('phpmailer_init', [__CLASS__, 'dock_funnels_configure_phpmailer']);
+
+            // Restore default PHPMailer config
+            add_action('phpmailer_init', 'wp_phpmailer_init');
+        } else {
+            // Fallback to default WordPress mail function
+            $result = wp_mail($to, $subject, $message, $headers);
+        }
+
+        return $result;
     }
 
     // Additional mailing methods can be added here
-    public static function send_notifications_emails($form, $submission) {
+    public static function send_notifications_emails($form, $submission)
+    {
         // Example implementation for sending notification emails
         $form_settings = json_decode($form->form_settings, true);
         $form_notification_settings = isset($form_settings['notifications_settings']) ? $form_settings['notifications_settings'] : [];
@@ -57,7 +79,8 @@ class DockFunnels_Mailing {
         ]);
     }
 
-    public static function handleOnSubmitActionMail($form, $submission, $action) {
+    public static function handleOnSubmitActionMail($form, $submission, $action)
+    {
         $email_field = $action['email_field'] ?? '';
         if (empty($email_field)) {
             return false; // No email field specified
@@ -83,7 +106,8 @@ class DockFunnels_Mailing {
     }
 
 
-    private static function get_submission_html($form, $submission_fields) {
+    private static function get_submission_html($form, $submission_fields)
+    {
         // Generate HTML for the submission data
         $form_data = json_decode($form->form_data, true);
         $form_steps = isset($form_data['form_steps']) ? $form_data['form_steps'] : [];
@@ -131,12 +155,28 @@ class DockFunnels_Mailing {
                     $field_value = implode(', ', $field_value); // Handle multi-select fields
                 }
 
-                
+
                 $html .= '<p><strong>' . esc_html($field['label']) . ':</strong> ' . esc_html($field_value) . '</p>';
             }
         }
         return $html;
     }
+
+    public static function dock_funnels_configure_phpmailer($phpmailer)
+    {
+        $options = get_option('dock_funnels_options');
+        if (empty($options['smtp_host']) || empty($options['smtp_username']) || empty($options['smtp_password'])) {
+            return; // No SMTP settings configured, use default WordPress mail function
+        }
+        // Custom SMTP config
+        $phpmailer->isSMTP();
+        $phpmailer->Host       = $options['smtp_host'];
+        $phpmailer->SMTPAuth   = true;
+        $phpmailer->Port       = !empty($options['smtp_port']) ? $options['smtp_port'] : 587;
+        $phpmailer->Username   = $options['smtp_username'];
+        $phpmailer->Password   = $options['smtp_password'];
+        $phpmailer->SMTPSecure = !empty($options['smtp_secure']) ? $options['smtp_secure'] : 'tls'; // or 'ssl'
+        $phpmailer->From       = !empty($options['from_email']) ? $options['from_email'] : 'your@email.com';
+        $phpmailer->FromName   = !empty($options['from_name']) ? $options['from_name'] : 'Your Name or Plugin Name';
+    }
 }
-
-

@@ -68,7 +68,7 @@ class DockFunnels_Ajax
         }
 
         // Send Response Per Mail
-        DockFunnels_Mailing::send_notifications_emails($form, $validation_result['data']);
+        $mail_sent = DockFunnels_Mailing::send_notifications_emails($form, $validation_result['data']);
 
         // Run Form On Submit Actions
         $form_settings = json_decode($form->form_settings, true);
@@ -92,6 +92,7 @@ class DockFunnels_Ajax
             'message' => 'success',
             'submission_id' => $submission_id,
             'data' => $validation_result['data'],
+            'mail_sent' => $mail_sent,
         ];
 
         if (!empty($redirect_url)) {

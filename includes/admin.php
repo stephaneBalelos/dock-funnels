@@ -50,6 +50,29 @@ class DockFunnels_Admin
             'dock-funnels-editor',
             [__CLASS__, 'render_form_editor_page']
         );
+
+        // Register settings page
+        add_options_page(
+            'Dock Funnels Settings',
+            'Dock Funnels Settings',
+            'manage_options',
+            'dock-funnels-settings',
+            [__CLASS__, 'render_settings_page']
+        );
+    }
+
+    public static function register_plugin_settings()
+    {
+        register_setting('dock_funnels_options_group', 'dock_funnels_options');
+
+        add_settings_section('dock_funnels_smtp_section', 'SMTP Settings', null, 'dock-funnels');
+        add_settings_field('dock_funnels_smtp_host', 'SMTP Host', [__CLASS__, 'render_smtp_host_field'], 'dock-funnels', 'dock_funnels_smtp_section');
+        add_settings_field('dock_funnels_smtp_port', 'SMTP Port', [__CLASS__, 'render_smtp_port_field'], 'dock-funnels', 'dock_funnels_smtp_section');
+        add_settings_field('dock_funnels_smtp_username', 'SMTP Username', [__CLASS__, 'render_smtp_username_field'], 'dock-funnels', 'dock_funnels_smtp_section');
+        add_settings_field('dock_funnels_smtp_password', 'SMTP Password', [__CLASS__, 'render_smtp_password_field'], 'dock-funnels', 'dock_funnels_smtp_section');
+        add_settings_field('dock_funnels_smtp_secure', 'SMTP Secure', [__CLASS__, 'render_smtp_secure_field'], 'dock-funnels', 'dock_funnels_smtp_section');
+        add_settings_field('dock_funnels_from_email', 'From Email', [__CLASS__, 'render_from_email_field'], 'dock-funnels', 'dock_funnels_smtp_section');
+        add_settings_field('dock_funnels_from_name', 'From Name', [__CLASS__, 'render_from_name_field'], 'dock-funnels', 'dock_funnels_smtp_section');
     }
 
     public static function render_forms_page()
@@ -171,5 +194,72 @@ class DockFunnels_Admin
             </tr>";
         }
         echo '</tbody></table>';
+    }
+
+    public static function render_settings_page()
+    {
+        echo '<div class="wrap">';
+        echo '<h1>Dock Funnels Settings</h1>';
+        echo '<form method="post" action="options.php">';
+        settings_fields('dock_funnels_options_group');
+        do_settings_sections('dock-funnels');
+        submit_button();
+        echo '</form>';
+        echo '</div>';
+    }
+
+
+
+    // Option Fields
+    public static function render_smtp_host_field()
+    {
+        $options = get_option('dock_funnels_options');
+        echo '<input type="text" name="dock_funnels_options[smtp_host]" value="' . esc_attr($options['smtp_host'] ?? '') . '" />';
+        echo '<p class="description">Enter your SMTP host for sending emails.</p>';
+    }
+    public static function render_smtp_port_field()
+    {
+        $options = get_option('dock_funnels_options');
+        echo '<input type="number" name="dock_funnels_options[smtp_port]" value="' . esc_attr($options['smtp_port'] ?? '') . '" />';
+        echo '<p class="description">Enter your SMTP port (usually 587 for TLS or 465 for SSL).</p>';
+    }
+    public static function render_smtp_username_field()
+    {
+        $options = get_option('dock_funnels_options');
+        echo '<input type="text" name="dock_funnels_options[smtp_username]" value="' . esc_attr($options['smtp_username'] ?? '') . '" />';
+        echo '<p class="description">Enter your SMTP username.</p>';
+    }
+    public static function render_smtp_password_field()
+    {
+        $options = get_option('dock_funnels_options');
+        echo '<input type="password" name="dock_funnels_options[smtp_password]" value="' . esc_attr($options['smtp_password'] ?? '') . '" />';
+        echo '<p class="description">Enter your SMTP password.</p>';
+    }
+
+    public static function render_smtp_secure_field()
+    {
+        $options = get_option('dock_funnels_options');
+        $secure_options = ['tls' => 'TLS', 'ssl' => 'SSL'];
+        echo '<select name="dock_funnels_options[smtp_secure]">';
+        foreach ($secure_options as $value => $label) {
+            $selected = (isset($options['smtp_secure']) && $options['smtp_secure'] === $value) ? 'selected' : '';
+            echo "<option value='$value' $selected>$label</option>";
+        }
+        echo '</select>';
+        echo '<p class="description">Select the SMTP secure protocol.</p>';
+    }
+
+    public static function render_from_email_field()
+    {
+        $options = get_option('dock_funnels_options');
+        echo '<input type="email" name="dock_funnels_options[from_email]" value="' . esc_attr($options['from_email'] ?? '') . '" />';
+        echo '<p class="description">Enter the email address that will be used as the sender.</p>';
+    }
+
+    public static function render_from_name_field()
+    {
+        $options = get_option('dock_funnels_options');
+        echo '<input type="text" name="dock_funnels_options[from_name]" value="' . esc_attr($options['from_name'] ?? '') . '" />';
+        echo '<p class="description">Enter the name that will be used as the sender.</p>';
     }
 }
