@@ -13,6 +13,7 @@ class DockFunnels_Main
         add_action('init', ['DockFunnels_Main', 'register_shortcode']);
         add_action('admin_menu', ['DockFunnels_Admin', 'register_admin_menu']);
         add_action('admin_init', ['DockFunnels_Admin', 'register_plugin_settings']);
+        add_action('admin_notices', ['DockFunnels_Admin', 'dock_funnels_admin_notice_key']);
 
         add_action('wp_ajax_dock_funnel_ajax_create_form', ['DockFunnels_Ajax', 'create_form']);
         add_action('wp_ajax_dock_funnel_ajax_get_form', ['DockFunnels_Ajax', 'get_form_by_id']);
@@ -67,6 +68,24 @@ class DockFunnels_Main
         dbDelta($sql_forms);
         dbDelta($sql_responses);
 
+        // Generate and save encryption key in wp-config.php
+        if (!defined('DOCK_FUNNELS_ENCRYPTION_KEY')) {
+            $encryption_key = wp_generate_password(32, false);
+            $config_path = ABSPATH . 'wp-config.php';
+
+            if (is_writable($config_path)) {
+                $config_contents = file_get_contents($config_path);
+
+                // Insert before the line that says "That's all, stop editing!"
+                $insert_line = "define( 'DOCK_FUNNELS_ENCRYPTION_KEY', '$encryption_key' );\n";
+                $pattern = "/(\/\* That's all, stop editing! Happy publishing. \*\/)/";
+
+                if (preg_match($pattern, $config_contents)) {
+                    $updated_contents = preg_replace($pattern, $insert_line . "\n$1", $config_contents);
+                    file_put_contents($config_path, $updated_contents);
+                }
+            }
+        }
     }
 
     public static function deactivate()
@@ -86,5 +105,30 @@ class DockFunnels_Main
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_steps");
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_fields");
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnels");
+    }
+
+    public static function dock_funnels_encrypt($data)
+    {
+        if (defined('DOCK_FUNNELS_ENCRYPTION_KEY')) {
+            $key = hash('sha256', constant("DOCK_FUNNELS_ENCRYPTION_KEY"));
+            $iv = openssl_random_pseudo_bytes(16);
+            $encrypted = openssl_encrypt($data, 'AES-256-CBC', $key, 0, $iv);
+            return base64_encode($iv . $encrypted);
+        } else {
+            return $data; // Return unencrypted data if key is not defined
+        }
+    }
+
+    public static function dock_funnels_decrypt($data)
+    {
+        if (defined('DOCK_FUNNELS_ENCRYPTION_KEY')) {
+            $key = hash('sha256', constant("DOCK_FUNNELS_ENCRYPTION_KEY"));
+            $data = base64_decode($data);
+            $iv = substr($data, 0, 16);
+            $encrypted = substr($data, 16);
+            return openssl_decrypt($encrypted, 'AES-256-CBC', $key, 0, $iv);
+        } else {
+            return $data; // Return unencrypted data if key is not defined
+        }
     }
 }

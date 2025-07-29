@@ -63,7 +63,7 @@ class DockFunnels_Admin
 
     public static function register_plugin_settings()
     {
-        register_setting('dock_funnels_options_group', 'dock_funnels_options');
+        register_setting('dock_funnels_options_group', 'dock_funnels_options', [__CLASS__, 'sanitize_options']);
 
         add_settings_section('dock_funnels_smtp_section', 'SMTP Settings', null, 'dock-funnels');
         add_settings_field('dock_funnels_smtp_host', 'SMTP Host', [__CLASS__, 'render_smtp_host_field'], 'dock-funnels', 'dock_funnels_smtp_section');
@@ -208,6 +208,28 @@ class DockFunnels_Admin
         echo '</div>';
     }
 
+    public static function dock_funnels_admin_notice_key()
+    {
+        if (!defined('DOCK_FUNNELS_ENCRYPTION_KEY')) {
+            echo '<div class="notice notice-error"><p>';
+            echo '⚠️ Please add the following line to your <code>wp-config.php</code>:<br>';
+            echo '<code>define( \'DOCK_FUNNELS_ENCRYPTION_KEY\', \'' . base64_encode(random_bytes(32)) . '\' );</code>';
+            echo '</p></div>';
+        }
+    }
+
+    public static function sanitize_options($options)
+    {
+        $options['smtp_host'] = sanitize_text_field($options['smtp_host'] ?? '');
+        $options['smtp_port'] = intval($options['smtp_port'] ?? 587);
+        $options['smtp_username'] = sanitize_text_field($options['smtp_username'] ?? '');
+        $options['smtp_password'] = DockFunnels_Main::dock_funnels_encrypt(sanitize_text_field($options['smtp_password'] ?? ''));
+        $options['smtp_secure'] = in_array($options['smtp_secure'], ['tls', 'ssl']) ? $options['smtp_secure'] : 'tls';
+        $options['from_email'] = sanitize_email($options['from_email'] ?? get_option('admin_email'));
+        $options['from_name'] = sanitize_text_field($options['from_name'] ?? get_bloginfo('name'));
+
+        return $options;
+    }
 
 
     // Option Fields
