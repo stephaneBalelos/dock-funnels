@@ -36,6 +36,33 @@ class DockFunnels_Main
 
     public static function activate()
     {
+        // Create necessary database tables
+        self::create_tables();
+        // Setup encryption key if not already defined
+        self::setup_encryption_key();
+    }
+
+    public static function deactivate()
+    {
+        global $wpdb;
+
+        // $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_responses");
+        // $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_steps");
+        // $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_fields");
+        // $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnels");
+    }
+    public static function uninstall()
+    {
+        global $wpdb;
+
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_responses");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_steps");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_fields");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnels");
+    }
+
+    public static function create_tables()
+    {
         global $wpdb;
         $charset_collate = $wpdb->get_charset_collate();
 
@@ -61,13 +88,22 @@ class DockFunnels_Main
             form_id mediumint(9) NOT NULL,
             response longtext NOT NULL,
             submitted_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
-            PRIMARY KEY  (id),
-            FOREIGN KEY (form_id) REFERENCES $forms_table(id) ON DELETE CASCADE
+            PRIMARY KEY  (id)
         ) $charset_collate;";
 
         dbDelta($sql_forms);
         dbDelta($sql_responses);
 
+        // Check if the foreign key form_id already exists in the responses table
+        $fk_exists = $wpdb->get_var("SELECT COUNT(*) FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_NAME = '$responses_table' AND CONSTRAINT_NAME = 'fk_form_id'") > 0;
+        if (!$fk_exists) {
+            $wpdb->query("ALTER TABLE $responses_table ADD CONSTRAINT fk_form_id FOREIGN KEY (form_id) REFERENCES $forms_table(id) ON DELETE CASCADE;");
+        }
+
+    }
+
+    public static function setup_encryption_key()
+    {
         // Generate and save encryption key in wp-config.php
         if (!defined('DOCK_FUNNELS_ENCRYPTION_KEY')) {
             $encryption_key = wp_generate_password(32, false);
@@ -86,25 +122,6 @@ class DockFunnels_Main
                 }
             }
         }
-    }
-
-    public static function deactivate()
-    {
-        global $wpdb;
-
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_responses");
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_steps");
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_fields");
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnels");
-    }
-    public static function uninstall()
-    {
-        global $wpdb;
-
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_responses");
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_steps");
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_fields");
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnels");
     }
 
     public static function dock_funnels_encrypt($data)
