@@ -174,7 +174,7 @@ class DockFunnels_Mailing
         $phpmailer->SMTPAuth   = true;
         $phpmailer->Port       = !empty($options['smtp_port']) ? $options['smtp_port'] : 587;
         $phpmailer->Username   = $options['smtp_username'];
-        $phpmailer->Password   = $options['smtp_password'];
+        $phpmailer->Password   = DockFunnels_Main::dock_funnels_decrypt($options['smtp_password']);
         $phpmailer->SMTPSecure = !empty($options['smtp_secure']) ? $options['smtp_secure'] : 'tls'; // or 'ssl'
         $phpmailer->From       = !empty($options['from_email']) ? $options['from_email'] : 'your@email.com';
         $phpmailer->FromName   = !empty($options['from_name']) ? $options['from_name'] : 'Your Name or Plugin Name';
