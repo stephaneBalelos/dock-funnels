@@ -148,7 +148,6 @@ onMounted(() => {
       body: editorStore.form.form_settings.notifications_settings.body || "",
     };
   }
-  console.log("Initial values:", initialValues.value);
 })
 </script>
 
