@@ -2,8 +2,10 @@
   <div :class="classes" @click="handleToggle">
     <div class="w-full flex justify-between items-center">
       <label class="text-primary-900 font-semibold cursor-pointer">{{
-        props.label
-      }}</label>
+        props.label 
+      }}
+      <span v-if="props.is_required" class="text-red-500">*</span>
+    </label>
       <div
         v-if="model.includes(props.value)"
         class="w-5 h-5 rounded border-2 border-primary-500 flex items-center justify-center"
@@ -32,6 +34,7 @@ type Props = {
   label: string;
   description?: string;
   value: string;
+  is_required?: boolean;
 };
 
 const props = defineProps<Props>();

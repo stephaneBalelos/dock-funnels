@@ -37,6 +37,7 @@
           :inputId="field.field_name + option.value"
           :name="option.label"
           :value="option.value"
+          :is_required="option.is_required"
         />
       </div>
     </div>

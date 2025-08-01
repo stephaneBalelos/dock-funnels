@@ -15,6 +15,7 @@ declare module 'vue' {
     Badge: typeof import('primevue/badge')['default']
     Button: typeof import('primevue/button')['default']
     Card: typeof import('primevue/card')['default']
+    Checkbox: typeof import('primevue/checkbox')['default']
     CheckboxListResponse: typeof import('./src/components/dashboard/responses/responses-items/CheckboxListResponse.vue')['default']
     ColorPicker: typeof import('primevue/colorpicker')['default']
     DependencyBadge: typeof import('./src/components/dashboard/sidebar-right/FieldEditor/DependencyBadge.vue')['default']

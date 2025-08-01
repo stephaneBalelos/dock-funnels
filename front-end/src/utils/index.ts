@@ -180,6 +180,7 @@ export const FormTestData: FormState = {
         {
           value: "roentgenbilder",
           label: "Röntgenbilder",
+          is_required: true,
           description: "Röntgenbilder der betroffenen Gelenke",
           depends_on: [
             {
@@ -195,6 +196,7 @@ export const FormTestData: FormState = {
         {
           value: "arztberichte",
           label: "Arztberichte",
+          is_required: true,
           description: "Arztberichte und medizinische Gutachten",
           depends_on: [
             {

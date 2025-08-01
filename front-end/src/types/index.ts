@@ -147,6 +147,7 @@ export type FormFieldCheckboxListOption = {
     value: string; // Value of the option
     label: string; // Display label for the option
     description?: string; // Optional description for the option
+    is_required?: boolean; // Whether this option is required
     depends_on: FormFieldDependsOn[]; // Conditional logic for showing/hiding the option
 }
 

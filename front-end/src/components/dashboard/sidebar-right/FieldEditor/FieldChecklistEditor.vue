@@ -153,6 +153,10 @@
                   }}</Message
                 >
               </FormField>
+              <FormField class="flex gap-1">
+                <label :for="`option-${index}-required`">Erforderlich?</label>
+                <Checkbox :id="`option-${index}-required`" v-model="state.options[index].is_required" binary variant="filled" />
+              </FormField>
               <div class="flex flex-col border p-2 rounded">
                 <div class="flex justify-between items-center">
                   <span class="text-sm font-semibold">
@@ -194,6 +198,7 @@
                 state.options.push({
                   label: `Auswahl ${state.options.length + 1}`,
                   value: `Auswahlwert ${state.options.length + 1}`,
+                  is_required: false,
                   description: '',
                   depends_on: []
                 })

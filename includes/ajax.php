@@ -803,6 +803,7 @@ class DockFunnels_FormStateValidator
                 $sanitized_field['options'][] = [
                     'label' => $option['label'],
                     'value' => $option['value'],
+                    'is_required' => isset($option['is_required']) ? (bool)$option['is_required'] : false,
                     'description' => $option['description'],
                     'depends_on' => isset($option['depends_on']) ? $option['depends_on'] : []
                 ];

@@ -112,20 +112,21 @@ export const useFormSubmissionStateStore = createGlobalState(
                         fieldSchema = z.nativeEnum(values, { message: `${field.label} ist erforderlich` })
                         break
                     case 'checkboxList':
-                        const checkboxValues = field.options.filter(shoulShowChechboxListOption).map(option => option.value)
-                        fieldSchema = z.array(z.enum([checkboxValues[0], ...checkboxValues]))
-                        if (checkboxValues.length === 1 && field.min === 1) {
-                            fieldSchema = fieldSchema.nonempty(`${field.label} muss ausgewählt werden`)
-                        } else {
-                            if (field.min && field.min > 0) {
-                                const min = Math.min(field.min, checkboxValues.length)
-                                fieldSchema = fieldSchema.min(min, `${field.label}: Sie müssen mindestens ${min} auswählen`)
-
-                                if (field.max && field.max >= min) {
-                                    const max = Math.min(field.max, checkboxValues.length)
-                                    fieldSchema = fieldSchema.max(max, `${field.label}: Sie können maximal ${max} auswählen`)
-                                }
-                            }
+                        const checkboxValues = field.options.filter(shoulShowChechboxListOption).map(option => ({
+                            value: option.value,
+                            is_required: option.is_required || false // Use is_required from the option
+                        }))
+                        fieldSchema = z.array(z.enum([checkboxValues[0].value, ...checkboxValues.slice(1).map(opt => opt.value)]))
+                        
+                        // Refine to ensure required checkboxes are selected
+                        if (checkboxValues.some(opt => opt.is_required)) {
+                            fieldSchema = fieldSchema.refine(values => {
+                                const selectedValues = new Set(values)
+                                const requiredValues = checkboxValues.filter(opt => opt.is_required).map(opt => opt.value)
+                                return requiredValues.every(requiredValue => selectedValues.has(requiredValue))
+                            }, {
+                                message: `${field.label} erfordert die Auswahl der mit (*) markierten Optionen`
+                            })
                         }
                         break
                     default:
@@ -149,6 +150,7 @@ export const useFormSubmissionStateStore = createGlobalState(
                 ])
             )
             const result = stepSchema.safeParse(stepData)
+            console.log('Validation result:', result)
             if (!result.success) {
                 // Handle validation errors
                 console.log(result.error)
