@@ -12,7 +12,7 @@
       >
         {{ props.form.title }}
       </h3>
-      <p :class="`text-surface-600 mt-2 text-xs text-${headerSettings.align}`">
+      <p v-if="props.form.description" :class="`text-surface-600 mt-2 text-xs text-${headerSettings.align}`">
         {{ props.form.description }}
       </p>
     </div>
