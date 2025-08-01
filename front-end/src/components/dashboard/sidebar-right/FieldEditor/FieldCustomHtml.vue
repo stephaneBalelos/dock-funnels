@@ -66,6 +66,12 @@
                   <option value="large">Groß</option>
                   <option value="huge">Sehr Groß</option>
                 </select>
+                <select class="ql-align">
+                  <option value="" selected>Links</option>
+                  <option value="center">Zentriert</option>
+                  <option value="right">Rechts</option>
+                  <option value="justify">Blocksatz</option>
+                </select>
                 <button v-tooltip.bottom="'Bold'" class="ql-bold"></button>
                 <button v-tooltip.bottom="'Italic'" class="ql-italic"></button>
                 <button

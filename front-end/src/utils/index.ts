@@ -58,6 +58,15 @@ export const FormTestData: FormState = {
   form_fields: [
     {
       step_index: 0,
+      label: "Intro HTML",
+      description: "Bitte geben Sie Ihre E-Mail-Adresse ein.",
+      field_name: "intro_html",
+      type: "customHtml",
+      required: false,
+      html_content: `<div class="custom-html-field"><p><span class="ql-size-huge">Sehr&nbsp;Groß</span></p><p><span class="ql-size-large">Groß</span></p><p>normal</p><p><span class="ql-size-small">klein</span></p><p></p><p><a href="https://google.com" rel="noopener noreferrer" target="_blank">Verlinkung</a></p></div>`,
+    },
+    {
+      step_index: 0,
       label: "Vorname",
       description: "Bitte geben Sie Ihren Vornamen ein.",
       field_name: "vorname",
