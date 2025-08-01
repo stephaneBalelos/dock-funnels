@@ -88,6 +88,13 @@ watch(
   () => submissionStateStore.currentStepIndex.value,
   (newIndex, oldIndex) => {
     // Determine the slide direction based on the index change
+    console.log(submissionStateStore.fieldsForCurrentStep.value.length);
+    if (submissionStateStore.fieldsForCurrentStep.value.length === 0) {
+      newIndex > oldIndex
+        ? submissionStateStore.nextStep()
+        : submissionStateStore.previousStep();
+      return;
+    }
 
     slideDirection.value = newIndex > oldIndex ? 1 : -1;
   }
