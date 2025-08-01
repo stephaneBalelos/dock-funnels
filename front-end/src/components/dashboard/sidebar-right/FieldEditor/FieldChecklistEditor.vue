@@ -216,7 +216,7 @@
             >{{ $field.error?.message }}</Message
           >
         </FormField>
-        <FormField
+        <!-- <FormField
           v-if="state.options.length > 0"
           name="min"
           class="flex flex-col gap-1"
@@ -260,7 +260,7 @@
                 ?.message
             }}</Message
           >
-        </FormField>
+        </FormField> -->
       </div>
     </Form>
   </div>

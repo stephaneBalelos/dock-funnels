@@ -15,7 +15,6 @@
         <TabList>
           <Tab value="0">Allgemein Einstellungen</Tab>
           <Tab value="1">E-Mail Benachrichtigung</Tab>
-          <Tab value="2">SMTP Einstellungen</Tab>
         </TabList>
         <TabPanels>
           <TabPanel value="0">
@@ -23,9 +22,6 @@
           </TabPanel>
           <TabPanel value="1">
             <NotificationsSettingsTab />
-          </TabPanel>
-          <TabPanel value="2">
-            <EmailSettingTab />
           </TabPanel>
         </TabPanels>
       </Tabs>
@@ -36,7 +32,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import GeneralSettingsTab from "./GeneralSettingsTab.vue";
-import EmailSettingTab from "./SmtpSettingTab.vue";
 import NotificationsSettingsTab from "./NotificationsSettingsTab.vue";
 
 const visible = ref(false);
