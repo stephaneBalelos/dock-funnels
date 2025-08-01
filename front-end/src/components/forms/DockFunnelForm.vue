@@ -12,6 +12,9 @@
       >
         {{ props.form.title }}
       </h3>
+      <p :class="`text-surface-600 mt-2 text-xs text-${headerSettings.align}`">
+        {{ props.form.description }}
+      </p>
     </div>
     <DockFunnelFormContent v-if="!submissionStateStore.isFormSubmitted.value" />
     <div v-if="isSubmitting" class="submitting absolute inset-0 flex items-center justify-center bg-neutral-300/50">
