@@ -1,5 +1,5 @@
 import { createForm, deleteForm, updateForm } from "@/api/wpAjaxApi"
-import type { FormFieldCheckboxList, FormFieldDependsOn, FormFieldSelect, FormFieldSubmissionSummary, FormFieldText, FormOnSubmitAction, FormState } from "@/types"
+import type { FormFieldCheckboxList, FormFieldCustomHtml, FormFieldDependsOn, FormFieldSelect, FormFieldSubmissionSummary, FormFieldText, FormOnSubmitAction, FormState } from "@/types"
 import { configureTheme, updateThemePreset } from "@/utils"
 import { createGlobalState } from "@vueuse/core"
 import { useToast } from "primevue"
@@ -263,13 +263,25 @@ export const useEditorStore = createGlobalState(() => {
                 }
                 form.form_fields.push(submissionSummaryField)
                 return submissionSummaryField.field_name
+            case 'customHtml':
+                const customHtmlField: FormFieldCustomHtml = {
+                    field_name: 'custom_html_field_' + (newFieldId),
+                    type: 'customHtml',
+                    label: 'Custom HTML Field',
+                    html_content: '<p>Your custom HTML content here</p>',
+                    required: false,
+                    step_index: stepIndex,
+                    depends_on: [],
+                }
+                form.form_fields.push(customHtmlField)
+                return customHtmlField.field_name
             default:
                 console.warn('Unsupported field type:', type)
                 return null
         }
     }
 
-    const updateField = (fieldName: string, fieldData: Partial<FormFieldText | FormFieldSelect | FormFieldCheckboxList | FormFieldSubmissionSummary>) => {
+    const updateField = (fieldName: string, fieldData: Partial<FormFieldText | FormFieldSelect | FormFieldCheckboxList | FormFieldSubmissionSummary | FormFieldCustomHtml>) => {
         const field = form.form_fields.find(f => f.field_name === fieldName)
         if (!field) {
             console.warn('Field not found:', fieldName)

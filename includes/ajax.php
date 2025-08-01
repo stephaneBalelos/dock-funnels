@@ -595,7 +595,7 @@ class DockFunnels_FormStateValidator
 
     public static function validate_field_by_type($field)
     {
-        $field_types = ['text', 'select', 'checkboxList', 'textarea', 'submissionSummary'];
+        $field_types = ['text', 'select', 'checkboxList', 'textarea', 'submissionSummary', 'customHtml'];
         $errors = [];
         $sanitized_field = [
             'field_name' => $field['field_name'],
@@ -653,6 +653,15 @@ class DockFunnels_FormStateValidator
                     $errors = array_merge($errors, $submission_summary_validation_result['errors']);
                 } else {
                     $sanitized_field = array_merge($sanitized_field, $submission_summary_validation_result['data']);
+                }
+                break;
+            case 'customHtml':
+                // Additional validation for custom HTML fields can be added here
+                $custom_html_validation_result = self::validate_custom_html_field($field);
+                if (!$custom_html_validation_result['valid']) {
+                    $errors = array_merge($errors, $custom_html_validation_result['errors']);
+                } else {
+                    $sanitized_field = array_merge($sanitized_field, $custom_html_validation_result['data']);
                 }
                 break;
             default:
@@ -894,6 +903,34 @@ class DockFunnels_FormStateValidator
             $errors['show_full_summary'] = 'Show full summary must be a boolean.';
         } else {
             $sanitized_field['show_full_summary'] = isset($field['show_full_summary']) ? (bool)$field['show_full_summary'] : false;
+        }
+
+        // Check if "depends_on" is set and is an array
+        if (isset($field['depends_on']) && is_array($field['depends_on'])) {
+            $sanitized_field['depends_on'] = self::sanitize_dependencies($field['depends_on']);
+        } else {
+            $field['depends_on'] = [];
+        }
+
+        return empty($errors) ? ['valid' => true, 'data' => $sanitized_field] : ['valid' => false, 'errors' => $errors];
+    }
+
+    public static function validate_custom_html_field($field)
+    {
+        $errors = [];
+        $sanitized_field = [
+            'field_name' => $field['field_name'],
+            'type' => $field['type'],
+            'label' => $field['label'],
+            'description' => isset($field['description']) ? sanitize_textarea_field($field['description']) : '',
+            'required' => false, // Custom HTML fields are not required
+        ];
+
+        // Check if "html_content" is set and is a string
+        if (!isset($field['html_content']) || !is_string($field['html_content']) || empty($field['html_content'])) {
+            $errors['html_content'] = 'HTML content is required and must be a string.';
+        } else {
+            $sanitized_field['html_content'] = wp_kses_post($field['html_content']);
         }
 
         // Check if "depends_on" is set and is an array
@@ -1335,6 +1372,15 @@ class DockFunnels_SubmissionValidator {
                 // Submission summary fields do not require validation as they are not user input fields
                 return ['valid' => true, 'data' => [
                     'value' => '', // No value to sanitize for submission summary fields
+                    'field_name' => $field['field_name'],
+                    'step_index' => $field['step_index'],
+                    'label' => $field['label'],
+                    'type' => $field['type'],
+                ]];
+            case 'customHtml':
+                // Custom HTML fields do not require validation as they are not user input fields
+                return ['valid' => true, 'data' => [
+                    'value' => '', // No value to sanitize for custom HTML fields
                     'field_name' => $field['field_name'],
                     'step_index' => $field['step_index'],
                     'label' => $field['label'],

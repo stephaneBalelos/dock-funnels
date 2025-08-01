@@ -4,7 +4,7 @@ export type FormState = {
     title: string; // Title of the form
     description: string; // Description of the form
     form_steps: FormStep[]; // Array of steps in the form
-    form_fields: (FormFieldSelect | FormFieldText | FormFieldTextarea | FormFieldCheckboxList | FormFieldSubmissionSummary)[]; // Array of fields in this step
+    form_fields: (FormFieldSelect | FormFieldText | FormFieldTextarea | FormFieldCheckboxList | FormFieldSubmissionSummary | FormFieldCustomHtml)[]; // Array of fields in this step
     form_settings: FormSettings; // Settings for the form
     outro_settings?: {// Whether to show the outro
         title: string; // Title of the outro
@@ -156,6 +156,13 @@ export type FormFieldSubmissionSummary = FormField & {
     show_full_summary?: boolean; // Whether to show the full summary for this field
     default_value?: null; // Default value for the field, usually null
     type: 'submissionSummary'; // Type of the field
+}
+
+export type FormFieldCustomHtml = FormField & {
+    type: 'customHtml'; // Custom HTML field type
+    html_content: string; // HTML content to display
+    default_value?: null; // Default value for the field, usually null
+    required: false; // Custom HTML fields are not required
 }
 
 

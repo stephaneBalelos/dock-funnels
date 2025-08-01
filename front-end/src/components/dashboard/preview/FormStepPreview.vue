@@ -118,7 +118,14 @@ const items = ref([
     command: () => {
       addFormField("submissionSummary");
     },
-  }
+  },
+  {
+    label: "Custom HTML",
+    icon: "heroicons:document-text",
+    command: () => {
+      addFormField("customHtml");
+    },
+  },
 ]);
 
 const addFormField = (field: string) => {

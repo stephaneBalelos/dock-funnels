@@ -24,6 +24,9 @@
     >
       <FormFieldSubmissionSummary :field="props.field" />
     </div>
+    <div v-else-if="props.field.type === 'customHtml'" class="form-field-custom-html">
+      <FormFieldCustomHtml :field="props.field" />
+    </div>
     <div v-else>
       <p class="text-red-500">Field type is not implemented.</p>
     </div>
@@ -36,6 +39,7 @@ import FormFieldSelect from "./FormFields/FormFieldSelect.vue";
 import FormFieldText from "./FormFields/FormFieldText.vue";
 import FormFieldCheckboxList from "./FormFields/FormFieldCheckboxList.vue";
 import FormFieldSubmissionSummary from "./FormFields/FormFieldSubmissionSummary.vue";
+import FormFieldCustomHtml from "./FormFields/FormFieldCustomHtml.vue";
 
 type Props = {
   field: Form["form_fields"][number];

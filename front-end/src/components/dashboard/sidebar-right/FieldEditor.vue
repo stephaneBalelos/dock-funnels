@@ -21,6 +21,10 @@
           v-else-if="field.type === 'submissionSummary'"
           :field-name="field.field_name"
         />
+        <FieldCustomHtml
+          v-else-if="field.type === 'customHtml'"
+          :field-name="field.field_name"
+        />
         <div v-else class="text-gray-500 text-center">
           Dieses Feld ist nicht verfügbar oder wird nicht unterstützt.
         </div>
