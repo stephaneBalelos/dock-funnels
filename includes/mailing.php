@@ -112,7 +112,55 @@ class DockFunnels_Mailing
             '{form_description}' => $form->description,
             '{submission_data}' => self::get_submission_html($form, $submission),
         ];
-        return strtr($body, $placeholders);
+
+        $dom = new DomDocument();
+        // Use UTF-8 encoding to handle special characters
+        $body = mb_convert_encoding($body, 'HTML-ENTITIES', 'UTF-8');
+        // Load HTML content into DOMDocument
+        // Suppress warnings from invalid HTML
+        libxml_use_internal_errors(true);
+        $dom->loadHTML($body, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        libxml_clear_errors();
+        // Replace placeholders in the HTML content
+        foreach ($placeholders as $key => $value) {
+            $body = str_replace($key, $value, $body);
+        }
+        // Find all .mention elements and replace them with their text content
+        $xpath = new DOMXPath($dom);
+        $mentions = $xpath->query('//span[contains(@class, "mention")]');
+        foreach ($mentions as $mention) {
+            // get data-id attribute if exists
+            $data_id = $mention->attributes->getNamedItem('data-id') ? $mention->attributes->getNamedItem('data-id')->nodeValue : '';
+            if ($data_id) {
+                // Replace the mention with data-id value
+                $mention_value = self::get_submission_field_display_value($data_id, $submission);
+                $mention->nodeValue = $mention_value;
+            } else {
+                // If no data-id, just use the text content
+                $mention->nodeValue = $mention->textContent;
+            }
+        }
+                
+        // Convert DOMDocument back to HTML
+        $body = $dom->saveHTML();
+        libxml_clear_errors();
+        return $body;
+    }
+
+
+    private static function get_submission_field_display_value($field_name, $submission_fields)
+    {
+        // Get the submitted field value from the submission data
+        if (isset($submission_fields[$field_name])) {
+            $field = $submission_fields[$field_name];
+            // Handle Select fields with options
+            $field_value = $field['value'];
+            if ($field['type'] === 'select') {
+                $field_value = $field['value_label'] ?? $field_value; // Use value_label if available
+            }
+            return $field_value; // Return the field value directly
+        }
+        return 'N/A'; // If field not found in submission
     }
 
 

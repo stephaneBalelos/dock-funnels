@@ -56,7 +56,11 @@
       <p class="text-sm text-gray-600 mb-2">
         Sie können Platzhalter wie {submission_data} verwenden, um die Formulardaten einzufügen.
       </p>
-      <Editor name="body" editorStyle="height: 320px" />
+      <WysiwygEditor
+      name="body"
+        :search-values="searchFields"
+        class="w-full"
+      />
       <Message
         v-if="$form.content?.invalid"
         severity="error"
@@ -77,13 +81,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { useToast } from "primevue/usetoast";
 import { z } from "zod";
 import type { FormSubmitEvent } from "@primevue/forms";
 import { useEditorStore } from "@/dashboard/editor.store";
 import type { FormNotificationSettings } from "@/types";
+import WysiwygEditor from "../UI/CustomInput/WysiwygEditor.vue";
 
 const initialValues = ref<FormNotificationSettings>();
 
@@ -149,6 +154,16 @@ onMounted(() => {
     };
   }
 })
+
+const searchFields = computed(() => {
+  return editorStore.form.form_fields
+    .filter((field) => field.type === "select" || field.type === "text")
+    .map((field) => ({
+      id: field.field_name,
+      value: field.label,
+      type: field.type,
+    }));
+});
 </script>
 
 <style scoped></style>
