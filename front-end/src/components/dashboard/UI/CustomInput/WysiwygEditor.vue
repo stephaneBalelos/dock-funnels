@@ -28,6 +28,8 @@
 import Quill from "quill";
 import { Mention, MentionBlot, type MentionBlotData } from "quill-mention";
 
+Quill.debug("error");
+
 class StyledMentionBlot extends MentionBlot {
   static render(data: MentionBlotData) {
     const element = document.createElement("span");
