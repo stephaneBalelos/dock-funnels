@@ -223,7 +223,9 @@ class DockFunnels_Admin
         $options['smtp_host'] = sanitize_text_field($options['smtp_host'] ?? '');
         $options['smtp_port'] = intval($options['smtp_port'] ?? 587);
         $options['smtp_username'] = sanitize_text_field($options['smtp_username'] ?? '');
-        $options['smtp_password'] = DockFunnels_Main::dock_funnels_encrypt(sanitize_text_field($options['smtp_password'] ?? ''));
+        if (isset($options['smtp_password']) && !empty($options['smtp_password'])) {
+            $options['smtp_password'] = DockFunnels_Main::dock_funnels_encrypt(sanitize_text_field($options['smtp_password']));
+        }
         $options['smtp_secure'] = in_array($options['smtp_secure'], ['tls', 'ssl']) ? $options['smtp_secure'] : 'tls';
         $options['from_email'] = sanitize_email($options['from_email'] ?? get_option('admin_email'));
         $options['from_name'] = sanitize_text_field($options['from_name'] ?? get_bloginfo('name'));
@@ -254,7 +256,7 @@ class DockFunnels_Admin
     public static function render_smtp_password_field()
     {
         $options = get_option('dock_funnels_options');
-        echo '<input type="password" name="dock_funnels_options[smtp_password]" value="' . esc_attr($options['smtp_password'] ?? '') . '" />';
+        echo '<input type="password" name="dock_funnels_options[smtp_password]" value="" />';
         echo '<p class="description">Enter your SMTP password.</p>';
     }
 
