@@ -106,13 +106,6 @@ class DockFunnels_Mailing
 
     private static function parse_email_body($body, $form, $submission)
     {
-        // Replace placeholders in the email body
-        $placeholders = [
-            '{form_name}' => $form->name,
-            '{form_description}' => $form->description,
-            '{submission_data}' => self::get_submission_html($form, $submission),
-        ];
-
         $dom = new DomDocument();
         // Use UTF-8 encoding to handle special characters
         $body = mb_convert_encoding($body, 'HTML-ENTITIES', 'UTF-8');
@@ -121,10 +114,6 @@ class DockFunnels_Mailing
         libxml_use_internal_errors(true);
         $dom->loadHTML($body, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         libxml_clear_errors();
-        // Replace placeholders in the HTML content
-        foreach ($placeholders as $key => $value) {
-            $body = str_replace($key, $value, $body);
-        }
         // Find all .mention elements and replace them with their text content
         $xpath = new DOMXPath($dom);
         $mentions = $xpath->query('//span[contains(@class, "mention")]');
@@ -132,9 +121,25 @@ class DockFunnels_Mailing
             // get data-id attribute if exists
             $data_id = $mention->attributes->getNamedItem('data-id') ? $mention->attributes->getNamedItem('data-id')->nodeValue : '';
             if ($data_id) {
-                // Replace the mention with data-id value
-                $mention_value = self::get_submission_field_display_value($data_id, $submission);
-                $mention->nodeValue = $mention_value;
+                if ($data_id === 'form_name') {
+                    // If data-id is 'form_name', replace with form name
+                    $mention->nodeValue = $form->name;
+                } else if ($data_id === 'form_description') {
+                    // If data-id is 'form_description', replace with form description
+                    $mention->nodeValue = $form->description;
+                } else if ($data_id === 'submission_data') {
+                    // If data-id is 'submission_data', replace with submission data HTML
+                    $submission_html = self::get_submission_html($form, $submission);
+                    $fragment = $mention->ownerDocument->createDocumentFragment();
+                    $fragment->appendXML($submission_html);
+                    $clone = $mention->cloneNode(false); // Create a clone without children
+                    $clone->appendChild($fragment); // Append the HTML fragment to the clone
+                    $mention->parentNode->replaceChild($clone, $mention); // Replace the mention
+                } else {
+                    // Replace the mention with data-id value
+                    $mention_value = self::get_submission_field_display_value($data_id, $submission);
+                    $mention->nodeValue = $mention_value;
+                } 
             } else {
                 // If no data-id, just use the text content
                 $mention->nodeValue = $mention->textContent;

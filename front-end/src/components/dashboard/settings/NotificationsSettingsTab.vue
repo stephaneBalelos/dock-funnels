@@ -156,13 +156,19 @@ onMounted(() => {
 })
 
 const searchFields = computed(() => {
-  return editorStore.form.form_fields
+  const defaults = [
+    { id: "form_name", value: "Formular Name", type: "text" },
+    { id: "submission_data", value: "Zusammenfassung", type: "html" },
+  ];
+  const formFields = editorStore.form.form_fields
     .filter((field) => field.type === "select" || field.type === "text")
     .map((field) => ({
       id: field.field_name,
       value: field.label,
       type: field.type,
     }));
+
+    return [...defaults, ...formFields];
 });
 </script>
 
