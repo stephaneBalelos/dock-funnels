@@ -57,6 +57,12 @@
           />
         </FormField>
         <FormField name="html" class="flex flex-col gap-2">
+          <label class="font-semibold">HTML Inhalt</label>
+          <p class="text-xs text-gray-600 mb-2">
+            Sie können Platzhalter verwenden, um die
+            Formulardaten einzufügen. Tippen Sie "@" um eine Liste der
+            verfügbaren Platzhalter anzuzeigen.
+          </p>
           <WysiwygEditor
             v-model="state.html_content"
             :search-values="editorSearchValues"

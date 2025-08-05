@@ -57,10 +57,14 @@
     <div class="flex flex-col gap-1">
       <label for="form-body" class="font-semibold">E-Mail Inhalt</label>
       <p class="text-sm text-gray-600 mb-2">
-        Sie können Platzhalter wie {submission_data} verwenden, um die Formulardaten
-        einzufügen.
+        Sie können Platzhalter verwenden, um die Formulardaten einzufügen. Tippen Sie "@" um eine Liste der verfügbaren Platzhalter anzuzeigen.
       </p>
-      <Editor name="body" editorStyle="height: 320px" />
+      <WysiwygEditor
+        id="form-body"
+        name="body"
+        :search-values="searchFields"
+        class="w-full"
+      />
       <Message
         v-if="$form.content?.invalid"
         severity="error"
@@ -96,6 +100,7 @@ import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { useToast } from "primevue";
 import { computed, onMounted, ref } from "vue";
 import z from "zod";
+import WysiwygEditor from "../UI/CustomInput/WysiwygEditor.vue";
 
 type Props = {
   actionIndex: number;
@@ -195,6 +200,22 @@ onMounted(() => {
     subject: action.subject || "",
     body: action.body || "",
   };
+});
+
+const searchFields = computed(() => {
+  const defaults = [
+    { id: "form_name", value: "Formular Name", type: "text" },
+    { id: "submission_data", value: "Zusammenfassung", type: "html" },
+  ];
+  const formFields = editorStore.form.form_fields
+    .filter((field) => field.type === "select" || field.type === "text")
+    .map((field) => ({
+      id: field.field_name,
+      value: field.label,
+      type: field.type,
+    }));
+
+    return [...defaults, ...formFields];
 });
 </script>
 

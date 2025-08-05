@@ -54,7 +54,7 @@
     <div class="flex flex-col gap-1">
       <label for="form-body" class="font-semibold">E-Mail Inhalt</label>
       <p class="text-sm text-gray-600 mb-2">
-        Sie können Platzhalter wie {submission_data} verwenden, um die Formulardaten einzufügen.
+        Sie können Platzhalter verwenden, um die Formulardaten einzufügen. Tippen Sie "@" um eine Liste der verfügbaren Platzhalter anzuzeigen.
       </p>
       <WysiwygEditor
       name="body"
