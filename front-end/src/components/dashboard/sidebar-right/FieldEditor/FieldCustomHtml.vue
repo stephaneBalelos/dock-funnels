@@ -61,7 +61,6 @@
             v-model="state.html_content"
             :search-values="editorSearchValues"
             class="w-full"
-            @update:model-value="console.log('Content updated:', $event)"
           />
         </FormField>
       </div>
@@ -90,6 +89,7 @@ const editorStore = useEditorStore();
 
 const editorSearchValues = computed(() => {
   return editorStore.form.form_fields
+    .filter((field) => field.type === "select" || field.type === "text")
     .map((field) => ({
       id: field.field_name,
       value: field.label,
