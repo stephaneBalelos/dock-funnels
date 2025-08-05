@@ -1,9 +1,11 @@
 <template>
-    <div v-html="props.field.html_content" class="custom-html-field"></div>
+    <div ref="customHtmlContent" v-html="props.field.html_content" class="custom-html-field"></div>
 </template>
 
 <script setup lang="ts">
+import { useFormSubmissionStateStore } from '@/forms/stores/submission.store';
 import type { FormFieldCustomHtml } from '@/types';
+import { onMounted, ref } from 'vue';
 
 
 type Props = {
@@ -11,6 +13,31 @@ type Props = {
 }
 
 const props = defineProps<Props>();
+const submissionStateStore = useFormSubmissionStateStore();
+const customHtmlContent = ref<HTMLDivElement | null>(null);
+
+onMounted(() => {
+    // Parse Mention Blots in the custom HTML content
+    if (customHtmlContent.value) {
+        const mentions = customHtmlContent.value.querySelectorAll('.mention');
+        mentions.forEach((mention) => {
+            const id = mention.getAttribute('data-id');
+            const value = mention.getAttribute('data-value');
+            if (id && value) {
+                const field = submissionStateStore.formSubmissionFields.value.get(id);
+                console.log('Field:', field);
+                if (field && field.value) {
+                    mention.innerHTML = `${field.value}`;
+                } else {
+                    mention.innerHTML = `{${value}}`;
+                }
+            }
+        });
+    }
+});
+
+
+
 </script>
 
 <style>

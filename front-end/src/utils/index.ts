@@ -63,7 +63,7 @@ export const FormTestData: FormState = {
       field_name: "intro_html",
       type: "customHtml",
       required: false,
-      html_content: `<div class="custom-html-field"><p><span class="ql-size-huge">Sehr&nbsp;Groß</span></p><p><span class="ql-size-large">Groß</span></p><p>normal</p><p><span class="ql-size-small">klein</span></p><p></p><p><a href="https://google.com" rel="noopener noreferrer" target="_blank">Verlinkung</a></p></div>`,
+      html_content: `<p><strong class="ql-size-huge">Willkommen</strong></p><p><span class="ql-size-large">Bitte&nbsp;Fahren&nbsp;Sie&nbsp;Fort</span></p><p><u>normal</u></p><p class="ql-align-justify"><span class="ql-size-small">klein</span></p><p></p><p><a href="https://google.com" rel="noopener noreferrer" target="_blank">Verlinkung</a></p><p></p><p><span class="mention" data-index="1" data-denotation-char="@" data-id="vorname" data-value="Vorname" data-type="select"><span contenteditable="false"><span class="ql-mention-denotation-char">@</span><span>{Select Field}</span></span></span>&nbsp;</p>`,
     },
     {
       step_index: 0,
