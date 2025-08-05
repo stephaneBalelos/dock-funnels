@@ -57,35 +57,12 @@
           />
         </FormField>
         <FormField name="html" class="flex flex-col gap-2">
-          <Editor v-model="state.html_content" editorStyle="height: 320px">
-            <template v-slot:toolbar>
-              <span class="ql-formats">
-                <select class="ql-size">
-                  <option value="small">Klein</option>
-                  <option value="" selected>Normal</option>
-                  <option value="large">Groß</option>
-                  <option value="huge">Sehr Groß</option>
-                </select>
-                <select class="ql-align">
-                  <option value="" selected>Links</option>
-                  <option value="center">Zentriert</option>
-                  <option value="right">Rechts</option>
-                  <option value="justify">Blocksatz</option>
-                </select>
-                <button v-tooltip.bottom="'Bold'" class="ql-bold"></button>
-                <button v-tooltip.bottom="'Italic'" class="ql-italic"></button>
-                <button
-                  v-tooltip.bottom="'Underline'"
-                  class="ql-underline"
-                ></button>
-                <button
-                  v-tooltip.bottom="'Strike'"
-                  class="ql-strike"
-                ></button>
-                <button v-tooltip.bottom="'Link'" class="ql-link"></button>
-              </span>
-            </template>
-          </Editor>
+          <WysiwygEditor
+            v-model="state.html_content"
+            :search-values="editorSearchValues"
+            class="w-full"
+            @update:model-value="console.log('Content updated:', $event)"
+          />
         </FormField>
       </div>
     </Form>
@@ -101,6 +78,8 @@ import type { FormSubmitEvent } from "@primevue/forms";
 import z from "zod";
 import { slugify } from "@/utils";
 import { Icon } from "@iconify/vue";
+import WysiwygEditor from "../../UI/CustomInput/WysiwygEditor.vue";
+
 
 type Props = {
   fieldName: string;
@@ -108,6 +87,15 @@ type Props = {
 
 const props = defineProps<Props>();
 const editorStore = useEditorStore();
+
+const editorSearchValues = computed(() => {
+  return editorStore.form.form_fields
+    .map((field) => ({
+      id: field.field_name,
+      value: field.label,
+      type: field.type,
+    }));
+});
 
 const field = computed(() => {
   return editorStore.form.form_fields.find(
@@ -179,6 +167,7 @@ const generateSlug = () => {
     state.field_name = slugify(state.label);
   }
 };
+
 </script>
 
 <style scoped></style>

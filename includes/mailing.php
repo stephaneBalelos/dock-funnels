@@ -65,14 +65,8 @@ class DockFunnels_Mailing
             }
         }
 
-        // Look for placeholders in the subject and body
-        $placeholders = [
-            '{form_name}' => $form->name,
-            '{form_description}' => $form->description,
-            '{submission_data}' => self::get_submission_html($form, $submission),
-        ];
-        $subject = strtr($subject, $placeholders);
-        $body = strtr($body, $placeholders);
+        $subject = self::parse_email_subject($subject, $form, $submission);
+        $body = self::parse_email_body($body, $form, $submission);
 
         return self::send_email($to, $subject, $body, [
             'Content-Type: text/html; charset=UTF-8',
@@ -89,20 +83,36 @@ class DockFunnels_Mailing
         if (empty($email_to)) {
             return false; // No email value found in submission
         }
-        $subject = isset($action['subject']) ? $action['subject'] : '';
-        $body = isset($action['body']) ? $action['body'] : '';
-        $placeholders = [
-            '{form_name}' => $form->name,
-            '{form_description}' => $form->description,
-            '{submission_data}' => self::get_submission_html($form, $submission),
-        ];
-        $subject = strtr($subject, $placeholders);
-        $body = strtr($body, $placeholders);
+        $subject = isset($action['subject']) ? $action['subject'] : 'Danke für Ihre Übermittlung';
+        $body = isset($action['body']) ? $action['body'] : 'Wir haben Ihre Übermittlung erhalten. {submission_data} Vielen Dank!';
+
+        $subject = self::parse_email_subject($subject, $form, $submission);
+        $body = self::parse_email_body($body, $form, $submission);
         $headers = [
             'Content-Type: text/html; charset=UTF-8',
         ];
         // Send the email
         return self::send_email($email_to, $subject, $body, $headers);
+    }
+
+    private static function parse_email_subject($subject, $form, $submission)
+    {
+        // Replace placeholders in the email subject
+        $placeholders = [
+            '{form_name}' => $form->name,
+        ];
+        return strtr($subject, $placeholders);
+    }
+
+    private static function parse_email_body($body, $form, $submission)
+    {
+        // Replace placeholders in the email body
+        $placeholders = [
+            '{form_name}' => $form->name,
+            '{form_description}' => $form->description,
+            '{submission_data}' => self::get_submission_html($form, $submission),
+        ];
+        return strtr($body, $placeholders);
     }
 
 
