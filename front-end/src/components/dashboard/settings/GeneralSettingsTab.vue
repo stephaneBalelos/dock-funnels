@@ -44,6 +44,30 @@
           >{{ $form.description.error?.message }}</Message
         >
       </div>
+      <div class="flex flex-col gap-1">
+        <div class="flex gap-2 items-center">
+          <Checkbox
+            id="should-save-responses"
+            name="should_save_responses"
+            binary
+          />
+          <label for="should-save-responses">
+            <div class="text-sm">
+              Antworten speichern?
+            </div>
+            <div class="text-xs text-gray-500">
+              Aktivieren Sie diese Option, um die Antworten der Benutzer zu speichern.
+            </div>
+          </label>
+        </div>
+        <Message
+          v-if="$form.should_save_responses?.invalid"
+          severity="error"
+          size="small"
+          variant="simple"
+          >{{ $form.should_save_responses.error?.message }}</Message
+        >
+      </div>
       <Button :loading="editorStore.editorState.value.isSaving" :disabled="editorStore.editorState.value.isSaving" type="submit" severity="secondary" label="Speichern" />
     </Form>
     <div class="flex flex-col items-start gap-4 mt-10 pt-4 border-t">
@@ -78,11 +102,13 @@ import { Icon } from "@iconify/vue";
 const initialValues = ref<{
   title: string;
   description?: string;
+  should_save_responses: boolean;
 }>();
 
 const schema = z.object({
   title: z.string().min(1, { message: "Geben Sie einen Titel ein." }),
   description: z.string().optional(),
+  should_save_responses: z.boolean(),
 });
 
 type Schema = z.infer<typeof schema>;
@@ -97,6 +123,7 @@ onMounted(() => {
     initialValues.value = {
       title: editorStore.form.title || "",
       description: editorStore.form.description || "",
+      should_save_responses: editorStore.form.should_save_responses,
     };
   }
 });
@@ -107,6 +134,7 @@ const onFormSubmit = async (event: FormSubmitEvent<Schema>) => {
   }
   editorStore.form.title = event.values.title;
   editorStore.form.description = event.values.description || "";
+  editorStore.form.should_save_responses = event.values.should_save_responses;
   try {
     await editorStore.saveFormState();
     toast.add({

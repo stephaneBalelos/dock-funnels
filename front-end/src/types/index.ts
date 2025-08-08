@@ -12,6 +12,9 @@ export type FormState = {
         button_text: string; // Text for the button in the outro
         button_url?: string; // URL for the button in the outro, optional
     }
+    status: 'draft' | 'published'; // Status of the form, either draft or published
+    updated_at?: string; // Timestamp of the last update, optional for new forms
+    should_save_responses: boolean; // Whether to save responses to the database
 }
 
 // Form is form data that is used to submit the form

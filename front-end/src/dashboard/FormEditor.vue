@@ -34,8 +34,10 @@ onMounted(() => {
   if (editFormId) {
     editorStore.editorState.value.isLoading = true; // Set loading state
     editorStore.apiSettings.value.editFormId = editFormId;
+    console.log("Loading form with ID:", editFormId);
     getFormById(endpoint, nonce, editFormId)
       .then(({ data }) => {
+        console.log("Form data loaded:", data);
         editorStore.initEditor(data as FormState);
       })
       .catch((error) => {

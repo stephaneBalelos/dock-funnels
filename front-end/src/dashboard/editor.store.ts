@@ -32,6 +32,8 @@ export const useEditorStore = createGlobalState(() => {
         description: '',
         form_steps: [],
         form_fields: [],
+        should_save_responses: true, // Default to true, can be set in form settings
+        status: 'draft', // Default status
         form_settings: {
             design_settings: {
                 colors: {
@@ -578,6 +580,7 @@ export const useEditorStore = createGlobalState(() => {
         const endpoint = apiSettings.value.endpoint
         const nonce = apiSettings.value.nonce
         const editFormId = apiSettings.value.editFormId
+        console.log('Saving form state:', formState)
         try {
             editorState.value.isSaving = true; // Set saving state
             if (!endpoint || !nonce) {

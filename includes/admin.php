@@ -158,6 +158,8 @@ class DockFunnels_Admin
         if (!current_user_can('manage_options')) {
             return;
         }
+                $plugin_version = get_option('dock_funnels_plugin_version');
+
         if (isset($_GET['form_id']) && is_numeric($_GET['form_id'])) {
             $form_id = intval($_GET['form_id']);
             $form = DockFunnels_DB::get_form_by_id($form_id);
@@ -171,6 +173,9 @@ class DockFunnels_Admin
             }
         } else {
             $form = null; // No form selected, create a new one
+        }
+        if ($plugin_version) {
+            echo '<p>Plugin Version: ' . esc_html($plugin_version) . '</p>';
         }
         echo '<div id="dock-funnels-editor" class="dock-funnels-root"></div>';
     }

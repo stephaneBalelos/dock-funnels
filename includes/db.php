@@ -41,7 +41,7 @@ class DockFunnels_DB {
         return $wpdb->insert_id;
     }
 
-    public static function update_form($id, $title, $description, $form_data, $form_settings = []) {
+    public static function update_form($id, $title, $description, $form_data, $form_settings = [], $should_save_responses, $status = 'draft') {
         global $wpdb;
         $table_name = $wpdb->prefix . 'dock_funnels';
 
@@ -54,6 +54,8 @@ class DockFunnels_DB {
                 'description' => $description,
                 'form_data' => wp_json_encode($form_data),
                 'form_settings' => wp_json_encode($form_settings),
+                'status' => $status,
+                'should_save_responses' => $should_save_responses ? 1 : 0
             ],
             ['id' => $id]
         );

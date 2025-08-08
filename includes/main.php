@@ -101,6 +101,8 @@ class DockFunnels_Main
             status enum('draft', 'published') DEFAULT 'draft' NOT NULL,
             response_count mediumint(9) DEFAULT 0 NOT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            should_save_responses boolean DEFAULT true NOT NULL,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
             PRIMARY KEY  (id)
         ) $charset_collate;";
 

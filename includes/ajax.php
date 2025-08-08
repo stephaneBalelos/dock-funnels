@@ -62,9 +62,11 @@ class DockFunnels_Ajax
             wp_send_json_error(['message' => 'Invalid form submission.', 'errors' => $validation_result['errors']]);
         }
 
-        $submission_id = DockFunnels_DB::save_form_response($form_id, $validation_result['data']);
-        if (!$submission_id) {
-            wp_send_json_error(['message' => 'Failed to save form response.']);
+        if ($form->should_save_responses) {
+            $submission_id = DockFunnels_DB::save_form_response($form_id, $validation_result['data']);
+            if (!$submission_id) {
+                wp_send_json_error(['message' => 'Failed to save form response.']);
+            }
         }
 
         // Send Response Per Mail
@@ -167,6 +169,8 @@ class DockFunnels_Ajax
             'form_settings' => $form_settings,
             'outro_settings' => $form_data['outro_settings'],
             'status' => $form->status,
+            'should_save_responses' => $form->should_save_responses == 1 ? true : false, // Convert to boolean
+            'updated_at' => $form->updated_at,
         ];
         wp_send_json_success($form_state);
     }
@@ -229,6 +233,7 @@ class DockFunnels_Ajax
             'description' => $form->description,
             'form_steps' => $form_data['form_steps'],
             'form_fields' => $form_data['form_fields'],
+            'should_save_responses' => $form->should_save_responses,
             'form_settings' => [
                 'design_settings' => $form_settings['design_settings'] ?? [],
             ],
@@ -280,7 +285,15 @@ class DockFunnels_Ajax
 
         $form_data = ['form_steps' => $results['form_steps'], 'form_fields' => $results['form_fields'], 'outro_settings' => $results['outro_settings']];
         $form_settings = $results['form_settings'];
-        $updated = DockFunnels_DB::update_form($form_id, $results['title'], $results['description'], $form_data, $form_settings);
+        $updated = DockFunnels_DB::update_form(
+            $form_id,
+            $results['title'],
+            $results['description'],
+            $form_data,
+            $form_settings,
+            $results['should_save_responses'],
+            $results['status'],
+        );
         if (!$updated['success']) {
             wp_send_json_error(['message' => 'Failed to update form.', 'data' => $updated['data']]);
         }
@@ -359,6 +372,8 @@ class DockFunnels_FormStateValidator
 {
     private $form_title = '';
     private $form_description = '';
+    private $form_should_save_responses = true; // Default to true
+    private $form_status = 'draft'; // Default to draft
     private $form_steps = [];
     private $form_fields = [];
     private $form_settings = [];
@@ -373,6 +388,8 @@ class DockFunnels_FormStateValidator
     {
         $this->form_title = $form_state['title'] ?? '';
         $this->form_description = $form_state['description'] ?? '';
+        $this->form_should_save_responses = $form_state['should_save_responses'];
+        $this->form_status = $form_state['status'] ?? 'draft'; // Default to draft
         $this->form_steps = $form_state['form_steps'] ?? [];
         $this->form_fields = $form_state['form_fields'] ?? [];
         $this->form_settings = $form_state['form_settings'] ?? [];
@@ -393,6 +410,16 @@ class DockFunnels_FormStateValidator
             $this->sanitized_form_state['description'] = '';
         } else {
             $this->sanitized_form_state['description'] = sanitize_textarea_field($this->form_description);
+        }
+
+        // Check form_should_save_responses
+        $this->sanitized_form_state['should_save_responses'] = $this->form_should_save_responses; // Ensure it's a boolean
+
+        // Check Status
+        if (!isset($this->form_status) || !is_string($this->form_status)) {
+            $this->errors['status'] = 'Form status is required and must be a string.';
+        } else {
+            $this->sanitized_form_state['status'] = sanitize_text_field($this->form_status) === 'published' ? 'published' : 'draft'; // Ensure it's either published or draft
         }
 
         // Validate outro settings
@@ -824,7 +851,7 @@ class DockFunnels_FormStateValidator
             $errors['min'] = 'Min must be a non-negative integer.';
         } else {
             $sanitized_field['min'] = isset($field['min']) ? intval($field['min']) : 1; // Default to 1 if not set
-        } 
+        }
         if (isset($field['max']) && (!is_int($field['max']) || $field['max'] < 0)) {
             $errors['max'] = 'Max must be a non-negative integer.';
         } else {
@@ -1247,7 +1274,8 @@ class DockFunnels_FormStateValidator
     }
 }
 
-class DockFunnels_SubmissionValidator {
+class DockFunnels_SubmissionValidator
+{
     private $sanitized_submission = [];
     private $errors = [];
     //
@@ -1260,7 +1288,8 @@ class DockFunnels_SubmissionValidator {
     private $submission_fields = [];
     private $form_fields = [];
 
-    public function __construct($form_fields, $submission_fields) {
+    public function __construct($form_fields, $submission_fields)
+    {
         $this->form_fields = $form_fields;
         $this->submission_fields = $submission_fields;
     }
@@ -1298,7 +1327,8 @@ class DockFunnels_SubmissionValidator {
     }
 
 
-    private function validate_field($field, $submitted_value) {
+    private function validate_field($field, $submitted_value)
+    {
         switch ($field['type']) {
             case 'text':
                 // Validate text field
@@ -1390,5 +1420,4 @@ class DockFunnels_SubmissionValidator {
                 return ['valid' => false, 'errors' => ['type' => 'Invalid field type: ' . $field['type']]];
         }
     }
-
 }
