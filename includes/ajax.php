@@ -39,9 +39,9 @@ class DockFunnels_Ajax
         }
 
         // Check if Form status
-        // if ($form->status !== 'published') {
-        //     wp_send_json_error(['message' => 'Form is not published.']);
-        // }
+        if ($form->status !== 'published') {
+            wp_send_json_error(['message' => 'Form is not published.']);
+        }
 
         $submitted_fields = isset($submission['fields']) ? $submission['fields'] : [];
         if (empty($submitted_fields)) {
@@ -222,6 +222,12 @@ class DockFunnels_Ajax
         if (!$form) {
             return wp_send_json_error(['message' => 'Form not found.']);
         }
+
+        // Check if Form status is published
+        if ($form->status !== 'published') {
+            wp_send_json_error(['message' => 'Form not found or not published.'], 404);
+        }
+
         $form_data = json_decode($form->form_data, true);
         $form_settings = json_decode($form->form_settings, true);
         if (!$form_data) {

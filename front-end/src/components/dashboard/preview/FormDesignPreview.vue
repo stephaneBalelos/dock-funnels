@@ -74,6 +74,8 @@ const form = computed(() => {
     description: editorStore.form.description,
     form_steps: editorStore.form.form_steps,
     form_fields: editorStore.form.form_fields,
+    status: editorStore.form.status || "draft",
+    should_save_responses: editorStore.form.should_save_responses || true,
     form_settings: {
       design_settings: editorStore.form.form_settings.design_settings
     }

@@ -34,6 +34,8 @@ export const FormTestData: FormState = {
     button_text: "Zurück zur Startseite",
     button_url: "https://dock26.de", // Optional URL for the button in the outro
   },
+  status: "draft", // 'draft' or 'published'
+  should_save_responses: true,
   form_steps: [
     {
       title: "Wählen Sie Ihre Fachrichtung",
