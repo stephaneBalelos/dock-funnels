@@ -10,6 +10,9 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// Define plugin constants
+define('DOCK_FUNNELS_PLUGIN_VERSION', '0.16.1');
+
 // include necessary files
 require_once plugin_dir_path(__FILE__) . 'includes/db.php';
 require_once plugin_dir_path(__FILE__) . 'includes/shortcodes.php';

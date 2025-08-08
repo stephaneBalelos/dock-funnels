@@ -26,6 +26,25 @@ class DockFunnels_Main
         add_action('wp_ajax_nopriv_dock_funnel_ajax_submit_form', ['DockFunnels_Ajax', 'handle_form_submission']);
 
         add_action('admin_enqueue_scripts', ['DockFunnels_Admin', 'enqueue_admin_assets']);
+
+        // Update the plugin version by changing the version number
+        $new_version = DOCK_FUNNELS_PLUGIN_VERSION;
+
+        // Check Version in the database
+        $current_version = get_option('dock_funnels_plugin_version');
+        if (!$current_version) {
+            // If no version is set, set it to the new version
+            // Setup encryption key if not already defined
+            update_option('dock_funnels_plugin_version', $new_version);
+            $current_version = $new_version;
+            self::setup_encryption_key();
+        }
+
+        if (version_compare($current_version, $new_version, '<')) {
+            // Update the plugin version in the database
+            update_option('dock_funnels_plugin_version', $new_version);
+            self::activate();
+        }
     }
 
 
@@ -36,10 +55,12 @@ class DockFunnels_Main
 
     public static function activate()
     {
-        // Create necessary database tables
-        self::create_tables();
+
         // Setup encryption key if not already defined
         self::setup_encryption_key();
+
+        // Create necessary database tables
+        self::create_tables();
     }
 
     public static function deactivate()
@@ -99,7 +120,6 @@ class DockFunnels_Main
         if (!$fk_exists) {
             $wpdb->query("ALTER TABLE $responses_table ADD CONSTRAINT fk_form_id FOREIGN KEY (form_id) REFERENCES $forms_table(id) ON DELETE CASCADE;");
         }
-
     }
 
     public static function setup_encryption_key()

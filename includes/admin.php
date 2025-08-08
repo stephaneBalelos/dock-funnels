@@ -77,6 +77,7 @@ class DockFunnels_Admin
 
     public static function render_forms_page()
     {
+        $plugin_version = get_option('dock_funnels_plugin_version');
         if (!current_user_can('manage_options')) {
             echo '<div class="wrap"><h1>Access Denied</h1><p>You do not have permission to view this page.</p></div>';
             return;
@@ -94,6 +95,9 @@ class DockFunnels_Admin
             }
         } else {
             $forms = DockFunnels_DB::get_forms();
+            if ($plugin_version) {
+                echo '<p>Plugin Version: ' . esc_html($plugin_version) . '</p>';
+            }
             echo '<div class="wrap"><h1>Dock Funnels</h1>';
             echo '<p>Verwalten Sie Ihre Formulare und deren Antworten.</p>';
             if (empty($forms)) {
