@@ -268,10 +268,6 @@ class DockFunnels_Ajax
         if (!$saved_form) {
             wp_send_json_error(['message' => 'Form not found.']);
         }
-        // Check If the saved form status is published
-        if ($saved_form->status === 'published') {
-            wp_send_json_error(['message' => 'Cannot update a published form. Please create a new version instead.']);
-        }
 
         // Format the data
         $form_state = json_decode($data['form_state'], true); // see @/types.index.ts for Form type

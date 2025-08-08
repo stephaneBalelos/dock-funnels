@@ -14,6 +14,7 @@ import ImportExportDialog from "@/components/dashboard/header/ImportExportDialog
 import SubmissionsActions from "@/components/dashboard/submissions-actions/SubmissionsActions.vue";
 import FormDesignPreview from "@/components/dashboard/preview/FormDesignPreview.vue";
 import EditorLoader from "@/components/dashboard/UI/Loaders/EditorLoader.vue";
+import FormSaving from "@/components/dashboard/header/FormSaving.vue";
 
 // const ajaxUrl = window.DockFunnelsAdmin?.ajaxUrl || '/wp-admin/admin-ajax.php';
 
@@ -69,23 +70,7 @@ onMounted(() => {
             Import/Export
           </Button>
         </ImportExportDialog>
-        <div
-          v-if="editorStore.editorState.value.isSaving"
-          class="flex items-center"
-        >
-          <Badge severity="secondary"> Wird gespeichert </Badge>
-        </div>
-        <Button
-          v-if="editorStore.form && !editorStore.editorState.value.isSaving"
-          @click="editorStore.saveFormState"
-          size="small"
-          severity="secondary"
-          class="flex items-center"
-          :loading="editorStore.editorState.value.isSaving"
-        >
-          <Icon icon="heroicons:arrow-down-tray" class="mr-2" />
-          {{ editFormId ? 'Speichern' : 'Erstellen' }}
-        </Button>
+        <FormSaving v-if="editorStore.form" />
       </div>
     </div>
     <div class="toolbar">

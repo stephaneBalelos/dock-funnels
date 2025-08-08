@@ -1,11 +1,15 @@
 <template>
   <div class="flex items-center gap-4">
-    <p class="text-stone-900 font-semibold text-lg">
-      <Icon icon="heroicons:document-text" class="inline mr-2" />
-      {{ editorStore.form.title }}
-    </p>
+    <div class="flex flex-col">
+      <p class="text-stone-900 font-semibold text-lg">
+        <Icon icon="heroicons:document-text" class="inline mr-2" />
+        {{ editorStore.form.title }}
+      </p>
+    </div>
     <Badge v-if="editFormId" :value="`Formular ID: ${editFormId}`" size="small"></Badge>
     <Badge v-else severity="success" size="small">Neues Formular</Badge>
+    <Badge v-if="editorStore.form.status === 'draft'" severity="secondary" size="small">Entwurf</Badge>
+    <Badge v-if="editorStore.form.status === 'published'" severity="success" size="small">Veröffentlicht</Badge>
   </div>
 </template>
 
