@@ -9,13 +9,13 @@ import ToastService from 'primevue/toastservice';
 import Tooltip from 'primevue/tooltip';
 
 
-
 // DockFunnelsData is provided by the PHP script
 declare global {
     interface Window {
         DockFunnelsAdmin: {
             ajaxUrl: string;
             nonce: string;
+            adminUrl: string;
         }
     }
 }
@@ -61,6 +61,7 @@ function mountFormResponses() {
     app.use(ToastService);
     app.directive('tooltip', Tooltip);
     app.provide('ajaxUrl', window.DockFunnelsAdmin?.ajaxUrl);
+    app.provide('adminUrl', window.DockFunnelsAdmin?.adminUrl);
     app.provide('nonce', window.DockFunnelsAdmin?.nonce);
     app.provide('formId', new URLSearchParams(window.location.search).get('form_id') || null);
     app.mount('#dock-funnels-responses');

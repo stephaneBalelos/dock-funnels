@@ -17,6 +17,7 @@ class DockFunnels_Admin
 
         $data = [
             'ajaxUrl' => admin_url('admin-ajax.php'),
+            'adminUrl' => admin_url('admin.php'),
             'nonce' => wp_create_nonce('dock_funnels_admin_nonce')
         ];
         wp_localize_script('dock-funnels-dashboard', 'DockFunnelsAdmin', $data);
@@ -195,7 +196,10 @@ class DockFunnels_Admin
         foreach ($forms as $form) {
             echo "<tr>
             <td>{$form['id']}</td>
-            <td>{$form['name']}</td>
+            <td>
+                <strong>{$form['name']}</strong> <br>
+                " . ($form['should_save_responses'] ? 'Dieses Formular speichert Antworten.' : 'Dieses Formular speichert keine Antworten.') . "
+            </td>
             <td><code>[dock_funnel id='{$form['id']}']</code></td>
             <td>
                 <a href='" . admin_url("admin.php?page=dock-funnels-editor&form_id={$form['id']}") . "' class='button'>Edit</a>
