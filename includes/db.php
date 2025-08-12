@@ -126,4 +126,22 @@ class DockFunnels_DB {
 
         return $result;
     }
+
+    public static function get_email_logs_by_form_id($form_id) {
+        global $wpdb;
+        return $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}dock_funnel_email_logs WHERE form_id = %d", $form_id), ARRAY_A);
+    }
+
+    public static function save_email_log($form_id, $email, $is_action = false) {
+        global $wpdb;
+        $wpdb->insert(
+            $wpdb->prefix . 'dock_funnel_email_logs',
+            [
+                'form_id' => $form_id,
+                'emails' => wp_json_encode($email),
+                'is_action' => $is_action ? 1 : 0,
+            ]
+        );
+        return $wpdb->insert_id;
+    }
 }

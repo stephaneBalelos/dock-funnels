@@ -68,9 +68,15 @@ class DockFunnels_Mailing
         $subject = self::parse_email_subject($subject, $form, $submission);
         $body = self::parse_email_body($body, $form, $submission);
 
-        return self::send_email($to, $subject, $body, [
+        $mail_sent = self::send_email($to, $subject, $body, [
             'Content-Type: text/html; charset=UTF-8',
         ]);
+
+        if ($mail_sent) {
+            $emails = $to;
+            DockFunnels_DB::save_email_log($form->id, $emails); // Save email log with is_action = false
+        }
+        return $mail_sent;
     }
 
     public static function handleOnSubmitActionMail($form, $submission, $action)
@@ -92,7 +98,13 @@ class DockFunnels_Mailing
             'Content-Type: text/html; charset=UTF-8',
         ];
         // Send the email
-        return self::send_email($email_to, $subject, $body, $headers);
+        $mail_sent = self::send_email($email_to, $subject, $body, $headers);
+
+        if ($mail_sent) {
+            $emails = [$email_to];
+            DockFunnels_DB::save_email_log($form->id, $emails, true); // Save email log with is_action = true
+        }
+        return $mail_sent;
     }
 
     private static function parse_email_subject($subject, $form, $submission)

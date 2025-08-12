@@ -367,6 +367,37 @@ class DockFunnels_Ajax
         }
         wp_send_json_success(['message' => 'Response deleted successfully.']);
     }
+
+    /**
+     * Get Email Logs by Form ID
+     */
+    public static function get_email_logs_by_form_id()
+    {
+        $body = file_get_contents('php://input');
+        if (empty($body)) {
+            wp_send_json_error(['message' => 'No data received.']);
+        }
+        $data = json_decode($body, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            wp_send_json_error(['message' => 'Invalid JSON data.']);
+        }
+        wp_verify_nonce($data['nonce'], 'dock_funnel_form_nonce');
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'You do not have permission to create forms.']);
+        }
+
+        $form_id = isset($data['form_id']) ? intval($data['form_id']) : 0;
+        if (!$form_id) {
+            wp_send_json_error(['message' => 'Invalid form ID.']);
+        }
+
+        $email_logs = DockFunnels_DB::get_email_logs_by_form_id($form_id);
+        if (!$email_logs) {
+            wp_send_json_error(['message' => 'No email logs found for this form.']);
+        }
+
+        wp_send_json_success($email_logs);
+    }
 }
 
 

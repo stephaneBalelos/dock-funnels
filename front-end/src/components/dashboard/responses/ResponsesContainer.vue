@@ -1,82 +1,119 @@
 <template>
-  <div class="grid grid-cols-6 h-full">
-    <div class="col-span-2 border-r">
-      <div class="responses-list flex flex-col h-full">
-        <div class="responses-header p-2 flex flex-col justify-center">
-          <div class="flex justify-between items-center mb-2">
+  <div class="h-full flex flex-col">
+    <div class="responses-header p-2 flex flex-col border-b">
+      <div class="flex items-center mb-2">
+        <div class="flex flex-col">
+          <h2 class="text-lg font-semibold">{{ formState.title }}</h2>
+          <p class="text-sm text-surface-500">
+            Wählen Sie eine Anfrage aus, um die Details anzuzeigen.
+          </p>
+        </div>
+        <Button
+          v-if="adminUrl"
+          class="ml-4"
+          @click="navigateToEditorPage"
+          aria-label="Edit Form"
+          severity="secondary"
+          size="small"
+        >
+          <Icon icon="heroicons:pencil-square" />
+        </Button>
+        <SelectButton
+          class="ml-auto"
+          v-model="selectedView"
+          option-value="value"
+          option-label="name"
+          :options="options"
+          size="small"
+        />
+      </div>
+      <Message
+        v-if="!formState.should_save_responses"
+        class="text-sm text-surface-500"
+        size="small"
+      >
+        Dieses Formular speichert keine Anfragen.
+      </Message>
+    </div>
+    <div v-if="selectedView === 1" class="grid grid-cols-6 flex-1">
+      <div class="col-span-2 border-r">
+        <div class="responses-list flex flex-col h-full">
+          <div class="relative responses-list-content flex-1 overflow-y-auto">
+            <ul
+              v-if="responses.length > 0"
+              class="absolute inset-0 list-none p-0 m-0"
+            >
+              <li
+                v-for="(res, index) in responses"
+                :key="index"
+                :class="
+                  'p-2 py-4 m-0 border-b hover:bg-surface-100 cursor-pointer' +
+                  (selectedResponseId === res.id ? ' bg-surface-100' : '')
+                "
+                @click="selectedResponseId = res.id"
+              >
+                Anfrage ID: {{ res.id }} <br />
+                Eingereicht am: {{ res.submittedAt.toLocaleDateString("de") }}
+              </li>
+            </ul>
+            <div v-else class="flex flex-col items-center h-full">
+              <EmptyState />
+              <p class="text-lg text-surface-500">
+                Bisher keine Antworten vorhanden.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-span-4">
+        <div
+          v-if="selectedResponseId && selectedResponse"
+          class="responses-details flex flex-col h-full"
+        >
+          <div
+            class="response-details-header p-2 border-b flex justify-between items-center"
+          >
             <div class="flex flex-col">
-              <h2 class="text-lg font-semibold">{{ formState.title }}</h2>
+              <h3 class="text-lg font-semibold">
+                Details zu Anfrage ID: {{ selectedResponseId }}
+              </h3>
               <p class="text-sm text-surface-500">
-                Wählen Sie eine Antwort aus, um die Details anzuzeigen.
+                Hier sind die Details zu Ihrer Anfrage
               </p>
             </div>
             <Button
-              v-if="adminUrl"
-              @click="navigateToEditorPage"
-              aria-label="Edit Form"
-              severity="secondary"
-              size="small"
+              severity="danger"
+              @click="deleteResponse(selectedResponseId)"
             >
-              <Icon icon="heroicons:pencil-square" />
+              Anfrage löschen
             </Button>
           </div>
-          <Message
-            v-if="!formState.should_save_responses"
-            class="text-sm text-surface-500"
-            size="small"
+          <div
+            class="responses-details-content relative flex-1 overflow-y-auto p-2"
           >
-            Dieses Formular speichert keine Antworten.
-          </Message>
-        </div>
-        <div class="relative responses-list-content flex-1 overflow-y-auto">
-          <ul
-            v-if="responses.length > 0"
-            class="absolute inset-0 list-none p-0 m-0"
-          >
-            <li
-              v-for="(res, index) in responses"
-              :key="index"
-              :class="
-                'p-2 py-4 m-0 border-t hover:bg-surface-100 cursor-pointer' +
-                (selectedResponseId === res.id ? ' bg-surface-100' : '')
-              "
-              @click="selectedResponseId = res.id"
-            >
-              Anfrage ID: {{ res.id }} <br />
-              Eingereicht am: {{ res.submittedAt.toLocaleDateString("de") }}
-            </li>
-          </ul>
-          <div v-else class="flex flex-col items-center h-full">
-            <EmptyState />
-            <p class="text-lg text-surface-500">
-              Bisher keine Antworten vorhanden.
-            </p>
+            <div class="absolute inset-0 p-4">
+              <ResponseContent
+                :form-steps="props.formState.form_steps"
+                :response="selectedResponse.response"
+              />
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="col-span-4" v-if="selectedResponseId && selectedResponse">
-      <div class="responses-details">
-        <div
-          class="response-details-header p-2 border-b flex justify-between items-center"
-        >
-          <div class="flex flex-col">
-            <h3 class="text-lg font-semibold">
-              Details zu Anfrage ID: {{ selectedResponseId }}
-            </h3>
-            <p class="text-sm text-surface-500">
-              Hier sind die Details zu Ihrer Anfrage
-            </p>
-          </div>
-          <Button severity="danger" @click="deleteResponse(selectedResponseId)">
-            Anfrage löschen
-          </Button>
-        </div>
-        <div class="responses-details-content p-2">
-          <ResponseContent
-            :form-steps="props.formState.form_steps"
-            :response="selectedResponse.response"
-          />
+    <div v-else class="email-logs flex-1 p-4">
+      <h3 class="text-lg font-semibold mb-2">E-Mail Logs</h3>
+      <p class="text-sm text-surface-500 mb-2">
+        Hier können Sie die E-Mail Logs für dieses Formular einsehen. Logs die
+        hier angezeigt werden, stammen aus den E-Mail Benachrichtigungen, die an
+        Admins oder Kunden über Wordpress gesendet wurden. Ist aber keine
+        Garantie, dass die E-Mails auch tatsächlich zugestellt wurden, da
+        technische Probleme oder Spamfilter bei dem Empfänger die Zustellung
+        verhindern können.
+      </p>
+      <div class="email-logs-content relative h-full">
+        <div class="absolute inset-0 py-4">
+          <ResponseLogsContent />
         </div>
       </div>
     </div>
@@ -121,6 +158,12 @@ const selectedResponse = computed(() => {
     responses.value.find((res) => res.id === selectedResponseId.value) || null
   );
 });
+
+const selectedView = ref(1);
+const options = ref([
+  { name: "Antworten", value: 1 },
+  { name: "E-Mail Logs", value: 2 },
+]);
 
 onMounted(async () => {
   if (!formId || !endpoint || !nonce) {
