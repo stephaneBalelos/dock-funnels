@@ -283,16 +283,37 @@ export const useEditorStore = createGlobalState(() => {
         }
     }
 
-    const updateField = (fieldName: string, fieldData: Partial<FormFieldText | FormFieldSelect | FormFieldCheckboxList | FormFieldSubmissionSummary | FormFieldCustomHtml>) => {
+    const updateField = (fieldName: string, fieldData: Partial<FormFieldText | FormFieldSelect | FormFieldCheckboxList | FormFieldSubmissionSummary | FormFieldCustomHtml>, dependanciesValuesChanges?: { old: string; new: string }[]) => {
         const field = form.form_fields.find(f => f.field_name === fieldName)
         if (!field) {
             console.warn('Field not found:', fieldName)
             return
         }
 
-        // Todo Update all fields that depend on this field
-        // end todo
         Object.assign(field, fieldData)
+
+        if (dependanciesValuesChanges && dependanciesValuesChanges.length > 0) {
+            console.log('Updating dependencies for field changes:', dependanciesValuesChanges)
+            // Update Fields Dependencies
+            form.form_fields.forEach(f => {
+                if (f.depends_on && Array.isArray(f.depends_on)) {
+                    f.depends_on.forEach(dep => {
+                        if (dep.field_name === field.field_name) {
+                            dep.value = dependanciesValuesChanges.find(change => change.old === dep.value)?.new || dep.value
+                        }
+                    })
+                }
+                if (f.type === 'select' || f.type === 'checkboxList') {
+                    f.options.forEach(option => {
+                        option.depends_on.forEach(dep => {
+                            if (dep.field_name === field.field_name) {
+                                dep.value = dependanciesValuesChanges.find(change => change.old === dep.value)?.new || dep.value
+                            }
+                        })
+                    })
+                }
+            })
+        }
 
         setSelectedFieldName(field.field_name)
 

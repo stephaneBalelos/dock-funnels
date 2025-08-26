@@ -186,7 +186,14 @@
                     :field_name="dep.field_name"
                     :field_value="dep.value"
                     :option_value="state.options[index].value"
-                    @onRemoveDependency="() => editorStore.removeOptionDependency(state.field_name, state.options[index].value, dep_idx)"
+                    @onRemoveDependency="
+                      () =>
+                        editorStore.removeOptionDependency(
+                          state.field_name,
+                          state.options[index].value,
+                          dep_idx
+                        )
+                    "
                   />
                 </div>
               </div>
@@ -228,6 +235,7 @@ import type { FormFieldSelect } from "@/types";
 import z from "zod";
 import type { FormSubmitEvent } from "@primevue/forms";
 import { Icon } from "@iconify/vue";
+import { slugify } from "@/utils";
 
 type Props = {
   fieldName: string;
@@ -282,9 +290,20 @@ function onFormSubmit(_$event: FormSubmitEvent<FormFieldSelect>) {
     return;
   }
 
-  console.log("Form submitted with state:", state);
-  // Here you can handle the form submission, e.g., save the state or emit an event
-  editorStore.updateField(props.fieldName, state);
+  // Slugify options values
+    const dependanciesValuesChanges: { old: string; new: string }[] = []; // To track changes and pass them to the updateField
+    state.options = state.options.map((option, index) => {
+      const newValue = slugify(option.label) + "_" + index;
+      if (option.value !== newValue) {
+        dependanciesValuesChanges.push({ old: option.value, new: newValue });
+      }
+      return {
+        ...option,
+        value: newValue,
+      };
+    });
+
+  editorStore.updateField(props.fieldName, state, dependanciesValuesChanges);
 }
 
 const validateForm = () => {

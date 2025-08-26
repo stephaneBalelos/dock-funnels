@@ -155,14 +155,23 @@
               </FormField>
               <FormField class="flex gap-1">
                 <label :for="`option-${index}-required`">Erforderlich?</label>
-                <Checkbox :id="`option-${index}-required`" v-model="state.options[index].is_required" binary variant="filled" />
+                <Checkbox
+                  :id="`option-${index}-required`"
+                  v-model="state.options[index].is_required"
+                  binary
+                  variant="filled"
+                />
               </FormField>
               <div class="flex flex-col border p-2 rounded">
                 <div class="flex justify-between items-center">
                   <span class="text-sm font-semibold">
                     Abhängigkeiten (optional)
                   </span>
-                  <FieldOptionDependencyInput :field_name="state.field_name" :option_value="state.options[index].value" v-slot="{ toggleDialog }">
+                  <FieldOptionDependencyInput
+                    :field_name="state.field_name"
+                    :option_value="state.options[index].value"
+                    v-slot="{ toggleDialog }"
+                  >
                     <Button
                       severity="secondary"
                       size="small"
@@ -179,15 +188,22 @@
                   "
                   class="flex flex-col mt-2"
                 >
-                <DependencyBadge
-                  v-for="(dep, dep_idx) in state.options[index].depends_on"
-                  :dep_idx="dep_idx"
-                  :key="dep_idx"
-                  :field_name="dep.field_name"
-                  :field_value="dep.value"
-                  :option_value="state.options[index].value"
-                  @on-remove-dependency="() => editorStore.removeOptionDependency(state.field_name, state.options[index].value, dep_idx)"
-                />
+                  <DependencyBadge
+                    v-for="(dep, dep_idx) in state.options[index].depends_on"
+                    :dep_idx="dep_idx"
+                    :key="dep_idx"
+                    :field_name="dep.field_name"
+                    :field_value="dep.value"
+                    :option_value="state.options[index].value"
+                    @on-remove-dependency="
+                      () =>
+                        editorStore.removeOptionDependency(
+                          state.field_name,
+                          state.options[index].value,
+                          dep_idx
+                        )
+                    "
+                  />
                 </div>
               </div>
             </div>
@@ -200,7 +216,7 @@
                   value: `Auswahlwert ${state.options.length + 1}`,
                   is_required: false,
                   description: '',
-                  depends_on: []
+                  depends_on: [],
                 })
               "
             >
@@ -275,6 +291,7 @@ import z from "zod";
 import type { FormSubmitEvent } from "@primevue/forms";
 import { Icon } from "@iconify/vue";
 import DependencyBadge from "./DependencyBadge.vue";
+import { slugify } from "@/utils";
 
 type Props = {
   fieldName: string;
@@ -317,6 +334,17 @@ const schema = z.object({
   ),
 });
 
+// Refine to check unique option values
+schema.refine(
+  (data) => {
+    const values = data.options.map((option) => option.value);
+    return values.length === new Set(values).size;
+  },
+  {
+    message: "Option values must be unique",
+  }
+);
+
 const state = reactive<FormFieldCheckboxList>({
   step_index: field.value.step_index,
   type: field.value.type,
@@ -340,7 +368,20 @@ function onFormSubmit($event: FormSubmitEvent<FormFieldCheckboxList>) {
   }
   // Here you can handle the form submission, e.g., save the state or emit an event
   if ($event.valid) {
-    editorStore.updateField(props.fieldName, state);
+    // Slugify options values
+    const dependanciesValuesChanges: { old: string; new: string }[] = []; // To track changes and pass them to the updateField
+    state.options = state.options.map((option, index) => {
+      const newValue = slugify(option.label) + "_" + index;
+      if (option.value !== newValue) {
+        dependanciesValuesChanges.push({ old: option.value, new: newValue });
+      }
+      return {
+        ...option,
+        value: newValue,
+      };
+    });
+
+    editorStore.updateField(props.fieldName, state, dependanciesValuesChanges);
   } else {
     console.error("Form validation failed:", $event.errors);
   }
