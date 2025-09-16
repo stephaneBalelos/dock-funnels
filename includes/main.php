@@ -68,18 +68,16 @@ class DockFunnels_Main
     {
         global $wpdb;
 
-        // $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_responses");
-        // $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_steps");
-        // $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_fields");
-        // $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnels");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_responses");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_email_logs");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnels");
     }
     public static function uninstall()
     {
         global $wpdb;
 
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_responses");
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_steps");
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_fields");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_email_logs");
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnels");
     }
 
@@ -104,8 +102,8 @@ class DockFunnels_Main
             response_count mediumint(9) DEFAULT 0 NOT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
             should_save_responses boolean DEFAULT true NOT NULL,
-            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL
-            PRIMARY KEY  (id)
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY (id)
         ) $charset_collate;";
 
         $sql_responses = "CREATE TABLE $responses_table (
