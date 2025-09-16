@@ -68,9 +68,9 @@ class DockFunnels_Main
     {
         global $wpdb;
 
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_responses");
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_email_logs");
-        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnels");
+        // $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_responses");
+        // $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnel_email_logs");
+        // $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}dock_funnels");
     }
     public static function uninstall()
     {

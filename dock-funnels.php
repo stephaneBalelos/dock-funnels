@@ -2,7 +2,7 @@
 /*
 Plugin Name: Dock Funnels
 Description: Dock Funnels ist ein Minimalistisches aber leistungsstarkes Plugin, das es dir ermöglicht, mehrstufige Formulare zu erstellen und zu verwalten. Es ist ideal für die Erstellung von Umfragen, Anmeldeformularen und anderen Formularen, die mehrere Schritte erfordern.
-Version: 0.17.2
+Version: 0.17.3
 Author: Dock26
 */
 
@@ -11,7 +11,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('DOCK_FUNNELS_PLUGIN_VERSION', '0.17.2');
+define('DOCK_FUNNELS_PLUGIN_VERSION', '0.17.3');
 
 // include necessary files
 require_once plugin_dir_path(__FILE__) . 'includes/db.php';
