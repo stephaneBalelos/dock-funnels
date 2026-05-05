@@ -1,11 +1,11 @@
 <template>
-    <div ref="customHtmlContent" v-html="props.field.html_content" class="custom-html-field"></div>
+    <div ref="customHtmlContent" v-html="htmlContent" class="custom-html-field"></div>
 </template>
 
 <script setup lang="ts">
 import { useFormSubmissionStateStore } from '@/forms/stores/submission.store';
 import type { FormFieldCustomHtml } from '@/types';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 
 type Props = {
@@ -15,6 +15,10 @@ type Props = {
 const props = defineProps<Props>();
 const submissionStateStore = useFormSubmissionStateStore();
 const customHtmlContent = ref<HTMLDivElement | null>(null);
+
+const htmlContent = computed(() => {
+    return props.field.html_content.replace(/((?:&nbsp;)*)&nbsp;/g, '$1 ')
+})
 
 onMounted(() => {
     // Parse Mention Blots in the custom HTML content
