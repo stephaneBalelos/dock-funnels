@@ -17,7 +17,9 @@ const submissionStateStore = useFormSubmissionStateStore();
 const customHtmlContent = ref<HTMLDivElement | null>(null);
 
 const htmlContent = computed(() => {
-    return props.field.html_content.replace(/((?:&nbsp;)*)&nbsp;/g, '$1 ')
+    return props.field.html_content
+        .replace(/((?:&nbsp;)*)&nbsp;/g, '$1 ')
+        .replace(/<p><\/p>/g, '<br>')
 })
 
 onMounted(() => {
